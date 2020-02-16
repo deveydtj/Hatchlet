@@ -15,7 +15,8 @@
 		8443ECFB23F0D6080095CFA8 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443ECFA23F0D6080095CFA8 /* Settings.swift */; };
 		8443ECFE23F0EB3B0095CFA8 /* Shop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443ECFD23F0EB3B0095CFA8 /* Shop.swift */; };
 		8443ED0023F0F2310095CFA8 /* Crown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443ECFF23F0F2310095CFA8 /* Crown.swift */; };
-		846D2EEB235BA9B100B4402F /* Enemy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846D2EEA235BA9B100B4402F /* Enemy.swift */; };
+		8458A4CE23F9226B000922A4 /* Eagle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8458A4CD23F9226B000922A4 /* Eagle.swift */; };
+		846D2EEB235BA9B100B4402F /* Fox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846D2EEA235BA9B100B4402F /* Fox.swift */; };
 		84832A5322879F60003BA784 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84832A5222879F60003BA784 /* AppDelegate.swift */; };
 		84832A5722879F60003BA784 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84832A5622879F60003BA784 /* Actions.sks */; };
 		84832A5922879F60003BA784 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84832A5822879F60003BA784 /* GameScene.swift */; };
@@ -53,7 +54,8 @@
 		8443ECFA23F0D6080095CFA8 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		8443ECFD23F0EB3B0095CFA8 /* Shop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shop.swift; sourceTree = "<group>"; };
 		8443ECFF23F0F2310095CFA8 /* Crown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crown.swift; sourceTree = "<group>"; };
-		846D2EEA235BA9B100B4402F /* Enemy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enemy.swift; sourceTree = "<group>"; };
+		8458A4CD23F9226B000922A4 /* Eagle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Eagle.swift; sourceTree = "<group>"; };
+		846D2EEA235BA9B100B4402F /* Fox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fox.swift; sourceTree = "<group>"; };
 		84832A4F22879F60003BA784 /* Hatchlet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hatchlet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84832A5222879F60003BA784 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		84832A5622879F60003BA784 /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
@@ -166,7 +168,8 @@
 			isa = PBXGroup;
 			children = (
 				84832A6A2287A027003BA784 /* Player.swift */,
-				846D2EEA235BA9B100B4402F /* Enemy.swift */,
+				846D2EEA235BA9B100B4402F /* Fox.swift */,
+				8458A4CD23F9226B000922A4 /* Eagle.swift */,
 				84C85A772352381700DAD310 /* ParallaxBG.swift */,
 				8497FE2123550F1D00CF4C06 /* Background.swift */,
 				84C85A6F234E4FA400DAD310 /* Egg.swift */,
@@ -283,7 +286,7 @@
 				84C85A8023537FE000DAD310 /* Emitters.swift in Sources */,
 				8443ECFE23F0EB3B0095CFA8 /* Shop.swift in Sources */,
 				84832A6B2287A027003BA784 /* Player.swift in Sources */,
-				846D2EEB235BA9B100B4402F /* Enemy.swift in Sources */,
+				846D2EEB235BA9B100B4402F /* Fox.swift in Sources */,
 				84C85A6E234E4CEB00DAD310 /* PhysicsCategory.swift in Sources */,
 				84832A5922879F60003BA784 /* GameScene.swift in Sources */,
 				84832A5B22879F60003BA784 /* GameViewController.swift in Sources */,
@@ -291,6 +294,7 @@
 				84C7CAC62357A8D5005D09DC /* Life.swift in Sources */,
 				8443ED0023F0F2310095CFA8 /* Crown.swift in Sources */,
 				84C85A782352381700DAD310 /* ParallaxBG.swift in Sources */,
+				8458A4CE23F9226B000922A4 /* Eagle.swift in Sources */,
 				84C7CAD7235A103B005D09DC /* Menu.swift in Sources */,
 				8443ECFB23F0D6080095CFA8 /* Settings.swift in Sources */,
 				84C85A6C234E387E00DAD310 /* Landscape.swift in Sources */,

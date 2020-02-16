@@ -27,7 +27,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var airEmitter: SKNode! = nil
     let emitter:Emitters
     let player:Player
-    var enemy:Enemy
+    var eagle:Eagle
+    var fox:Fox
     var HUD:gameHUD
     let cameraNode: SKCameraNode
     
@@ -66,7 +67,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         crown = Crown(size: size)
         
         player = Player()
-        enemy = Enemy()
+        eagle = Eagle()
+        fox = Fox()
         cameraNode = SKCameraNode()
         HUD = gameHUD(size: size, player: player)
         emitter = Emitters(size: size)
@@ -452,8 +454,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         //stop any enemys
-        enemy.removeAllActions()
-        enemy.removeFromParent()
+        fox.removeAllActions()
+        fox.removeFromParent()
         
         //hide the game's utility & reset game score
         HUD.removeFromParent()
@@ -491,13 +493,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             
             HUD.updateShadow(userOfShadow: "player", currentPos: player.position.y)
-            HUD.updateShadow(userOfShadow: "enemy", currentPos: enemy.position.y)
-            HUD.enemyShadow.position.x = (enemy.position.x + size.width / 2) - 5
+            HUD.updateShadow(userOfShadow: "fox", currentPos: fox.position.y)
+            HUD.enemyShadow.position.x = (fox.position.x + size.width / 2) - 5
             
             // Spawn Enemy
-            if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) &&  (gameOver == false) && (enemy.isRunning() == false){
+            if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) &&  (gameOver == false) && (fox.isRunning() == false){
                 spawnEnemy()
-                enemy.run(speed: gameSpeed, viewSize: size)
+                fox.run(speed: gameSpeed, viewSize: size)
+                eagle.run(speed: gameSpeed, viewSize: size)
                 }
         }
         
@@ -506,11 +509,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         func spawnEnemy() {
             HUD.enemyShadow.isHidden = false
             
-            enemy = Enemy()
-            enemy.position.x = size.width
-            enemy.position.y = groundHitBox.position.y + (enemy.size.height)
-            enemy.zPosition = 100
-            addChild(enemy)
+            eagle = Eagle()
+            eagle.position.x = size.width
+            eagle.position.y = groundHitBox.position.y + (fox.size.height)
+            eagle.zPosition = 101
+            addChild(eagle)
+            
+            fox = Fox()
+            fox.position.x = size.width
+            fox.position.y = groundHitBox.position.y + (fox.size.height)
+            fox.zPosition = 100
+            addChild(fox)
         }
     
 //******************************************************************************
@@ -533,7 +542,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if collision == PhysicsCategory.Roof | PhysicsCategory.Player {
                 player.hurtHead()
                 if (gameOver == false) && (HUD.removeLife() == false){
-                    enemy.stop(viewSize: size)
+                    eagle.stop(viewSize: size)
+                    fox.stop(viewSize: size)
                     endGame()
                 }
                 emitter.addEmitterOnPlayer(fileName: "feathers", position: player.position)
@@ -541,19 +551,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if collision == PhysicsCategory.Ground | PhysicsCategory.Player {
                 emitter.addEmitterOnPlayer(fileName: "grass", position: player.position, deleteTime: 0.4)
-                if gameOver == false && !enemy.isRunning(){
+                if gameOver == false && !fox.isRunning(){
                     spawnEnemy()
-                    enemy.run(speed: gameSpeed, viewSize: size)
+                    fox.run(speed: gameSpeed, viewSize: size)
+                    eagle.run(speed: gameSpeed, viewSize: size)
                 }
             }
             
             if collision == PhysicsCategory.Enemy | PhysicsCategory.Ground {
-                emitter.addEmitterOnPlayer(fileName: "grass", position: CGPoint(x: enemy.position.x, y: enemy.position.y - 15), deleteTime: 0.4)
+                emitter.addEmitterOnPlayer(fileName: "grass", position: CGPoint(x: fox.position.x, y: fox.position.y - 15), deleteTime: 0.4)
             }
             
             //contact enemy & player
             if collision == PhysicsCategory.Player | PhysicsCategory.Enemy {
-                enemy.stop(viewSize: size)
+                fox.stop(viewSize: size)
+                eagle.stop(viewSize: size)
                 HUD.enemyShadow.isHidden = true
                  if HUD.removeLife() == false{
                                endGame()

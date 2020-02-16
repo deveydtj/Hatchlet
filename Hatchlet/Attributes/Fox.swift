@@ -8,7 +8,7 @@
 import SpriteKit
 
 
-class Enemy:SKSpriteNode {
+class Fox:SKSpriteNode {
     
     let Game = SKTextureAtlas(named: "Game")
     var enemyImage = SKTexture()
@@ -34,7 +34,7 @@ class Enemy:SKSpriteNode {
         enemyImage = Game.textureNamed("fox")
         texture = enemyImage
         
-        name = "enemy"
+        name = "fox"
         physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2.15)
         physicsBody!.isDynamic = true
         physicsBody!.affectedByGravity = true
@@ -69,10 +69,6 @@ class Enemy:SKSpriteNode {
         removeAllActions()
         removeAllChildren()
         removeFromParent()
-//        let reset = SKAction.run() { [weak self] in guard self != nil else { return }
-//                   self!.position.x = viewSize.width + (self!.size.width)
-//               }
-//        run(reset)
         running = false
     }
     
