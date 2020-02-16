@@ -242,12 +242,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func setScore() {
         //gameSpeed is how fast the animation plays
         //this is only good for createEggs()
-        gameSpeed *= 0.97
+        
+        if gameSpeed > 1.77 {
+            gameSpeed *= 0.97
+        }
         
         //speeds up other animations by accessing their speed
         
         landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed += 0.025
-        farBgBin.action(forKey: "farBgBinMoveLeft")!.speed += 1
+        farBgBin.action(forKey: "farBgBinMoveLeft")!.speed += 0.012
         scoreNum += 1
         HUD.scoreLabel.text = String(scoreNum)
         HUD.labelShadow.text = String(scoreNum)
