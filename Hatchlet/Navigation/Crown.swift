@@ -74,8 +74,9 @@ class Crown: SKNode {
         highScoreShadow.position = CGPoint(x: highScore.position.x + 2, y: highScore.position.y - 1)
         highScoreShadow.zPosition = 6
         highScoreShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
+        
         highScore.text = "HighScore: " + String(UserDefaults.standard.integer(forKey: "highScore"))
-        highScoreShadow.text = "HighScore: " + String(UserDefaults.standard.integer(forKey: "highScore"))
+        highScoreShadow.text = highScore.text
 
         bin.texture = MenuAtlas.textureNamed("bin")
         bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
@@ -89,6 +90,9 @@ class Crown: SKNode {
     }
     
     func show() {
+        highScore.text = "HighScore: " + String(UserDefaults.standard.integer(forKey: "highScore"))
+        highScoreShadow.text = highScore.text
+        
         bin.addChild(title)
         bin.addChild(titleShadow)
         bin.addChild(highScore)

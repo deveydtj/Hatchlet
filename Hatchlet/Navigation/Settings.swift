@@ -59,25 +59,10 @@ class Settings: SKNode {
         titleShadow.position = CGPoint(x: title.position.x + 3, y: title.position.y - 2)
         titleShadow.zPosition = 6
         titleShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
-        
-        /*
-        highScore.text = "HighScore: " + String(UserDefaults.standard.integer(forKey: "highScore"))
-        highScore.fontSize = 55
-        highScore.position = CGPoint(x:0, y: 0 - 100)
-        highScore.zPosition = 7
-        highScore.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
-        highScoreShadow.text = "HighScore: " + String(UserDefaults.standard.integer(forKey: "highScore"))
-        highScoreShadow.fontSize = 55
-        highScoreShadow.position = CGPoint(x: highScore.position.x + 2, y: highScore.position.y - 1)
-        highScoreShadow.zPosition = 6
-        highScoreShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
- */
  
         bin.texture = MenuAtlas.textureNamed("bin")
         bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
         bin.zPosition = 5
-        
-        
         
         backButton.texture = Constant.textureNamed("mainMenu")
         backButton.name = "settingsBackButton"

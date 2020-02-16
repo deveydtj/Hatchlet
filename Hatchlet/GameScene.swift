@@ -143,6 +143,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         farBgBin.name = "farBgBin"
         farBgBin.position = CGPoint(x: 0, y:0)
         addChild(farBgBin)
+        
+        scrollLandscapes(object: landscapeBin, speed: gameSpeed)
+        scrollLandscapes(object: farBgBin, speed: gameSpeed * 10)
+        farBgBin.isPaused = true
+        landscapeBin.isPaused = true
+        
     }
 //END SETUP^^^^
     
@@ -241,7 +247,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //speeds up other animations by accessing their speed
         
         landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed += 0.025
-        farBgBin.action(forKey: "farBgBinMoveLeft")!.speed += 0.015
+        farBgBin.action(forKey: "farBgBinMoveLeft")!.speed += 1
         scoreNum += 1
         HUD.scoreLabel.text = String(scoreNum)
         HUD.labelShadow.text = String(scoreNum)
@@ -283,7 +289,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func createEgg() {
         if gameOver == false {
             
-            checkMountains()
+            //checkMountains()
             
             var egg: Egg
             
@@ -343,8 +349,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         farBgBin.isPaused = false
         landscapeBin.isPaused = false
-        scrollLandscapes(object: landscapeBin, speed: gameSpeed)
-        scrollLandscapes(object: farBgBin, speed: gameSpeed * 10)
     }
     
 //******************************************************************************
@@ -424,8 +428,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         //Freeze Landscapes
-        landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed = 0.01
-        farBgBin.action(forKey: "farBgBinMoveLeft")!.speed = 0.01
+        landscapeBin.isPaused = true
+        farBgBin.isPaused = true
+        landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed = 1
+        farBgBin.action(forKey: "farBgBinMoveLeft")!.speed = 1
         
         //Stop spawning eggs
         removeAction(forKey: "createEgg")
@@ -568,9 +574,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 object.run(SKAction.repeatForever(SKAction.sequence([moveLeft, reset])),withKey: key)
         
-        if aniSpeed != 0 {
-            farBgBin.action(forKey: "farBgBinMoveLeft")!.speed += aniSpeed
-        }
+//        if aniSpeed != 0 {
+//            farBgBin.action(forKey: "farBgBinMoveLeft")!.speed = aniSpeed
+//        }
             }
 
 //******************************************************************************
@@ -578,12 +584,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // ~Update Landscapes
         func checkMountains() {
             if farBgBin.position.x < -(farBgBin.calculateAccumulatedFrame().size.width / 2) {
-                let aniSpeed = farBgBin.action(forKey: "farBgBinMoveLeft")!.speed
                 farBgBin.removeAllActions()
                 farBgBin.position.x = 0
-                scrollLandscapes(object: farBgBin, speed: gameSpeed * 10, aniSpeed: aniSpeed)
-                
-                print("UPDATED MOUNTAINS")
+                scrollLandscapes(object: farBgBin, speed: gameSpeed * 10)
             }
         }
 
