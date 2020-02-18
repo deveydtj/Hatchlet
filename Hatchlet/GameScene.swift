@@ -172,7 +172,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             location = touch.location(in: self)
         }
         
-        player.physicsBody!.applyForce(CGVector(dx: 0, dy: 9000))
+        player.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 145))
         
         let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
         let touchedNode = self.atPoint(positionInScene)
@@ -241,19 +241,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         touched = false
     }
     
-    func setScore() {
+    func setScore(eggType: String) {
         //gameSpeed is how fast the animation plays
         //this is only good for createEggs()
         
-        if gameSpeed > 1.77 {
-            gameSpeed *= 0.97
+        if gameSpeed > 1.5 {
+            gameSpeed *= 0.98
+            //speeds up other animations by accessing their speed
+            landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed += 0.025
+            farBgBin.action(forKey: "farBgBinMoveLeft")!.speed += 0.012
+        }
+
+        if eggType == "GoldenEgg"
+        {
+            scoreNum += 3
+        } else {
+        scoreNum += 1
         }
         
-        //speeds up other animations by accessing their speed
-        
-        landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed += 0.025
-        farBgBin.action(forKey: "farBgBinMoveLeft")!.speed += 0.012
-        scoreNum += 1
         HUD.scoreLabel.text = String(scoreNum)
         HUD.labelShadow.text = String(scoreNum)
     }
@@ -294,11 +299,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func createEgg() {
         if gameOver == false {
             
-            //checkMountains()
-            
             var egg: Egg
             
-            if ((Int.random(in: 1...10)) == 5 ) {
+            if ((Int.random(in: 1...15)) == 7 ) {
                 egg = Egg(isGold: true)
                 let goldenEggEmitter = SKEmitterNode(fileNamed: "eggCoin")
                 goldenEggEmitter?.targetNode = self.scene
@@ -307,7 +310,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 egg = Egg()
             }
             
-            let maxY = size.height - (egg.size.height * 2)
+            let maxY = size.height - (egg.size.height * 3)
             let minY = egg.size.height + 100
             let range = maxY - minY
             let eggY = maxY - CGFloat(arc4random_uniform(UInt32 (range)))
@@ -348,7 +351,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run() { [weak self] in guard let `self` = self else { return }
-                    self.createEgg()
+                   self.createEgg()
                 }, SKAction.wait(forDuration: 1)])
         ),withKey: "createEgg")
         
@@ -423,6 +426,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func endGame() {
         gameOver = true
+        
+        fox.stop()
+        eagle.stop()
         
         // ~Add endScreen
         endScreen = EndScreen(size: size, score: scoreNum)
@@ -500,7 +506,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) &&  (gameOver == false) && (fox.isRunning() == false){
                 spawnEnemy()
                 fox.run(speed: gameSpeed, viewSize: size)
-                eagle.run(speed: gameSpeed, viewSize: size)
                 }
         }
         
@@ -508,12 +513,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         func spawnEnemy() {
             HUD.enemyShadow.isHidden = false
-            
-            eagle = Eagle()
-            eagle.position.x = size.width
-            eagle.position.y = groundHitBox.position.y + (fox.size.height)
-            eagle.zPosition = 101
-            addChild(eagle)
             
             fox = Fox()
             fox.position.x = size.width
@@ -529,22 +528,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let collision = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
             
             if collision == PhysicsCategory.Egg | PhysicsCategory.Player {
-                setScore()
-                
                 if contact.bodyA.categoryBitMask == PhysicsCategory.Egg {
+                    setScore(eggType: contact.bodyA.node!.name!)
                     deleteEgg(egg: contact.bodyA.node!)
                 }
                 else {
+                    setScore(eggType: contact.bodyB.node!.name!)
                     deleteEgg(egg: contact.bodyB.node!)
                 }
             }
             
             if collision == PhysicsCategory.Roof | PhysicsCategory.Player {
-                player.hurtHead()
-                if (gameOver == false) && (HUD.removeLife() == false){
-                    eagle.stop(viewSize: size)
-                    fox.stop(viewSize: size)
-                    endGame()
+                
+                 if gameOver == false && !eagle.isRunning(){
+                eagle = Eagle()
+                addChild(eagle)
+                eagle.run(speed: gameSpeed, viewSize: size)
                 }
                 emitter.addEmitterOnPlayer(fileName: "feathers", position: player.position)
             }
@@ -554,7 +553,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 if gameOver == false && !fox.isRunning(){
                     spawnEnemy()
                     fox.run(speed: gameSpeed, viewSize: size)
-                    eagle.run(speed: gameSpeed, viewSize: size)
                 }
             }
             
@@ -564,8 +562,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             //contact enemy & player
             if collision == PhysicsCategory.Player | PhysicsCategory.Enemy {
-                fox.stop(viewSize: size)
-                eagle.stop(viewSize: size)
+                if contact.bodyB.node!.name == "fox" || contact.bodyB.node!.name == "fox"{
+                    fox.stop()
+                }
+                else {
+                eagle.stop()
+                }
                 HUD.enemyShadow.isHidden = true
                  if HUD.removeLife() == false{
                                endGame()
@@ -588,23 +590,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     object.position = CGPoint(x: 0, y: 0)
                 }
                 object.run(SKAction.repeatForever(SKAction.sequence([moveLeft, reset])),withKey: key)
-        
-//        if aniSpeed != 0 {
-//            farBgBin.action(forKey: "farBgBinMoveLeft")!.speed = aniSpeed
-//        }
             }
 
 //******************************************************************************
         
         // ~Update Landscapes
-        func checkMountains() {
-            if farBgBin.position.x < -(farBgBin.calculateAccumulatedFrame().size.width / 2) {
-                farBgBin.removeAllActions()
-                farBgBin.position.x = 0
-                scrollLandscapes(object: farBgBin, speed: gameSpeed * 10)
-            }
-        }
-
         func checkBackground() {
             if landscapeBin.position.x < -(size.width) {
                 landscapeBin.removeAllActions()

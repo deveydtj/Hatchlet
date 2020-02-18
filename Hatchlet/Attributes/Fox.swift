@@ -49,14 +49,14 @@ class Fox:SKSpriteNode {
         running = true
         let moveLeft = SKAction.moveBy(x: -(viewSize.width + (size.width * 1.5)), y: 0, duration: speed)
         let reset = SKAction.run() { [weak self] in guard self != nil else { return }
-            self!.stop(viewSize: viewSize)
+            self!.stop()
         }
         run(SKAction.sequence([moveLeft, reset]))
         
         
         
         let jump = SKAction.run() { [weak self] in guard self != nil else { return }
-            self!.physicsBody!.applyForce(CGVector(dx: 0, dy: 9000 * Double.random(in: 1.0..<2.6)))
+            self!.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 90 * Double.random(in: 1.5..<3.0)))
         }
         let wait = SKAction.wait(forDuration: 2)
         
@@ -64,7 +64,7 @@ class Fox:SKSpriteNode {
         
     }
     
-    func stop(viewSize: CGSize)
+    func stop()
     {
         removeAllActions()
         removeAllChildren()

@@ -12,12 +12,13 @@ class Eagle:SKSpriteNode {
     
     let Game = SKTextureAtlas(named: "Game")
     var enemyImage = SKTexture()
+    var enemyFlap = SKTexture()
     var running:Bool = false
     
     var prevPos: CGFloat = 0
     
     init() {
-        let size = CGSize(width: 207 / 1.35, height: 140 / 1.35)
+        let size = CGSize(width: 207 / 1.9, height: 140 / 1.9)
         
         super.init(texture: nil, color: UIColor.purple, size: size)
         
@@ -32,37 +33,74 @@ class Eagle:SKSpriteNode {
     func setup() {
         
         enemyImage = Game.textureNamed("eagle")
+        enemyFlap = Game.textureNamed("eagleFlap")
         texture = enemyImage
         
         name = "eagle"
         physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2.64)
         physicsBody!.isDynamic = true
-        physicsBody!.affectedByGravity = true
+        physicsBody!.affectedByGravity = false
         physicsBody!.allowsRotation = false
         
         physicsBody!.categoryBitMask = PhysicsCategory.Enemy
         physicsBody!.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Roof
         physicsBody!.contactTestBitMask = PhysicsCategory.Player | PhysicsCategory.Roof | PhysicsCategory.Ground
+        
+        zPosition = 101
     }
     
     func run(speed: Double, viewSize: CGSize) {
         running = true
-        let moveLeft = SKAction.moveBy(x: -(viewSize.width + (size.width * 1.5)), y: 0, duration: speed)
+        let maxY = viewSize.height
+        let minY = viewSize.height / 2
+        let range = maxY - minY
+        
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: (viewSize.width + (size.width * 1.5)),y: CGFloat(maxY) - CGFloat(arc4random_uniform(UInt32 (range)))))
+        path.addCurve(to:CGPoint(x: -size.width, y:  CGFloat(maxY) - CGFloat(arc4random_uniform(UInt32 (range)))),
+                      controlPoint1: CGPoint(x: 136, y: viewSize.height), //136, 373
+            controlPoint2: CGPoint(x: 178, y: Int.random(in: 100...400))) //178 x 110
+        
         let reset = SKAction.run() { [weak self] in guard self != nil else { return }
-            self!.stop(viewSize: viewSize)
+            self!.stop()
         }
+        let moveLeft = SKAction.follow(path.cgPath,
+        asOffset: false,
+        orientToPath: false,
+        speed: 250.0)
+        
         run(SKAction.sequence([moveLeft, reset]))
-        
-        let jump = SKAction.run() { [weak self] in guard self != nil else { return }
-            self!.physicsBody!.applyForce(CGVector(dx: 0, dy: 1000 * Double.random(in: 1.0..<3.1)))
-        }
-        let wait = SKAction.wait(forDuration: 0.2)
-        
-        run(SKAction.repeat(SKAction.sequence([jump, wait]), count: 24))
-        
+        flap()
     }
     
-    func stop(viewSize: CGSize)
+//    func run(speed: Double, viewSize: CGSize) {
+//        running = true
+//        let moveLeft = SKAction.moveBy(x: -(viewSize.width + (size.width * 1.5)), y: 0, duration: speed * 2)
+//        let reset = SKAction.run() { [weak self] in guard self != nil else { return }
+//            self!.stop(viewSize: viewSize)
+//        }
+//        run(SKAction.sequence([moveLeft, reset]))
+//
+//        let jump = SKAction.run() { [weak self] in guard self != nil else { return }
+//            self!.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 120 * Double.random(in: 1.0..<2.0)))
+//        }
+//        let wait = SKAction.wait(forDuration: 0.5)
+//
+//        run(SKAction.repeat(SKAction.sequence([jump, wait]), count: 20))
+//
+//    }
+    
+    func flap() {
+        let flap = SKAction.animate(with: [enemyImage], timePerFrame: 0.17)
+        let noFlap = SKAction.animate(with: [enemyFlap], timePerFrame: 0.17)
+        let sequence2 = SKAction.sequence([flap, noFlap])
+        
+         run(SKAction.repeatForever(SKAction.sequence([
+            SKAction.run() { [weak self] in guard self != nil else { return }
+            }, sequence2])))
+    }
+    
+    func stop()
     {
         removeAllActions()
         removeAllChildren()
