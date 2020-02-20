@@ -54,6 +54,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var eggCollected = false
     var gameSpeed:Double = 7
     
+    var eagleSpeed:Double = 0.02
+    
     var location = CGPoint.zero
     var touched:Bool = false
     
@@ -246,10 +248,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //this is only good for createEggs()
         
         if gameSpeed > 1.5 {
-            gameSpeed *= 0.98
+            gameSpeed *= 0.989
+            eagleSpeed /= 0.985
+            print(eagleSpeed)
             //speeds up other animations by accessing their speed
-            landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed += 0.025
-            farBgBin.action(forKey: "farBgBinMoveLeft")!.speed += 0.012
+            landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed += 0.017
+            farBgBin.action(forKey: "farBgBinMoveLeft")!.speed += 0.010
         }
 
         if eggType == "GoldenEgg"
@@ -482,6 +486,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 checkBackground()
             }
             
+            if eagle.isRunning() {
+                moveCloser()
+            }
+            
             if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) {
                 player.removeAction(forKey: "flap")
                 player.texture = player.playerImage
@@ -541,9 +549,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if collision == PhysicsCategory.Roof | PhysicsCategory.Player {
                 
                  if gameOver == false && !eagle.isRunning(){
-                eagle = Eagle()
-                addChild(eagle)
-                eagle.run(speed: gameSpeed, viewSize: size)
+                    eagle = Eagle()
+                    eagle.position.x = size.width + eagle.size.width
+                    eagle.position.y = size.height / 2
+                    addChild(eagle)
+                    eagle.run(speed: gameSpeed, viewSize: size)
                 }
                 emitter.addEmitterOnPlayer(fileName: "feathers", position: player.position)
             }
@@ -602,6 +612,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 scrollLandscapes(object: landscapeBin, speed: gameSpeed)
             }
         }
+    
+//******************************************************************************
+    
+    func moveCloser() {
+        let distance = player.position.y - eagle.position.y
+        
+        if eagle.position.x > size.width / 2 {
+            eagle.position.y += distance * CGFloat(eagleSpeed)
+            //print(distance * 0.048)
+        }
+    }
     
 //******************************************************************************
 }
