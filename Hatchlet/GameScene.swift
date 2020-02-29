@@ -11,8 +11,9 @@
 import Foundation
 import SpriteKit
 
-var gameOver: Bool = true
+//var gameOver: Bool = true
 let Constant = SKTextureAtlas(named: "Constant")
+var statics = Constants()
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
@@ -45,19 +46,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var landscape1:Landscape
     var landscape2:Landscape
     
-    var farBgBin:SKNode
-    var farBg:Parallax
-    var farBg1:Parallax
+    var scrollingGroundBin:SKNode
+    var scrollingGround:Parallax
+    var scrollingGround1:Parallax
     
     var lastUpdateTime: TimeInterval = 0
     
-    var eggCollected = false
     var gameSpeed:Double = 7
     
-    var eagleSpeed:Double = 0.02
+    var randomMax = 26
+    
+    var eagleSpeed:Double = 0.007
     
     var location = CGPoint.zero
     var touched:Bool = false
+    
+    //var statics:Constants
     
 //******************************************************************************
     
@@ -67,6 +71,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         settings = Settings(size: size)
         shop = Shop(size: size)
         crown = Crown(size: size)
+        
+        statics = Constants()
         
         player = Player()
         eagle = Eagle()
@@ -83,9 +89,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         landscape1 = Landscape(size: size)
         landscape2 = Landscape(size: size)
         
-        farBgBin = SKNode()
-        farBg = Parallax(size: size)
-        farBg1 = Parallax(size: size)
+        scrollingGroundBin = SKNode()
+        scrollingGround = Parallax(size: size)
+        scrollingGround1 = Parallax(size: size)
         
         super.init(size: size)
         
@@ -141,16 +147,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         landscapeBin.position = CGPoint(x: 0, y:0)
         addChild(landscapeBin)
         
-        farBgBin.addChild(farBg)
-        farBg1.position.x += farBg1.size.width
-        farBgBin.addChild(farBg1)
-        farBgBin.name = "farBgBin"
-        farBgBin.position = CGPoint(x: 0, y:0)
-        addChild(farBgBin)
+        scrollingGroundBin.addChild(scrollingGround)
+        scrollingGround1.position.x += scrollingGround1.size.width
+        scrollingGroundBin.addChild(scrollingGround1)
+        scrollingGroundBin.name = "scrollingGroundBin"
+        scrollingGroundBin.position = CGPoint(x: 0, y:0)
+        addChild(scrollingGroundBin)
         
         scrollLandscapes(object: landscapeBin, speed: gameSpeed)
-        scrollLandscapes(object: farBgBin, speed: gameSpeed * 10)
-        farBgBin.isPaused = true
+        scrollLandscapes(object: scrollingGroundBin, speed: gameSpeed * 10)
+        scrollingGroundBin.isPaused = true
         landscapeBin.isPaused = true
         
     }
@@ -170,68 +176,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         touched = true
-        for touch in (touches ) {
-            location = touch.location(in: self)
-        }
         
         player.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 145))
-        
-        let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
-        let touchedNode = self.atPoint(positionInScene)
-        
-        //Play Game Button
-        if let name = touchedNode.name { if name == "playButton" {
-            runGame()
-            }
-        }
-        
-//******************************************************************************
-        //Crown Button
-        if let name = touchedNode.name { if name == "crownButton" {
-            showCrown()
-            }
-        }
-        //Main Menu Button from Crown
-        if let name = touchedNode.name { if name == "crownBackButton" {
-            crown.delete()
-            showMainMenu()
-            }
-        }
-        
-//******************************************************************************
-        //Settings Button
-        if let name = touchedNode.name { if name == "settingsButton" {
-            showSettings()
-            }
-        }
-        //Main Menu Button from Settings
-        if let name = touchedNode.name { if name == "settingsBackButton" {
-            settings.delete()
-            showMainMenu()
-            }
-        }
-        
-//******************************************************************************
-        
-        //Shop Button
-        if let name = touchedNode.name { if name == "shopButton" {
-            showShop()
-            }
-        }
-        //Main Menu Button from Shop
-        if let name = touchedNode.name { if name == "shopBackButton" {
-            shop.delete()
-            showMainMenu()
-            }
-        }
-        
-//******************************************************************************
-        
-        //Main Menu Button from EndScreen
-        if let name = touchedNode.name { if name == "menu" {
-            mainMenu()
-            }
-        }
+    
         //~ADD Player Smoke
         emitter.addEmitterOnPlayer(fileName: String("playerSmoke"), position: player.position, deleteTime: 1)
     }
@@ -241,19 +188,84 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //~TOUCHES ENDED
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         touched = false
+        
+                for touch in (touches ) {
+                    location = touch.location(in: self)
+                }
+                
+                let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
+                let touchedNode = self.atPoint(positionInScene)
+                
+                //Play Game Button
+        if let name  = touchedNode.name { if name == "eggSwitchTutorial" {
+            settings.switchButton()
+            }
+        }
+        
+                if let name = touchedNode.name { if name == "playButton" {
+                    runGame()
+                    }
+                }
+                
+        //******************************************************************************
+                //Crown Button
+                if let name = touchedNode.name { if name == "crownButton" {
+                    showCrown()
+                    }
+                }
+                //Main Menu Button from Crown
+                if let name = touchedNode.name { if name == "crownBackButton" {
+                    crown.delete()
+                    showMainMenu()
+                    }
+                }
+                
+        //******************************************************************************
+                //Settings Button
+                if let name = touchedNode.name { if name == "settingsButton" {
+                    showSettings()
+                    }
+                }
+                //Main Menu Button from Settings
+                if let name = touchedNode.name { if name == "settingsBackButton" {
+                    settings.delete()
+                    showMainMenu()
+                    }
+                }
+                
+        //******************************************************************************
+                
+                //Shop Button
+                if let name = touchedNode.name { if name == "shopButton" {
+                    showShop()
+                    }
+                }
+                //Main Menu Button from Shop
+                if let name = touchedNode.name { if name == "shopBackButton" {
+                    shop.delete()
+                    showMainMenu()
+                    }
+                }
+                
+        //******************************************************************************
+                
+                //Main Menu Button from EndScreen
+                if let name = touchedNode.name { if name == "menu" {
+                    mainMenu()
+                    }
+                }
     }
     
     func setScore(eggType: String) {
         //gameSpeed is how fast the animation plays
         //this is only good for createEggs()
         
-        if gameSpeed > 1.5 {
+        if gameSpeed > 1.6 {
             gameSpeed *= 0.989
-            eagleSpeed /= 0.985
-            print(eagleSpeed)
+            eagleSpeed /= 0.99
             //speeds up other animations by accessing their speed
             landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed += 0.017
-            farBgBin.action(forKey: "farBgBinMoveLeft")!.speed += 0.010
+            scrollingGroundBin.action(forKey: "scrollingGroundBinMoveLeft")!.speed += 0.010
         }
 
         if eggType == "GoldenEgg"
@@ -265,6 +277,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         HUD.scoreLabel.text = String(scoreNum)
         HUD.labelShadow.text = String(scoreNum)
+       
+        if scoreNum % 15 == 1 && randomMax >= 7 {
+            randomMax -= 1
+            print(randomMax)
+                   }
+        
+        let random = (Int.random(in: 1...randomMax))
+    
+        if ( random == 7 ) {
+            randomEnemy()
+        }
     }
     
 //******************************************************************************
@@ -283,7 +306,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                            egg.isHidden=false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     egg.removeAllChildren()
-                    egg.removeAllActions()
                     egg.removeFromParent()
                 }
                        }
@@ -293,7 +315,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else {
             emitter.addEmitter(position: egg.position)
             egg.removeAllChildren()
-            egg.removeAllActions()
             egg.removeFromParent()
         }
     }
@@ -301,7 +322,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //******************************************************************************
     
     func createEgg() {
-        if gameOver == false {
+        if statics.gameOver == false {
             
             var egg: Egg
             
@@ -336,7 +357,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //******************************************************************************
     
     func runGame() {
-        gameOver = false
+        statics.gameOver = false
     
         Game.preload{}
         
@@ -359,8 +380,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }, SKAction.wait(forDuration: 1)])
         ),withKey: "createEgg")
         
-        farBgBin.isPaused = false
+        scrollingGroundBin.isPaused = false
         landscapeBin.isPaused = false
+        
+        randomMax = 26
     }
     
 //******************************************************************************
@@ -396,6 +419,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     func showMainMenu() {
         addChild(menu)
+        menu.playButton.removeAllActions()
         menu.show()
     }
     
@@ -429,7 +453,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //******************************************************************************
     
     func endGame() {
-        gameOver = true
+        statics.gameOver = true
         
         fox.stop()
         eagle.stop()
@@ -444,9 +468,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //Freeze Landscapes
         landscapeBin.isPaused = true
-        farBgBin.isPaused = true
+        scrollingGroundBin.isPaused = true
         landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed = 1
-        farBgBin.action(forKey: "farBgBinMoveLeft")!.speed = 1
+        scrollingGroundBin.action(forKey: "scrollingGroundBinMoveLeft")!.speed = 1
         
         //Stop spawning eggs
         removeAction(forKey: "createEgg")
@@ -482,7 +506,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //~UPDATE
         override func update(_ currentTime: TimeInterval) {
     
-            if !gameOver {
+            if !statics.gameOver {
                 checkBackground()
             }
             
@@ -511,9 +535,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             HUD.enemyShadow.position.x = (fox.position.x + size.width / 2) - 5
             
             // Spawn Enemy
-            if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) &&  (gameOver == false) && (fox.isRunning() == false){
+            if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) &&  (statics.gameOver == false) && (fox.isRunning() == false){
                 spawnEnemy()
-                fox.run(speed: gameSpeed, viewSize: size)
+                fox.run(speed: gameSpeed * 1.5, viewSize: size)
                 }
         }
         
@@ -548,7 +572,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if collision == PhysicsCategory.Roof | PhysicsCategory.Player {
                 
-                 if gameOver == false && !eagle.isRunning(){
+                 if statics.gameOver == false && !eagle.isRunning(){
                     eagle = Eagle()
                     eagle.position.x = size.width + eagle.size.width
                     eagle.position.y = size.height / 2
@@ -560,7 +584,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if collision == PhysicsCategory.Ground | PhysicsCategory.Player {
                 emitter.addEmitterOnPlayer(fileName: "grass", position: player.position, deleteTime: 0.4)
-                if gameOver == false && !fox.isRunning(){
+                if statics.gameOver == false && !fox.isRunning(){
                     spawnEnemy()
                     fox.run(speed: gameSpeed, viewSize: size)
                 }
@@ -625,4 +649,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
 //******************************************************************************
+        
+    func randomEnemy() {
+        
+        let random = (Int.random(in: 1...2))
+        
+        if statics.gameOver == false {
+            if (random == 1 && !eagle.isRunning())
+             {
+                eagle = Eagle()
+                eagle.position.x = size.width + eagle.size.width
+                eagle.position.y = size.height / 2
+                addChild(eagle)
+                eagle.run(speed: gameSpeed, viewSize: size)
+            }
+            else if random == 2 && !fox.isRunning() {
+                spawnEnemy()
+                fox.run(speed: gameSpeed, viewSize: size)
+            }
+            else if !eagle.isRunning() {
+                eagle = Eagle()
+                eagle.position.x = size.width + eagle.size.width
+                eagle.position.y = size.height / 2
+                addChild(eagle)
+                eagle.run(speed: gameSpeed, viewSize: size)
+            }
+            else if !fox.isRunning() {
+                spawnEnemy()
+                fox.run(speed: gameSpeed, viewSize: size)
+            }
+        }
+        
+        
+        
+        
+    }
+        
+    //******************************************************************************
 }

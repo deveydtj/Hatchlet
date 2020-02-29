@@ -16,7 +16,10 @@ class Menu: SKNode {
     var titleShadow: SKLabelNode
     
     var shopAtlas = SKTextureAtlas()
+    var playAtlas = SKTextureAtlas()
     var shopArrary = [SKTexture]()
+    var playArray = [SKTexture]()
+    
     
     let bin: SKSpriteNode
     
@@ -35,6 +38,7 @@ class Menu: SKNode {
         titleShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
         
         shopAtlas = SKTextureAtlas(named: "images")
+        playAtlas = SKTextureAtlas(named: "play")
         
         bin = SKSpriteNode(texture: nil, size: CGSize(width: 336 ,height: 400))
         
@@ -56,9 +60,17 @@ class Menu: SKNode {
         shopAtlas.preload {
         }
         
-        for i in 0...(shopAtlas.textureNames.count - 1) {
-            let name = "shop\(i).png"
-            shopArrary.append(SKTexture(imageNamed: name))
+        playAtlas.preload {
+        }
+        
+//        for i in 0...(shopAtlas.textureNames.count - 1) {
+//            let name = "shop\(i).png"
+//            shopArrary.append(SKTexture(imageNamed: name))
+//        }
+        
+        for i in 0...(playAtlas.textureNames.count - 1) {
+            let name = "playButton\(i).png"
+            playArray.append(SKTexture(imageNamed: name))
         }
         
         name = "MENU"
@@ -85,7 +97,11 @@ class Menu: SKNode {
         playButton.zPosition = 15
         
         
-        shopButton.texture = MenuAtlas.textureNamed(shopAtlas.textureNames[1] )
+        //shopButton.texture = MenuAtlas.textureNamed(shopAtlas.textureNames[1] )
+        
+        playButton.texture = MenuAtlas.textureNamed(playAtlas.textureNames[1] )
+        
+        shopButton.texture = MenuAtlas.textureNamed("shop")
         shopButton.name = "shopButton"
         shopButton.size = CGSize(width: 58, height: 60)
         shopButton.position = CGPoint(x: 0, y: 0)
@@ -118,7 +134,15 @@ class Menu: SKNode {
         bin.addChild(crownButton)
         addChild(bin)
         
-        shopButton.run(SKAction.repeatForever(SKAction.animate(with: shopArrary, timePerFrame: 0.006)))
+        let animate = SKAction.animate(with: playArray, timePerFrame: 0.0084)
+        
+        let seq = SKAction.sequence([animate, SKAction.wait(forDuration: 0.3)])
+        let seq2 = SKAction.sequence([animate, SKAction.wait(forDuration: 2.0)])
+        let seq3 = SKAction.sequence([seq,seq2])
+        
+        playButton.run(SKAction.repeatForever(seq3))
+        
+        //shopButton.run(SKAction.repeatForever(SKAction.animate(with: shopArrary, timePerFrame: 0.006)))
     }
     
     func delete() {

@@ -18,11 +18,12 @@ class Settings: SKNode {
     
     let bin: SKSpriteNode
     
+    var eggSwitchAtlas = SKTextureAtlas()
+    var eggSwitchArray = [SKTexture]()
+    
     // BUTTONS
     var backButton: SKSpriteNode
-    var settingsButton: SKSpriteNode
-    var shopButton: SKSpriteNode
-    var crownButton: SKSpriteNode
+    var eggSwitch: SKSpriteNode
     
     let MenuAtlas = SKTextureAtlas(named: "Menu")
     
@@ -35,10 +36,10 @@ class Settings: SKNode {
         bin = SKSpriteNode(texture: nil, size: CGSize(width: 336 ,height: 400))
         
         backButton = SKSpriteNode()
-        settingsButton = SKSpriteNode()
-        shopButton = SKSpriteNode()
-        crownButton = SKSpriteNode()
-
+        
+        eggSwitch = SKSpriteNode()
+        eggSwitchAtlas = SKTextureAtlas(named: "eggSwitch")
+        
         super.init()
         
         setup()
@@ -49,6 +50,21 @@ class Settings: SKNode {
     }
     
     func setup() {
+        eggSwitchAtlas.preload {
+        }
+        
+        for i in 0...(eggSwitchAtlas.textureNames.count - 1) {
+                   let name = "eggSwitch\(i).png"
+                   eggSwitchArray.append(SKTexture(imageNamed: name))
+               }
+        
+        eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[1] )
+        eggSwitch.name = "eggSwitchTutorial"
+        eggSwitch.size = CGSize(width: 100.6, height: 34.6)
+        eggSwitch.position = CGPoint(x: 0, y: 0)
+        eggSwitch.zPosition = 15
+        
+        
         title.text = "Settings"
         title.fontSize = 70
         title.position = CGPoint(x:0, y: 0 + title.frame.height)
@@ -76,7 +92,35 @@ class Settings: SKNode {
         bin.addChild(title)
         bin.addChild(titleShadow)
         bin.addChild(backButton)
+        bin.addChild(eggSwitch)
+        animateSwitch()
         addChild(bin)
+    }
+    
+    func switchButton() {
+        if statics.gameTutorialOn {
+            statics.gameTutorialOn = false
+            eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[0] )
+            let animate = SKAction.animate(with: eggSwitchArray.reversed(), timePerFrame: 0.0084)
+            eggSwitch.run(animate)
+        } else {
+            statics.gameTutorialOn = true
+            eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[51] )
+            let animate = SKAction.animate(with: eggSwitchArray, timePerFrame: 0.0084)
+            eggSwitch.run(animate)
+        }
+    }
+    
+    func animateSwitch() {
+        if !statics.gameTutorialOn {
+            eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[0] )
+            let animate = SKAction.animate(with: eggSwitchArray.reversed(), timePerFrame: 0.0084)
+            eggSwitch.run(animate)
+        } else {
+            eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[51] )
+            let animate = SKAction.animate(with: eggSwitchArray, timePerFrame: 0.0084)
+            eggSwitch.run(animate)
+        }
     }
     
     func delete() {
