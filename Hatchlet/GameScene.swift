@@ -60,8 +60,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var location = CGPoint.zero
     var touched:Bool = false
-    
-    //var statics:Constants
+
     
 //******************************************************************************
     
@@ -159,6 +158,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scrollingGroundBin.isPaused = true
         landscapeBin.isPaused = true
         
+        
+        if UserDefaults.standard.integer(forKey: "highScore") == 0 {
+            statics.setGameTut(value: true)
+        }
     }
 //END SETUP^^^^
     
@@ -168,19 +171,39 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
           for touch in (touches ) {
                   location = touch.location(in: self)
         }
+        
+        let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
+        let touchedNode = self.atPoint(positionInScene)
+        
+        if touchedNode.name == statics.playButton || touchedNode.name == statics.crownButton || touchedNode.name == statics.crownButton || touchedNode.name == statics.crownBackButton || touchedNode.name == statics.settingsButton || touchedNode.name == statics.settingsBackButton || touchedNode.name == statics.shopButton || touchedNode.name == statics.shopBackButton {
+            touchedNode.run(.scale(to: 1, duration: 0.2))
+        }
     }
     
 //******************************************************************************
     
 //~TOUCHES BEGAN
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+          for touch in (touches ) {
+                  location = touch.location(in: self)
+        }
         touched = true
         
-        player.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 145))
-    
-        //~ADD Player Smoke
-        emitter.addEmitterOnPlayer(fileName: String("playerSmoke"), position: player.position, deleteTime: 1)
+        if statics.gameOver == false {
+            player.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 145))
+             emitter.addEmitterOnPlayer(fileName: String("playerSmoke"), position: player.position, deleteTime: 1)
+        }
+        else {
+            player.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 15))
+        }
+        
+        let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
+        let touchedNode = self.atPoint(positionInScene)
+        
+        if touchedNode.name == statics.playButton || touchedNode.name == statics.crownButton || touchedNode.name == statics.crownButton || touchedNode.name == statics.crownBackButton || touchedNode.name == statics.settingsButton || touchedNode.name == statics.settingsBackButton || touchedNode.name == statics.shopButton || touchedNode.name == statics.shopBackButton {
+            touchedNode.run(.scale(to: 1.18, duration: 0.2))
+        }
+        
     }
     
 //******************************************************************************
@@ -195,6 +218,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
                 let touchedNode = self.atPoint(positionInScene)
+        
+        if touchedNode.name == statics.playButton || touchedNode.name == statics.crownButton || touchedNode.name == statics.crownButton || touchedNode.name == statics.crownBackButton || touchedNode.name == statics.settingsButton || touchedNode.name == statics.settingsBackButton || touchedNode.name == statics.shopButton || touchedNode.name == statics.shopBackButton || touchedNode.name == statics.menu {
+            touchedNode.run(.scale(to: 1, duration: 0.2))
+        }
                 
                 //Play Game Button
         if let name  = touchedNode.name { if name == "eggSwitchTutorial" {
@@ -358,6 +385,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func runGame() {
         statics.gameOver = false
+        player.removeHome()
+        
+        emitter.addEmitter(position: player.position)
     
         Game.preload{}
         
@@ -455,6 +485,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func endGame() {
         statics.gameOver = true
         
+        player.addHome()
+        
         fox.stop()
         eagle.stop()
         
@@ -535,9 +567,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             HUD.enemyShadow.position.x = (fox.position.x + size.width / 2) - 5
             
             // Spawn Enemy
-            if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) &&  (statics.gameOver == false) && (fox.isRunning() == false){
+            if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) &&  (statics.gameOver == false) && (fox.isRunning() == false) && scoreNum > 0{
                 spawnEnemy()
-                fox.run(speed: gameSpeed * 1.5, viewSize: size)
                 }
         }
         
@@ -551,6 +582,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             fox.position.y = groundHitBox.position.y + (fox.size.height)
             fox.zPosition = 100
             addChild(fox)
+            
+            fox.run(speed: gameSpeed, viewSize: size)
         }
     
 //******************************************************************************
@@ -584,9 +617,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if collision == PhysicsCategory.Ground | PhysicsCategory.Player {
                 emitter.addEmitterOnPlayer(fileName: "grass", position: player.position, deleteTime: 0.4)
-                if statics.gameOver == false && !fox.isRunning(){
+                if statics.gameOver == false && !fox.isRunning() && scoreNum >= 1{
                     spawnEnemy()
-                    fox.run(speed: gameSpeed, viewSize: size)
+                    print("test")
                 }
             }
             
@@ -665,7 +698,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             else if random == 2 && !fox.isRunning() {
                 spawnEnemy()
-                fox.run(speed: gameSpeed, viewSize: size)
             }
             else if !eagle.isRunning() {
                 eagle = Eagle()
@@ -676,7 +708,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             else if !fox.isRunning() {
                 spawnEnemy()
-                fox.run(speed: gameSpeed, viewSize: size)
             }
         }
         

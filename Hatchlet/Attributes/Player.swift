@@ -23,8 +23,12 @@ class Player:SKSpriteNode {
     var playerOuchSick = SKTexture()
     
     
+    let eggHome: SKSpriteNode
+    
     init() {
         let size = CGSize(width: 135 / 1.85, height: 118.3 / 1.85)
+        
+        eggHome = SKSpriteNode()
         
         super.init(texture: nil, color: UIColor.purple, size: size)
         
@@ -38,6 +42,12 @@ class Player:SKSpriteNode {
     //SETUP
     
     func setup() {
+        
+        eggHome.size = CGSize(width: size.width * 1.1, height: size.height * 1.1)
+        eggHome.texture = Constant.textureNamed("eggHome")
+        eggHome.zPosition = zPosition + 1
+        addChild(eggHome)
+        
         
         playerImage = Constant.textureNamed("bob")
         texture = playerImage
@@ -107,5 +117,14 @@ class Player:SKSpriteNode {
         let seq = SKAction.sequence([colorize, unColorize])
         
         run(SKAction.repeat(seq, count: 2))
+    }
+    
+    func removeHome() {
+        eggHome.run(.fadeOut(withDuration: 0.2))
+        eggHome.isHidden = true
+    }
+    func addHome() {
+        eggHome.isHidden = false
+        eggHome.run(.fadeIn(withDuration: 0.2))
     }
 }

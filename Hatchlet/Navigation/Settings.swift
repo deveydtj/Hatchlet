@@ -16,6 +16,9 @@ class Settings: SKNode {
     let title: SKLabelNode
     var titleShadow: SKLabelNode
     
+    let tutorial: SKLabelNode
+    var tutorialShadow: SKLabelNode
+    
     let bin: SKSpriteNode
     
     var eggSwitchAtlas = SKTextureAtlas()
@@ -32,6 +35,9 @@ class Settings: SKNode {
         
         title = SKLabelNode(fontNamed: "AmaticSC-Regular")
         titleShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
+        tutorial = SKLabelNode(fontNamed: "AmaticSC-Regular")
+        tutorialShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
+        
         
         bin = SKSpriteNode(texture: nil, size: CGSize(width: 336 ,height: 400))
         
@@ -60,8 +66,8 @@ class Settings: SKNode {
         
         eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[1] )
         eggSwitch.name = "eggSwitchTutorial"
-        eggSwitch.size = CGSize(width: 100.6, height: 34.6)
-        eggSwitch.position = CGPoint(x: 0, y: 0)
+        eggSwitch.size = CGSize(width: 132.6, height: 41.05)
+        eggSwitch.position = CGPoint(x: 72, y: 14)
         eggSwitch.zPosition = 15
         
         
@@ -75,6 +81,17 @@ class Settings: SKNode {
         titleShadow.position = CGPoint(x: title.position.x + 3, y: title.position.y - 2)
         titleShadow.zPosition = 6
         titleShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
+        
+        tutorial.text = "Tutorial"
+        tutorial.fontSize = 43
+        tutorial.position = CGPoint(x: -85, y: 0)
+        tutorial.zPosition = 7
+        tutorial.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
+        tutorialShadow.text = tutorial.text
+        tutorialShadow.fontSize = tutorial.fontSize
+        tutorialShadow.position = CGPoint(x: tutorial.position.x + 3, y: tutorial.position.y - 2)
+        tutorialShadow.zPosition = 6
+        tutorialShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
  
         bin.texture = MenuAtlas.textureNamed("bin")
         bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
@@ -91,6 +108,8 @@ class Settings: SKNode {
     func show() {
         bin.addChild(title)
         bin.addChild(titleShadow)
+        bin.addChild(tutorial)
+        bin.addChild(tutorialShadow)
         bin.addChild(backButton)
         bin.addChild(eggSwitch)
         animateSwitch()
@@ -99,13 +118,13 @@ class Settings: SKNode {
     
     func switchButton() {
         if statics.gameTutorialOn {
-            statics.gameTutorialOn = false
+            statics.setGameTut(value: false)
             eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[0] )
             let animate = SKAction.animate(with: eggSwitchArray.reversed(), timePerFrame: 0.0084)
             eggSwitch.run(animate)
         } else {
-            statics.gameTutorialOn = true
-            eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[51] )
+            statics.setGameTut(value: true)
+            eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[55] )
             let animate = SKAction.animate(with: eggSwitchArray, timePerFrame: 0.0084)
             eggSwitch.run(animate)
         }
