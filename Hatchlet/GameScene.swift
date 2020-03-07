@@ -540,7 +540,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if scoreNum >= 10 {
                    statics.setGameTut(value: false)
         }
-        scoreNum = 0
         
         //Freeze Landscapes
         landscapeBin.isPaused = true
@@ -551,6 +550,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // ~Add endScreen
         endScreen = EndScreen(size: size, score: scoreNum)
         addChild(endScreen)
+        
+        scoreNum = 0
     }
     
 //******************************************************************************
