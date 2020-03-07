@@ -55,6 +55,7 @@ class Emitters:SKNode {
             emitter.particleTexture = textureAtlas
             emitter.name = "airParticles"
             emitter.zPosition = 4
+            emitter.particlePositionRange = CGVector(dx: 0, dy: size.height / 1.5)
         }
         
         if fileName == "playerSmoke"  {
@@ -82,5 +83,18 @@ class Emitters:SKNode {
                 emitter.removeFromParent()
             }
         }
+    }
+    
+    func updateSpeed() {
+        let test: SKEmitterNode = childNode(withName: "airParticles") as! SKEmitterNode
+        
+        print(test.particleSpeed)
+        test.particleSpeed += 0.90
+    }
+    
+    func resetSpeed() {
+        let test: SKEmitterNode = childNode(withName: "airParticles") as! SKEmitterNode
+        
+        test.particleSpeed = 45
     }
 }

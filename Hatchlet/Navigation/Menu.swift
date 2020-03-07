@@ -20,7 +20,6 @@ class Menu: SKNode {
     var shopArrary = [SKTexture]()
     var playArray = [SKTexture]()
     
-    
     let bin: SKSpriteNode
     
     // BUTTONS
@@ -95,7 +94,6 @@ class Menu: SKNode {
         playButton.size = CGSize(width: 87, height: 78)
         playButton.position = CGPoint(x: 0, y: 0)
         playButton.zPosition = 15
-        
         
         //shopButton.texture = MenuAtlas.textureNamed(shopAtlas.textureNames[1] )
         

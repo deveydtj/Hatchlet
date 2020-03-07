@@ -23,10 +23,14 @@ class Settings: SKNode {
     
     var eggSwitchAtlas = SKTextureAtlas()
     var eggSwitchArray = [SKTexture]()
+
+    var gameDiffAtlas = SKTextureAtlas()
+    var gameDiffArray = [SKTexture]()
     
     // BUTTONS
     var backButton: SKSpriteNode
     var eggSwitch: SKSpriteNode
+    var gameDiff: SKSpriteNode
     
     let MenuAtlas = SKTextureAtlas(named: "Menu")
     
@@ -46,6 +50,9 @@ class Settings: SKNode {
         eggSwitch = SKSpriteNode()
         eggSwitchAtlas = SKTextureAtlas(named: "eggSwitch")
         
+        gameDiff = SKSpriteNode()
+        gameDiffAtlas = SKTextureAtlas(named: "gameDiff")
+        
         super.init()
         
         setup()
@@ -58,17 +65,38 @@ class Settings: SKNode {
     func setup() {
         eggSwitchAtlas.preload {
         }
+        gameDiffAtlas.preload {
+        }
         
         for i in 0...(eggSwitchAtlas.textureNames.count - 1) {
                    let name = "eggSwitch\(i).png"
                    eggSwitchArray.append(SKTexture(imageNamed: name))
                }
         
+//        for i in 0...(gameDiffAtlas.textureNames.count - 1) {
+//                   let name = "gameDiff\(i).png"
+//                   gameDiffArray.append(SKTexture(imageNamed: name))
+//               }
+        
         eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[1] )
         eggSwitch.name = "eggSwitchTutorial"
         eggSwitch.size = CGSize(width: 132.6, height: 41.05)
         eggSwitch.position = CGPoint(x: 72, y: 14)
         eggSwitch.zPosition = 15
+        
+        if statics.gameDifficulty == 0 {
+            gameDiff.texture = MenuAtlas.textureNamed("gameDiff0")
+        }
+        else if statics.gameDifficulty == 1 {
+            gameDiff.texture = MenuAtlas.textureNamed("gameDiff20")
+        }
+        else {
+            gameDiff.texture = MenuAtlas.textureNamed("gameDiff59")
+        }
+        gameDiff.name = "gameDiff"
+        gameDiff.size = CGSize(width: 234, height: 51.6)
+        gameDiff.position = CGPoint(x: 0, y: -60)
+        gameDiff.zPosition = 15
         
         
         title.text = "Settings"
@@ -113,6 +141,7 @@ class Settings: SKNode {
         bin.addChild(backButton)
         bin.addChild(eggSwitch)
         animateSwitch()
+        bin.addChild(gameDiff)
         addChild(bin)
     }
     
@@ -140,6 +169,22 @@ class Settings: SKNode {
             let animate = SKAction.animate(with: eggSwitchArray, timePerFrame: 0.0084)
             eggSwitch.run(animate)
         }
+    }
+    
+    func switchGameDiff() {
+        if statics.gameDifficulty == 0 {
+            statics.setGameMode(value:1)
+            gameDiff.texture = MenuAtlas.textureNamed("gameDiff20")
+        }
+        else if statics.gameDifficulty == 1 {
+            statics.setGameMode(value:2)
+            gameDiff.texture = MenuAtlas.textureNamed("gameDiff59")
+        }
+        else {
+            statics.setGameMode(value:0)
+            gameDiff.texture = MenuAtlas.textureNamed("gameDiff0")
+        }
+        gameDiff.texture!.filteringMode = .linear
     }
     
     func delete() {

@@ -25,6 +25,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let crown: Crown
     var endScreen: EndScreen
     
+    let tut: Tut
+    
     var airEmitter: SKNode! = nil
     let emitter:Emitters
     let player:Player
@@ -50,8 +52,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var scrollingGround:Parallax
     var scrollingGround1:Parallax
     
-    var lastUpdateTime: TimeInterval = 0
-    
     var gameSpeed:Double = 7
     
     var randomMax = 26
@@ -70,6 +70,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         settings = Settings(size: size)
         shop = Shop(size: size)
         crown = Crown(size: size)
+        tut = Tut(size:size)
         
         statics = Constants()
         
@@ -158,7 +159,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scrollingGroundBin.isPaused = true
         landscapeBin.isPaused = true
         
-        
         if UserDefaults.standard.integer(forKey: "highScore") == 0 {
             statics.setGameTut(value: true)
         }
@@ -223,16 +223,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             touchedNode.run(.scale(to: 1, duration: 0.2))
         }
                 
-                //Play Game Button
+        if let name  = touchedNode.name { if name == "gameDiff" {
+            settings.switchGameDiff()
+            }
+        }
+        
         if let name  = touchedNode.name { if name == "eggSwitchTutorial" {
             settings.switchButton()
             }
         }
         
-                if let name = touchedNode.name { if name == "playButton" {
-                    runGame()
-                    }
-                }
+        if let name = touchedNode.name { if name == "playButton" {
+            runGame()
+            }
+        }
                 
         //******************************************************************************
                 //Crown Button
@@ -284,15 +288,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func setScore(eggType: String) {
-        //gameSpeed is how fast the animation plays
-        //this is only good for createEggs()
         
-        if gameSpeed > 1.6 {
+        if gameSpeed > 1.8 {
             gameSpeed *= 0.989
             eagleSpeed /= 0.99
             //speeds up other animations by accessing their speed
             landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed += 0.017
             scrollingGroundBin.action(forKey: "scrollingGroundBinMoveLeft")!.speed += 0.010
+            
+            //emitter.updateSpeed()
+        }
+        
+        if scoreNum > 0 {
+            tut.delete()
         }
 
         if eggType == "GoldenEgg"
@@ -305,15 +313,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         HUD.scoreLabel.text = String(scoreNum)
         HUD.labelShadow.text = String(scoreNum)
        
-        if scoreNum % 15 == 1 && randomMax >= 7 {
-            randomMax -= 1
-            print(randomMax)
-                   }
-        
-        let random = (Int.random(in: 1...randomMax))
-    
-        if ( random == 7 ) {
-            randomEnemy()
+        if statics.gameDifficulty != 0 {
+            if scoreNum % 15 == 1 && randomMax >= 7 {
+                randomMax -= 1
+            }
+            let random = (Int.random(in: 1...randomMax))
+            if ( random == 7 ) {
+                randomEnemy()
+            }
         }
     }
     
@@ -387,6 +394,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         statics.gameOver = false
         player.removeHome()
         
+        
+        if statics.gameTutorialOn {
+            addChild(tut)
+            tut.position = CGPoint(x: 0, y: -size.width / 1.5)
+            tut.show()
+        }
+
         emitter.addEmitter(position: player.position)
     
         Game.preload{}
@@ -407,13 +421,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             SKAction.sequence([
                 SKAction.run() { [weak self] in guard let `self` = self else { return }
                    self.createEgg()
-                }, SKAction.wait(forDuration: 1)])
+                }, SKAction.wait(forDuration: createEggGameMode())])
         ),withKey: "createEgg")
         
         scrollingGroundBin.isPaused = false
         landscapeBin.isPaused = false
         
         randomMax = 26
+        
+        if statics.gameDifficulty == 0 {
+            eagleSpeed = 0.0005
+        }
+        else if statics.gameDifficulty == 1 {
+            eagleSpeed = 0.007
+        }
+        else {
+            eagleSpeed = 0.01
+        }
     }
     
 //******************************************************************************
@@ -483,29 +507,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //******************************************************************************
     
     func endGame() {
+        // ~Reset Game Stuff
         statics.gameOver = true
-        
         player.addHome()
-        
+        gameSpeed = 7
+        emitter.resetSpeed()
+       
+        // ~Delete Game Stuff
+        HUD.removeFromParent()
+        HUD.scoreLabel.text = "0"
+        HUD.labelShadow.text = "0"
+        tut.delete()
         fox.stop()
         eagle.stop()
-        
-        // ~Add endScreen
-        endScreen = EndScreen(size: size, score: scoreNum)
-        addChild(endScreen)
-        
-        if scoreNum > UserDefaults.standard.integer(forKey: "highScore") {
-            UserDefaults.standard.set(scoreNum, forKey: "highScore")
-        }
-        
-        //Freeze Landscapes
-        landscapeBin.isPaused = true
-        scrollingGroundBin.isPaused = true
-        landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed = 1
-        scrollingGroundBin.action(forKey: "scrollingGroundBinMoveLeft")!.speed = 1
-        
-        //Stop spawning eggs
-        removeAction(forKey: "createEgg")
+        removeAction(forKey: "createEgg") //Stop spawning eggs
         
         //delete any visisble eggs
         for child in self.children {
@@ -519,25 +534,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        //stop any enemys
-        fox.removeAllActions()
-        fox.removeFromParent()
-        
-        //hide the game's utility & reset game score
-        HUD.removeFromParent()
-        HUD.scoreLabel.text = "0"
-        HUD.labelShadow.text = "0"
+        if scoreNum > UserDefaults.standard.integer(forKey: "highScore") {
+            UserDefaults.standard.set(scoreNum, forKey: "highScore")
+        }
+        if scoreNum >= 10 {
+                   statics.setGameTut(value: false)
+        }
         scoreNum = 0
+        
+        //Freeze Landscapes
+        landscapeBin.isPaused = true
+        scrollingGroundBin.isPaused = true
+        landscapeBin.action(forKey: "landscapeBinMoveLeft")!.speed = 1
+        scrollingGroundBin.action(forKey: "scrollingGroundBinMoveLeft")!.speed = 1
  
-       //reset game speed
-        gameSpeed = 7
+        // ~Add endScreen
+        endScreen = EndScreen(size: size, score: scoreNum)
+        addChild(endScreen)
     }
     
 //******************************************************************************
         
     //~UPDATE
-        override func update(_ currentTime: TimeInterval) {
-    
+        override func update(_ currentTime: CFTimeInterval) {
             if !statics.gameOver {
                 checkBackground()
             }
@@ -563,11 +582,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             
             HUD.updateShadow(userOfShadow: "player", currentPos: player.position.y)
-            HUD.updateShadow(userOfShadow: "fox", currentPos: fox.position.y)
-            HUD.enemyShadow.position.x = (fox.position.x + size.width / 2) - 5
+            
+            if fox.isRunning() {
+                 HUD.updateShadow(userOfShadow: "fox", currentPos: fox.position.y)
+                  HUD.enemyShadow.position.x = (fox.position.x + size.width / 2) - 5
+            }
             
             // Spawn Enemy
-            if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) &&  (statics.gameOver == false) && (fox.isRunning() == false) && scoreNum > 0{
+            if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) &&  (statics.gameOver == false) && (fox.isRunning() == false) && scoreNum > 0 && statics.gameDifficulty != 0{
                 spawnEnemy()
                 }
         }
@@ -619,7 +641,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 emitter.addEmitterOnPlayer(fileName: "grass", position: player.position, deleteTime: 0.4)
                 if statics.gameOver == false && !fox.isRunning() && scoreNum >= 1{
                     spawnEnemy()
-                    print("test")
                 }
             }
             
@@ -710,11 +731,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 spawnEnemy()
             }
         }
-        
-        
-        
-        
     }
         
+    func createEggGameMode() -> Double {
+        var eggSpawnRate = 0.0
+        if statics.gameDifficulty == 0 {
+            eggSpawnRate = 0.8
+        }
+        else if statics.gameDifficulty == 0 {
+            eggSpawnRate = 1
+        }
+        else {
+           eggSpawnRate =  0.5
+        }
+        return eggSpawnRate
+    }
+    
     //******************************************************************************
+    
+
+    
 }

@@ -12,7 +12,7 @@ struct Constants {
     
     var gameOver: Bool = true
     
-    var gameDifficulty = ["easy", "normal", "hard"]
+    var gameDifficulty = UserDefaults.standard.integer(forKey: "gameDifficulty")
     
     var gameTutorialOn = UserDefaults.standard.bool(forKey: "gameTut")
     
@@ -28,6 +28,11 @@ struct Constants {
     mutating func setGameTut(value: Bool) {
         UserDefaults.standard.set(value, forKey: "gameTut")
         gameTutorialOn = UserDefaults.standard.bool(forKey: "gameTut")
+    }
+    
+    mutating func setGameMode(value: Int = 1) {
+        UserDefaults.standard.set(value, forKey: "gameDifficulty")
+        gameDifficulty = UserDefaults.standard.integer(forKey: "gameDifficulty")
     }
 }
 
