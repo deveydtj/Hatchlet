@@ -32,7 +32,7 @@ class Shop: SKNode {
         title = SKLabelNode(fontNamed: "AmaticSC-Regular")
         titleShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
         
-        bin = SKSpriteNode(texture: nil, size: CGSize(width: 336 ,height: 400))
+        bin = SKSpriteNode(texture: nil, size: CGSize(width: 336 ,height: 700))
         
         backButton = SKSpriteNode()
         settingsButton = SKSpriteNode()

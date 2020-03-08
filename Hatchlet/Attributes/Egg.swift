@@ -50,7 +50,7 @@ class Egg: SKSpriteNode {
         }
     
         zPosition = 98
-        physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
+        physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2.3)
         physicsBody!.categoryBitMask = PhysicsCategory.Egg
         physicsBody!.contactTestBitMask = PhysicsCategory.Player | PhysicsCategory.eggDelete | PhysicsCategory.Enemy
         physicsBody!.isDynamic = false
