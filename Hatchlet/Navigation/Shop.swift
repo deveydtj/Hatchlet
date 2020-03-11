@@ -8,6 +8,16 @@
 
 import SpriteKit
 
+// Helpers:
+extension SKNode {
+  func addChildren(_ nodes: [SKNode]) { for node in nodes { addChild(node) } }
+
+//  func addChildrenBehind(_ nodes: [SKNode]) { for node in nodes {
+//    node.zPosition -= 2
+//    addChild(node)                        THIS WILL BE REDONE!
+//    }
+//  }
+}
 
 class Shop: SKNode {
     
@@ -25,6 +35,8 @@ class Shop: SKNode {
     var crownButton: SKSpriteNode
     
     let MenuAtlas = SKTextureAtlas(named: "Menu")
+    
+    private var itemNodes  = [ItemNode]()
     
     init(size: CGSize){
         self.size = size
@@ -49,6 +61,7 @@ class Shop: SKNode {
     }
     
     func setup() {
+        
         title.text = "Shop"
         title.fontSize = 70
         title.position = CGPoint(x:0, y: 0 + title.frame.height)
@@ -69,6 +82,7 @@ class Shop: SKNode {
         backButton.size = CGSize(width: 58, height: 60)
         backButton.position = CGPoint(x: -120, y: 140)
         backButton.zPosition = 15
+        
     }
     
     func show() {
