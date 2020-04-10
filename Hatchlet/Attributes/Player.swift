@@ -22,6 +22,7 @@ class Player:SKSpriteNode {
     var playerFlapSick = SKTexture()
     var playerOuchSick = SKTexture()
     
+    var playerCostume: SKSpriteNode
     
     let eggHome: SKSpriteNode
     
@@ -29,6 +30,7 @@ class Player:SKSpriteNode {
         let size = CGSize(width: 135 / 1.85, height: 118.3 / 1.85)
         
         eggHome = SKSpriteNode()
+        playerCostume = SKSpriteNode()
         
         super.init(texture: nil, color: UIColor.purple, size: size)
         
@@ -45,19 +47,16 @@ class Player:SKSpriteNode {
         
         eggHome.size = CGSize(width: size.width * 1.1, height: size.height * 1.1)
         eggHome.texture = Constant.textureNamed("eggHome")
-        eggHome.zPosition = zPosition + 1
+        eggHome.zPosition = zPosition + 2
         addChild(eggHome)
         
+        getPlayerCostume()
         
         playerImage = Constant.textureNamed("bob")
         texture = playerImage
         playerBlink = Constant.textureNamed("bobBlink")
-        playerBlinkSick = Constant.textureNamed("bobBlinkSick")
-        playerImageSick = Constant.textureNamed("bobSick")
         playerFlap = Constant.textureNamed("bobFlap")
-        playerFlapSick = Constant.textureNamed("bobFlapSick")
         playerOuch = Constant.textureNamed("bobOuch")
-        playerOuchSick = Constant.textureNamed("bobOuchSick")
         
         physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
         physicsBody!.isDynamic = true
@@ -126,5 +125,50 @@ class Player:SKSpriteNode {
     func addHome() {
         eggHome.isHidden = false
         eggHome.run(.fadeIn(withDuration: 0.2))
+    }
+    
+    func updateCostume() {
+        let costume = statics.playerCostume ?? ""
+        
+        switch costume {
+        case "cow":
+            playerImage = Constant.textureNamed("cow")
+            playerBlink = Constant.textureNamed("cowBlink")
+            playerFlap = Constant.textureNamed("cowFlap")
+            playerOuch = Constant.textureNamed("cowOuch")
+            playerCostume.removeFromParent()
+            removeAllActions()
+            blink()
+        case "":
+            playerCostume.removeFromParent()
+            playerImage = Constant.textureNamed("bob")
+            playerBlink = Constant.textureNamed("bobBlink")
+            playerFlap = Constant.textureNamed("bobFlap")
+            playerOuch = Constant.textureNamed("bobOuch")
+            removeAllActions()
+            blink()
+        default:
+            playerCostume.removeFromParent()
+            playerCostume.texture = Constant.textureNamed(costume)
+            addChild(playerCostume)
+        }
+    }
+    
+    func getPlayerCostume() {
+        playerCostume.size = CGSize(width: size.width * 1.1, height: size.height * 1.15)
+        playerCostume.zPosition = zPosition + 1
+        
+        let costume = statics.playerCostume ?? ""
+        if costume != ""  && costume != "cow" {
+            playerCostume.texture = Constant.textureNamed(costume)
+            addChild(playerCostume)
+        }
+    }
+    
+    func trail() {
+        let emitter = SKEmitterNode(fileNamed: "trailTest")!
+        emitter.targetNode = self.scene
+        emitter.position.x = -(size.width/2)
+        addChild(emitter)
     }
 }

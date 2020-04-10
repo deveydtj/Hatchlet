@@ -24,7 +24,6 @@ class Settings: SKNode {
     var eggSwitchAtlas = SKTextureAtlas()
     var eggSwitchArray = [SKTexture]()
 
-    var gameDiffAtlas = SKTextureAtlas()
     var gameDiffArray = [SKTexture]()
     
     // BUTTONS
@@ -51,7 +50,6 @@ class Settings: SKNode {
         eggSwitchAtlas = SKTextureAtlas(named: "eggSwitch")
         
         gameDiff = SKSpriteNode()
-        gameDiffAtlas = SKTextureAtlas(named: "gameDiff")
         
         super.init()
         
@@ -64,8 +62,6 @@ class Settings: SKNode {
     
     func setup() {
         eggSwitchAtlas.preload {
-        }
-        gameDiffAtlas.preload {
         }
         
         for i in 0...(eggSwitchAtlas.textureNames.count - 1) {

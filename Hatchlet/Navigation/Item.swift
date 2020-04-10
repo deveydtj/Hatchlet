@@ -41,12 +41,13 @@ struct Item {
   static let list = (
     // Hard-code any new costumes you create here (this is a "master list" of costumes)
     // (make sure all of your costumes have a unique name, or the program will not work properly)
-    gray:  Item(name: "Gray Shirt",  texture: tex1 /*SKTexture(imageNamed: "grayshirt")*/,  price:  0),
-    red:   Item(name: "Red Shirt",   texture: tex2 /*SKTexture(imageNamed: "redshirt")*/,   price: 5),
-    blue:  Item(name: "Blue Shirt",  texture: tex3 /*SKTexture(imageNamed: "blueshirt")*/,  price: 25),
-    green: Item(name: "Green Shirt", texture: tex4 /*SKTexture(imageNamed: "greenshirt")*/, price: 50)
+    blank: Item(name: "",  texture: SKTexture(imageNamed: ""),  price:  0),
+    gangster:  Item(name: "gangster",  texture: SKTexture(imageNamed: "gangster"),  price:  0),
+    covid:   Item(name: "covid",   texture: SKTexture(imageNamed: "covid"),   price: 5),
+    glasses:   Item(name: "glasses",   texture: SKTexture(imageNamed: "glasses"),   price: 5),
+    cow:   Item(name: "cow",   texture: SKTexture(imageNamed: "cow"),   price: 5)
   )
 
-  static let defaultCostume = list.gray
+  //static let defaultCostume = list.gray
 };
 

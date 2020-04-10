@@ -61,6 +61,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var location = CGPoint.zero
     var touched:Bool = false
 
+    let menuButtonsList = [statics.playButton, statics.crownButton, statics.crownBackButton, statics.settingsButton, statics.settingsBackButton, statics.shopButton, statics.shopBackButton, statics.menu]
     
 //******************************************************************************
     
@@ -137,7 +138,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.position.y = size.height / 2
         player.zPosition = 99
         player.blink()
-        
+                
 // -ADD Landscapes / Scene
         
         landscapeBin.addChild(landscape1)
@@ -185,7 +186,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //~TOUCHES BEGAN
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
           for touch in (touches ) {
-                  location = touch.location(in: self)
+            location = touch.location(in: self)
         }
         touched = true
         
@@ -195,15 +196,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         else {
             player.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 15))
+            let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
+            let touchedNode = self.atPoint(positionInScene)
+            
+            for node in menuButtonsList {
+                if node == touchedNode.name {
+                touchedNode.run(.scale(to: 1.18, duration: 0.2))
+                }
+            }
         }
-        
-        let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
-        let touchedNode = self.atPoint(positionInScene)
-        
-        if touchedNode.name == statics.playButton || touchedNode.name == statics.crownButton || touchedNode.name == statics.crownButton || touchedNode.name == statics.crownBackButton || touchedNode.name == statics.settingsButton || touchedNode.name == statics.settingsBackButton || touchedNode.name == statics.shopButton || touchedNode.name == statics.shopBackButton {
-            touchedNode.run(.scale(to: 1.18, duration: 0.2))
-        }
-        
     }
     
 //******************************************************************************
@@ -212,79 +213,65 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         touched = false
         
-                for touch in (touches ) {
-                    location = touch.location(in: self)
-                }
-                
-                let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
-                let touchedNode = self.atPoint(positionInScene)
-        
-        if touchedNode.name == statics.playButton || touchedNode.name == statics.crownButton || touchedNode.name == statics.crownButton || touchedNode.name == statics.crownBackButton || touchedNode.name == statics.settingsButton || touchedNode.name == statics.settingsBackButton || touchedNode.name == statics.shopButton || touchedNode.name == statics.shopBackButton || touchedNode.name == statics.menu {
-            touchedNode.run(.scale(to: 1, duration: 0.2))
-        }
-                
-        if let name  = touchedNode.name { if name == "gameDiff" {
-            settings.switchGameDiff()
+        if statics.gameOver {
+            for touch in (touches ) {
+                location = touch.location(in: self)
             }
-        }
-        
-        if let name  = touchedNode.name { if name == "eggSwitchTutorial" {
-            settings.switchButton()
+            
+            let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
+            let touchedNode = self.atPoint(positionInScene)
+            
+            switch touchedNode {
+            case is GameScene:
+                return
+            case let touchedNode as ItemNode:
+                    print("touched!")
+                    for node in Item.allItems {
+                        if node.name == touchedNode.name {
+                        shop.setCostume(costume: node.name)
+                        player.updateCostume()
+                        }
+                    }
+            case is SKSpriteNode:
+                for node in menuButtonsList {
+                    if node == touchedNode.name {
+                    touchedNode.run(.scale(to: 1, duration: 0.2))
+                    }
+                }
+            default: ()
             }
-        }
-        
-        if let name = touchedNode.name { if name == "playButton" {
-            runGame()
+            switch touchedNode.name {
+            case "gameDiff":
+                settings.switchGameDiff()
+            case "eggSwitchTutorial":
+                settings.switchButton()
+            case "playButton":
+                runGame()
+            case "leftButton":
+                shop.pageBack()
+            case "rightButton":
+                shop.pageForward()
+            case "crownButton":
+                showCrown()
+            case "crownBackButton":
+                crown.delete()
+                showMainMenu()
+            case "settingsButton":
+                showSettings()
+            case "settingsBackButton":
+                settings.delete()
+                showMainMenu()
+            case "shopButton":
+                showShop()
+            case "shopBackButton":
+                shop.delete()
+                showMainMenu()
+            case "menu":
+                mainMenu()
+            default: ()
             }
+
         }
-                
-        //******************************************************************************
-                //Crown Button
-                if let name = touchedNode.name { if name == "crownButton" {
-                    showCrown()
-                    }
-                }
-                //Main Menu Button from Crown
-                if let name = touchedNode.name { if name == "crownBackButton" {
-                    crown.delete()
-                    showMainMenu()
-                    }
-                }
-                
-        //******************************************************************************
-                //Settings Button
-                if let name = touchedNode.name { if name == "settingsButton" {
-                    showSettings()
-                    }
-                }
-                //Main Menu Button from Settings
-                if let name = touchedNode.name { if name == "settingsBackButton" {
-                    settings.delete()
-                    showMainMenu()
-                    }
-                }
-                
-        //******************************************************************************
-                
-                //Shop Button
-                if let name = touchedNode.name { if name == "shopButton" {
-                    showShop()
-                    }
-                }
-                //Main Menu Button from Shop
-                if let name = touchedNode.name { if name == "shopBackButton" {
-                    shop.delete()
-                    showMainMenu()
-                    }
-                }
-                
-        //******************************************************************************
-                
-                //Main Menu Button from EndScreen
-                if let name = touchedNode.name { if name == "menu" {
-                    mainMenu()
-                    }
-                }
     }
     
     func setScore(eggType: String) {
@@ -299,7 +286,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //emitter.updateSpeed()
         }
         
-        if scoreNum > 0 {
+        if scoreNum == 2 {
             tut.delete()
         }
 
@@ -391,9 +378,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //******************************************************************************
     
     func runGame() {
+        Game.preload{}
+        
         statics.gameOver = false
         player.removeHome()
-        
+        player.trail()
         
         if statics.gameTutorialOn {
             addChild(tut)
@@ -403,8 +392,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         emitter.addEmitter(position: player.position)
     
-        Game.preload{}
-        
     // Add Lives
         HUD = gameHUD(size: size, player: player)
         HUD.addLife(howMany: 3)
@@ -413,8 +400,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     // Remove Menu Children
         menu.removeFromParent()
-        
-    // Add Children:
         
     // ~ Generate Eggs
         run(SKAction.repeatForever(
@@ -739,11 +724,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if statics.gameDifficulty == 0 {
             eggSpawnRate = 0.8
         }
-        else if statics.gameDifficulty == 0 {
+        else if statics.gameDifficulty == 1 {
             eggSpawnRate = 1
         }
         else {
-           eggSpawnRate =  0.5
+           eggSpawnRate =  0.25
         }
         return eggSpawnRate
     }

@@ -10,6 +10,7 @@
 		841373A823F87FBC004E63BF /* AmaticSC-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 841373A623F87FBC004E63BF /* AmaticSC-Bold.ttf */; };
 		841373A923F87FBC004E63BF /* AmaticSC-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 841373A723F87FBC004E63BF /* AmaticSC-Regular.ttf */; };
 		841CA1202381134000684909 /* EndScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841CA11F2381134000684909 /* EndScreen.swift */; };
+		842177B82439380700FDB3AF /* ItemNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842177B72439380700FDB3AF /* ItemNode.swift */; };
 		842AD9E22287D49600EE3271 /* Ground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842AD9E12287D49600EE3271 /* Ground.swift */; };
 		842AD9E42287D80500EE3271 /* Roof.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842AD9E32287D80500EE3271 /* Roof.swift */; };
 		8443ECFB23F0D6080095CFA8 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443ECFA23F0D6080095CFA8 /* Settings.swift */; };
@@ -17,6 +18,8 @@
 		8443ED0023F0F2310095CFA8 /* Crown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443ECFF23F0F2310095CFA8 /* Crown.swift */; };
 		8458A4CE23F9226B000922A4 /* Eagle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8458A4CD23F9226B000922A4 /* Eagle.swift */; };
 		846D2EEB235BA9B100B4402F /* Fox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846D2EEA235BA9B100B4402F /* Fox.swift */; };
+		8481F5A924403AD40014A17D /* trailTest.sks in Resources */ = {isa = PBXBuildFile; fileRef = 8481F5A724403AD40014A17D /* trailTest.sks */; };
+		8481F5AA24403AD40014A17D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8481F5A824403AD40014A17D /* Assets.xcassets */; };
 		84832A5322879F60003BA784 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84832A5222879F60003BA784 /* AppDelegate.swift */; };
 		84832A5722879F60003BA784 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84832A5622879F60003BA784 /* Actions.sks */; };
 		84832A5922879F60003BA784 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84832A5822879F60003BA784 /* GameScene.swift */; };
@@ -41,7 +44,7 @@
 		84C85A9C2353874D00DAD310 /* playerSmoke.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84C85A992353874D00DAD310 /* playerSmoke.sks */; };
 		84C85A9F2353913000DAD310 /* newSpark.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84C85A9D2353913000DAD310 /* newSpark.sks */; };
 		84D85C2F2414880B00B173FF /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D85C2E2414880B00B173FF /* Item.swift */; };
-		84D85C312414923B00B173FF /* ItemNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D85C302414923B00B173FF /* ItemNode.swift */; };
+		84D85C312414923B00B173FF /* oldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D85C302414923B00B173FF /* oldNode.swift */; };
 		84DB432F240384AC00BDB9AF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DB432E240384AC00BDB9AF /* Constants.swift */; };
 		84FBFF3C23556B8A00A45CCD /* grass.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84FBFF3B23556B8A00A45CCD /* grass.sks */; };
 		84FBFF412356469D00A45CCD /* airParticles.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84FBFF3F2356469D00A45CCD /* airParticles.sks */; };
@@ -51,6 +54,7 @@
 		841373A623F87FBC004E63BF /* AmaticSC-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmaticSC-Bold.ttf"; sourceTree = "<group>"; };
 		841373A723F87FBC004E63BF /* AmaticSC-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmaticSC-Regular.ttf"; sourceTree = "<group>"; };
 		841CA11F2381134000684909 /* EndScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndScreen.swift; sourceTree = "<group>"; };
+		842177B72439380700FDB3AF /* ItemNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemNode.swift; sourceTree = "<group>"; };
 		842AD9E12287D49600EE3271 /* Ground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ground.swift; sourceTree = "<group>"; };
 		842AD9E32287D80500EE3271 /* Roof.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Roof.swift; sourceTree = "<group>"; };
 		8443ECFA23F0D6080095CFA8 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -58,6 +62,8 @@
 		8443ECFF23F0F2310095CFA8 /* Crown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crown.swift; sourceTree = "<group>"; };
 		8458A4CD23F9226B000922A4 /* Eagle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Eagle.swift; sourceTree = "<group>"; };
 		846D2EEA235BA9B100B4402F /* Fox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fox.swift; sourceTree = "<group>"; };
+		8481F5A724403AD40014A17D /* trailTest.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = trailTest.sks; sourceTree = "<group>"; };
+		8481F5A824403AD40014A17D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		84832A4F22879F60003BA784 /* Hatchlet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hatchlet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84832A5222879F60003BA784 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		84832A5622879F60003BA784 /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
@@ -84,7 +90,7 @@
 		84C85A992353874D00DAD310 /* playerSmoke.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = playerSmoke.sks; sourceTree = "<group>"; };
 		84C85A9D2353913000DAD310 /* newSpark.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = newSpark.sks; sourceTree = "<group>"; };
 		84D85C2E2414880B00B173FF /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
-		84D85C302414923B00B173FF /* ItemNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemNode.swift; sourceTree = "<group>"; };
+		84D85C302414923B00B173FF /* oldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = oldNode.swift; sourceTree = "<group>"; };
 		84DB432E240384AC00BDB9AF /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = Hatchlet/Constants.swift; sourceTree = SOURCE_ROOT; };
 		84FBFF3B23556B8A00A45CCD /* grass.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = grass.sks; sourceTree = "<group>"; };
 		84FBFF3F2356469D00A45CCD /* airParticles.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = airParticles.sks; sourceTree = "<group>"; };
@@ -107,8 +113,9 @@
 				84C7CAD6235A103B005D09DC /* Menu.swift */,
 				8443ECFA23F0D6080095CFA8 /* Settings.swift */,
 				8443ECFD23F0EB3B0095CFA8 /* Shop.swift */,
+				842177B72439380700FDB3AF /* ItemNode.swift */,
 				84D85C2E2414880B00B173FF /* Item.swift */,
-				84D85C302414923B00B173FF /* ItemNode.swift */,
+				84D85C302414923B00B173FF /* oldNode.swift */,
 				8443ECFF23F0F2310095CFA8 /* Crown.swift */,
 			);
 			path = Navigation;
@@ -199,6 +206,8 @@
 				84C85A9D2353913000DAD310 /* newSpark.sks */,
 				84C85A992353874D00DAD310 /* playerSmoke.sks */,
 				84A5013623E6500B00B09B9E /* eggCoin.sks */,
+				8481F5A724403AD40014A17D /* trailTest.sks */,
+				8481F5A824403AD40014A17D /* Assets.xcassets */,
 			);
 			path = Emitters;
 			sourceTree = "<group>";
@@ -262,9 +271,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8481F5A924403AD40014A17D /* trailTest.sks in Resources */,
 				84C85A9B2353874D00DAD310 /* spark.sks in Resources */,
 				841373A823F87FBC004E63BF /* AmaticSC-Bold.ttf in Resources */,
 				8497FE202354FC0D00CF4C06 /* feathers.sks in Resources */,
+				8481F5AA24403AD40014A17D /* Assets.xcassets in Resources */,
 				84832A5E22879F60003BA784 /* Main.storyboard in Resources */,
 				841373A923F87FBC004E63BF /* AmaticSC-Regular.ttf in Resources */,
 				84C85A9C2353874D00DAD310 /* playerSmoke.sks in Resources */,
@@ -285,6 +296,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				842177B82439380700FDB3AF /* ItemNode.swift in Sources */,
 				84C85A74234E891A00DAD310 /* gameHUD.swift in Sources */,
 				84DB432F240384AC00BDB9AF /* Constants.swift in Sources */,
 				84C85A70234E4FA400DAD310 /* Egg.swift in Sources */,
@@ -308,7 +320,7 @@
 				84832A5322879F60003BA784 /* AppDelegate.swift in Sources */,
 				842AD9E22287D49600EE3271 /* Ground.swift in Sources */,
 				842AD9E42287D80500EE3271 /* Roof.swift in Sources */,
-				84D85C312414923B00B173FF /* ItemNode.swift in Sources */,
+				84D85C312414923B00B173FF /* oldNode.swift in Sources */,
 				8497FE2223550F1D00CF4C06 /* Background.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -386,7 +398,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -441,7 +453,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -457,10 +469,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = JM23Z9GG95;
 				INFOPLIST_FILE = "$(SRCROOT)/Hatchlet/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -480,10 +492,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = JM23Z9GG95;
 				INFOPLIST_FILE = "$(SRCROOT)/Hatchlet/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
