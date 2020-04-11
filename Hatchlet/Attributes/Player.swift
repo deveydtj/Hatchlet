@@ -131,6 +131,14 @@ class Player:SKSpriteNode {
         let costume = statics.playerCostume ?? ""
         
         switch costume {
+        case "unicorn":
+            playerImage = Constant.textureNamed("unicorn")
+            playerBlink = Constant.textureNamed("unicornBlink")
+            playerFlap = Constant.textureNamed("unicornFlap")
+            playerOuch = Constant.textureNamed("unicornOuch")
+            playerCostume.removeFromParent()
+            removeAllActions()
+            blink()
         case "cow":
             playerImage = Constant.textureNamed("cow")
             playerBlink = Constant.textureNamed("cowBlink")
@@ -163,12 +171,5 @@ class Player:SKSpriteNode {
             playerCostume.texture = Constant.textureNamed(costume)
             addChild(playerCostume)
         }
-    }
-    
-    func trail() {
-        let emitter = SKEmitterNode(fileNamed: "trailTest")!
-        emitter.targetNode = self.scene
-        emitter.position.x = -(size.width/2)
-        addChild(emitter)
     }
 }

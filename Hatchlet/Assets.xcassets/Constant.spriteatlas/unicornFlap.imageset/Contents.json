@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "bokeh.png",
+      "filename" : "unicornFlap.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "unicornFlap@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "unicornFlap@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

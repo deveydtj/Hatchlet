@@ -19,7 +19,7 @@
 		8458A4CE23F9226B000922A4 /* Eagle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8458A4CD23F9226B000922A4 /* Eagle.swift */; };
 		846D2EEB235BA9B100B4402F /* Fox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846D2EEA235BA9B100B4402F /* Fox.swift */; };
 		8481F5A924403AD40014A17D /* trailTest.sks in Resources */ = {isa = PBXBuildFile; fileRef = 8481F5A724403AD40014A17D /* trailTest.sks */; };
-		8481F5AA24403AD40014A17D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8481F5A824403AD40014A17D /* Assets.xcassets */; };
+		8481F5AE24418B7F0014A17D /* milk.sks in Resources */ = {isa = PBXBuildFile; fileRef = 8481F5AD24418B7A0014A17D /* milk.sks */; };
 		84832A5322879F60003BA784 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84832A5222879F60003BA784 /* AppDelegate.swift */; };
 		84832A5722879F60003BA784 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84832A5622879F60003BA784 /* Actions.sks */; };
 		84832A5922879F60003BA784 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84832A5822879F60003BA784 /* GameScene.swift */; };
@@ -63,7 +63,7 @@
 		8458A4CD23F9226B000922A4 /* Eagle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Eagle.swift; sourceTree = "<group>"; };
 		846D2EEA235BA9B100B4402F /* Fox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fox.swift; sourceTree = "<group>"; };
 		8481F5A724403AD40014A17D /* trailTest.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = trailTest.sks; sourceTree = "<group>"; };
-		8481F5A824403AD40014A17D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8481F5AD24418B7A0014A17D /* milk.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = milk.sks; sourceTree = "<group>"; };
 		84832A4F22879F60003BA784 /* Hatchlet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hatchlet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84832A5222879F60003BA784 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		84832A5622879F60003BA784 /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
@@ -205,9 +205,9 @@
 				84C85A982353874D00DAD310 /* spark.sks */,
 				84C85A9D2353913000DAD310 /* newSpark.sks */,
 				84C85A992353874D00DAD310 /* playerSmoke.sks */,
+				8481F5AD24418B7A0014A17D /* milk.sks */,
 				84A5013623E6500B00B09B9E /* eggCoin.sks */,
 				8481F5A724403AD40014A17D /* trailTest.sks */,
-				8481F5A824403AD40014A17D /* Assets.xcassets */,
 			);
 			path = Emitters;
 			sourceTree = "<group>";
@@ -275,9 +275,9 @@
 				84C85A9B2353874D00DAD310 /* spark.sks in Resources */,
 				841373A823F87FBC004E63BF /* AmaticSC-Bold.ttf in Resources */,
 				8497FE202354FC0D00CF4C06 /* feathers.sks in Resources */,
-				8481F5AA24403AD40014A17D /* Assets.xcassets in Resources */,
 				84832A5E22879F60003BA784 /* Main.storyboard in Resources */,
 				841373A923F87FBC004E63BF /* AmaticSC-Regular.ttf in Resources */,
+				8481F5AE24418B7F0014A17D /* milk.sks in Resources */,
 				84C85A9C2353874D00DAD310 /* playerSmoke.sks in Resources */,
 				84832A6022879F63003BA784 /* Assets.xcassets in Resources */,
 				84832A6322879F63003BA784 /* LaunchScreen.storyboard in Resources */,
@@ -405,6 +405,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -459,6 +460,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

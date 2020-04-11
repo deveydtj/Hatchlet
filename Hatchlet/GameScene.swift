@@ -27,6 +27,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let tut: Tut
     
+    var trailEmitter:SKEmitterNode
     var airEmitter: SKNode! = nil
     let emitter:Emitters
     let player:Player
@@ -74,6 +75,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         tut = Tut(size:size)
         
         statics = Constants()
+        
+        trailEmitter = SKEmitterNode()
         
         player = Player()
         eagle = Eagle()
@@ -382,7 +385,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         statics.gameOver = false
         player.removeHome()
-        player.trail()
+        //trail()
         
         if statics.gameTutorialOn {
             addChild(tut)
@@ -460,6 +463,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(menu)
         menu.playButton.removeAllActions()
         menu.show()
+    }
+    
+    func trail() {
+        trailEmitter = SKEmitterNode(fileNamed: "trailTest")!
+        trailEmitter.targetNode = self.scene
+        trailEmitter.position.x = -(player.size.width/2.3)
+        trailEmitter.position.y = 0
+        trailEmitter.zPosition = player.zPosition + 1
+        player.addChild(trailEmitter)
+        print("added TRAIL")
     }
     
 //******************************************************************************
