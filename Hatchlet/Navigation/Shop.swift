@@ -44,6 +44,8 @@ class Shop: SKNode {
     
     var availableItems: [Item] = [Item.list.blank, Item.list.gangster, Item.list.covid, Item.list.glasses, Item.list.cow, Item.list.unicorn]
     
+    var costumeItems: [Item] = [Item.list.blank, Item.list.cow, Item.list.unicorn]
+    
     
     var currentPageNum = 1
     var currentPageEnd = 0
@@ -243,6 +245,19 @@ class Shop: SKNode {
     }
     
     func setCostume(costume: String) {
-        statics.setPlayerCostume(value: costume)
+        var acc = true
+        for n in costumeItems {
+            if costume == n.name {
+                statics.setPlayerCostume(value: costume)
+                acc = false
+                if costume == "" {
+                    acc = true
+                }
+            }
+        }
+        
+        if acc {
+            statics.setPlayerAcc(value: costume)
+        }
     }
 }

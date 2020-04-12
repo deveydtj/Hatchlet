@@ -50,13 +50,8 @@ class Player:SKSpriteNode {
         eggHome.zPosition = zPosition + 2
         addChild(eggHome)
         
-        getPlayerCostume()
-        
-        playerImage = Constant.textureNamed("bob")
-        texture = playerImage
-        playerBlink = Constant.textureNamed("bobBlink")
-        playerFlap = Constant.textureNamed("bobFlap")
-        playerOuch = Constant.textureNamed("bobOuch")
+        playerCostume.size = CGSize(width: size.width * 1.1, height: size.height * 1.15)
+        playerCostume.zPosition = zPosition + 1
         
         physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
         physicsBody!.isDynamic = true
@@ -129,6 +124,7 @@ class Player:SKSpriteNode {
     
     func updateCostume() {
         let costume = statics.playerCostume ?? ""
+        let acc = statics.playerAcc ?? ""
         
         switch costume {
         case "unicorn":
@@ -148,6 +144,7 @@ class Player:SKSpriteNode {
             removeAllActions()
             blink()
         case "":
+            statics.setPlayerAcc(value: costume)
             playerCostume.removeFromParent()
             playerImage = Constant.textureNamed("bob")
             playerBlink = Constant.textureNamed("bobBlink")
@@ -156,19 +153,15 @@ class Player:SKSpriteNode {
             removeAllActions()
             blink()
         default:
-            playerCostume.removeFromParent()
-            playerCostume.texture = Constant.textureNamed(costume)
-            addChild(playerCostume)
+            playerImage = Constant.textureNamed("bob")
+            playerBlink = Constant.textureNamed("bobBlink")
+            playerFlap = Constant.textureNamed("bobFlap")
+            playerOuch = Constant.textureNamed("bobOuch")
+            texture = playerImage
         }
-    }
-    
-    func getPlayerCostume() {
-        playerCostume.size = CGSize(width: size.width * 1.1, height: size.height * 1.15)
-        playerCostume.zPosition = zPosition + 1
-        
-        let costume = statics.playerCostume ?? ""
-        if costume != ""  && costume != "cow" {
-            playerCostume.texture = Constant.textureNamed(costume)
+        if acc != "" {
+            playerCostume.removeFromParent()
+            playerCostume.texture = Constant.textureNamed(acc)
             addChild(playerCostume)
         }
     }

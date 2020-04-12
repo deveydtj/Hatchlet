@@ -140,7 +140,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.position.x = size.width / 2
         player.position.y = size.height / 2
         player.zPosition = 99
-        player.blink()
+        player.updateCostume()
                 
 // -ADD Landscapes / Scene
         
@@ -228,7 +228,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             case is GameScene:
                 return
             case let touchedNode as ItemNode:
-                    print("touched!")
                     for node in Item.allItems {
                         if node.name == touchedNode.name {
                         shop.setCostume(costume: node.name)

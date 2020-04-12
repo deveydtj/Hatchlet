@@ -28,6 +28,7 @@ struct Constants {
     
     //PLAYER
     var playerCostume = UserDefaults.standard.string(forKey: "playerCostume")
+    var playerAcc = UserDefaults.standard.string(forKey: "playerAcc")
     
     mutating func setGameTut(value: Bool) {
         UserDefaults.standard.set(value, forKey: "gameTut")
@@ -42,6 +43,11 @@ struct Constants {
     mutating func setPlayerCostume(value: String = "") {
         UserDefaults.standard.set(value, forKey: "playerCostume")
         playerCostume = UserDefaults.standard.string(forKey: "playerCostume")
+    }
+    
+    mutating func setPlayerAcc(value: String = "") {
+        UserDefaults.standard.set(value, forKey: "playerAcc")
+        playerAcc = UserDefaults.standard.string(forKey: "playerAcc")
     }
 }
 

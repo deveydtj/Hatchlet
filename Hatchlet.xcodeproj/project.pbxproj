@@ -25,7 +25,6 @@
 		84832A5922879F60003BA784 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84832A5822879F60003BA784 /* GameScene.swift */; };
 		84832A5B22879F60003BA784 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84832A5A22879F60003BA784 /* GameViewController.swift */; };
 		84832A5E22879F60003BA784 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84832A5C22879F60003BA784 /* Main.storyboard */; };
-		84832A6022879F63003BA784 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84832A5F22879F63003BA784 /* Assets.xcassets */; };
 		84832A6322879F63003BA784 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84832A6122879F63003BA784 /* LaunchScreen.storyboard */; };
 		84832A6B2287A027003BA784 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84832A6A2287A027003BA784 /* Player.swift */; };
 		8497FE202354FC0D00CF4C06 /* feathers.sks in Resources */ = {isa = PBXBuildFile; fileRef = 8497FE1F2354FC0D00CF4C06 /* feathers.sks */; };
@@ -43,6 +42,7 @@
 		84C85A9B2353874D00DAD310 /* spark.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84C85A982353874D00DAD310 /* spark.sks */; };
 		84C85A9C2353874D00DAD310 /* playerSmoke.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84C85A992353874D00DAD310 /* playerSmoke.sks */; };
 		84C85A9F2353913000DAD310 /* newSpark.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84C85A9D2353913000DAD310 /* newSpark.sks */; };
+		84C9053A2442CF47000A2D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84832A5F22879F63003BA784 /* Assets.xcassets */; };
 		84D85C2F2414880B00B173FF /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D85C2E2414880B00B173FF /* Item.swift */; };
 		84D85C312414923B00B173FF /* oldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D85C302414923B00B173FF /* oldNode.swift */; };
 		84DB432F240384AC00BDB9AF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DB432E240384AC00BDB9AF /* Constants.swift */; };
@@ -275,11 +275,11 @@
 				84C85A9B2353874D00DAD310 /* spark.sks in Resources */,
 				841373A823F87FBC004E63BF /* AmaticSC-Bold.ttf in Resources */,
 				8497FE202354FC0D00CF4C06 /* feathers.sks in Resources */,
+				84C9053A2442CF47000A2D47 /* Assets.xcassets in Resources */,
 				84832A5E22879F60003BA784 /* Main.storyboard in Resources */,
 				841373A923F87FBC004E63BF /* AmaticSC-Regular.ttf in Resources */,
 				8481F5AE24418B7F0014A17D /* milk.sks in Resources */,
 				84C85A9C2353874D00DAD310 /* playerSmoke.sks in Resources */,
-				84832A6022879F63003BA784 /* Assets.xcassets in Resources */,
 				84832A6322879F63003BA784 /* LaunchScreen.storyboard in Resources */,
 				84FBFF3C23556B8A00A45CCD /* grass.sks in Resources */,
 				84A5013823E6500B00B09B9E /* eggCoin.sks in Resources */,
@@ -471,10 +471,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = JM23Z9GG95;
 				INFOPLIST_FILE = "$(SRCROOT)/Hatchlet/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -494,10 +494,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = JM23Z9GG95;
 				INFOPLIST_FILE = "$(SRCROOT)/Hatchlet/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
