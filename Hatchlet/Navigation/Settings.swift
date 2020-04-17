@@ -80,10 +80,10 @@ class Settings: SKNode {
         eggSwitch.position = CGPoint(x: 72, y: 14)
         eggSwitch.zPosition = 15
         
-        if statics.gameDifficulty == 0 {
+        if const.gameDifficulty == 0 {
             gameDiff.texture = MenuAtlas.textureNamed("gameDiff0")
         }
-        else if statics.gameDifficulty == 1 {
+        else if const.gameDifficulty == 1 {
             gameDiff.texture = MenuAtlas.textureNamed("gameDiff20")
         }
         else {
@@ -117,7 +117,7 @@ class Settings: SKNode {
         tutorialShadow.zPosition = 6
         tutorialShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
  
-        bin.texture = MenuAtlas.textureNamed("bin")
+        //bin.texture = MenuAtlas.textureNamed("bin")
         bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
         bin.zPosition = 5
         
@@ -142,13 +142,13 @@ class Settings: SKNode {
     }
     
     func switchButton() {
-        if statics.gameTutorialOn {
-            statics.setGameTut(value: false)
+        if const.gameTutorialOn {
+            const.setGameTut(value: false)
             eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[0] )
             let animate = SKAction.animate(with: eggSwitchArray.reversed(), timePerFrame: 0.0084)
             eggSwitch.run(animate)
         } else {
-            statics.setGameTut(value: true)
+            const.setGameTut(value: true)
             eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[55] )
             let animate = SKAction.animate(with: eggSwitchArray, timePerFrame: 0.0084)
             eggSwitch.run(animate)
@@ -156,7 +156,7 @@ class Settings: SKNode {
     }
     
     func animateSwitch() {
-        if !statics.gameTutorialOn {
+        if !const.gameTutorialOn {
             eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[0] )
             let animate = SKAction.animate(with: eggSwitchArray.reversed(), timePerFrame: 0.0084)
             eggSwitch.run(animate)
@@ -168,16 +168,16 @@ class Settings: SKNode {
     }
     
     func switchGameDiff() {
-        if statics.gameDifficulty == 0 {
-            statics.setGameMode(value:1)
+        if const.gameDifficulty == 0 {
+            const.setGameMode(value:1)
             gameDiff.texture = MenuAtlas.textureNamed("gameDiff20")
         }
-        else if statics.gameDifficulty == 1 {
-            statics.setGameMode(value:2)
+        else if const.gameDifficulty == 1 {
+            const.setGameMode(value:2)
             gameDiff.texture = MenuAtlas.textureNamed("gameDiff59")
         }
         else {
-            statics.setGameMode(value:0)
+            const.setGameMode(value:0)
             gameDiff.texture = MenuAtlas.textureNamed("gameDiff0")
         }
         gameDiff.texture!.filteringMode = .linear

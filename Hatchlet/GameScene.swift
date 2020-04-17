@@ -11,9 +11,37 @@
 import Foundation
 import SpriteKit
 
+extension UIColor {
+    public convenience init?(hex: String) {
+        let r, g, b, a: CGFloat
+
+        if hex.hasPrefix("#") {
+            let start = hex.index(hex.startIndex, offsetBy: 1)
+            let hexColor = String(hex[start...])
+
+            if hexColor.count == 8 {
+                let scanner = Scanner(string: hexColor)
+                var hexNumber: UInt64 = 0
+
+                if scanner.scanHexInt64(&hexNumber) {
+                    r = CGFloat((hexNumber & 0xff000000) >> 24) / 255
+                    g = CGFloat((hexNumber & 0x00ff0000) >> 16) / 255
+                    b = CGFloat((hexNumber & 0x0000ff00) >> 8) / 255
+                    a = CGFloat(hexNumber & 0x000000ff) / 255
+
+                    self.init(red: r, green: g, blue: b, alpha: a)
+                    return
+                }
+            }
+        }
+
+        return nil
+    }
+}
+
 //var gameOver: Bool = true
 let Constant = SKTextureAtlas(named: "Constant")
-var statics = Constants()
+var const = Constants()
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
@@ -62,7 +90,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var location = CGPoint.zero
     var touched:Bool = false
 
-    let menuButtonsList = [statics.playButton, statics.crownButton, statics.crownBackButton, statics.settingsButton, statics.settingsBackButton, statics.shopButton, statics.shopBackButton, statics.menu]
+    let menuButtonsList = [const.playButton, const.crownButton, const.crownBackButton, const.settingsButton, const.settingsBackButton, const.shopButton, const.shopBackButton, const.menu]
     
 //******************************************************************************
     
@@ -74,7 +102,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         crown = Crown(size: size)
         tut = Tut(size:size)
         
-        statics = Constants()
+        const = Constants()
         
         trailEmitter = SKEmitterNode()
         
@@ -164,7 +192,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         landscapeBin.isPaused = true
         
         if UserDefaults.standard.integer(forKey: "highScore") == 0 {
-            statics.setGameTut(value: true)
+            const.setGameTut(value: true)
         }
     }
 //END SETUP^^^^
@@ -179,7 +207,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
         let touchedNode = self.atPoint(positionInScene)
         
-        if touchedNode.name == statics.playButton || touchedNode.name == statics.crownButton || touchedNode.name == statics.crownButton || touchedNode.name == statics.crownBackButton || touchedNode.name == statics.settingsButton || touchedNode.name == statics.settingsBackButton || touchedNode.name == statics.shopButton || touchedNode.name == statics.shopBackButton {
+        if touchedNode.name == const.playButton || touchedNode.name == const.crownButton || touchedNode.name == const.crownButton || touchedNode.name == const.crownBackButton || touchedNode.name == const.settingsButton || touchedNode.name == const.settingsBackButton || touchedNode.name == const.shopButton || touchedNode.name == const.shopBackButton {
             touchedNode.run(.scale(to: 1, duration: 0.2))
         }
     }
@@ -193,7 +221,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         touched = true
         
-        if statics.gameOver == false {
+        if const.gameOver == false {
             player.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 145))
              emitter.addEmitterOnPlayer(fileName: String("playerSmoke"), position: player.position, deleteTime: 1)
         }
@@ -216,7 +244,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         touched = false
         
-        if statics.gameOver {
+        if const.gameOver {
             for touch in (touches ) {
                 location = touch.location(in: self)
             }
@@ -228,12 +256,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             case is GameScene:
                 return
             case let touchedNode as ItemNode:
-                    for node in Item.allItems {
-                        if node.name == touchedNode.name {
-                        shop.setCostume(costume: node.name)
+                var owned = false
+                for nodeName in const.ownedItems {
+                    if nodeName == touchedNode.name {
+                        owned = true
+                        shop.setCostume(costume: nodeName, owned: owned)
                         player.updateCostume()
-                        }
                     }
+                }
+                if !owned && const.goldenEggs >= Int(touchedNode.priceNode.text!)! {
+                    shop.setCostume(costume: touchedNode.name ?? "")
+                    player.updateCostume()
+                    touchedNode.setPriceText()
+                }
+//                
+//                    for node in Item.allItems {
+//                        if node.name == touchedNode.name  {
+//                        
+//                        }
+//                    }
             case is SKSpriteNode:
                 for node in menuButtonsList {
                     if node == touchedNode.name {
@@ -288,13 +329,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //emitter.updateSpeed()
         }
         
-        if scoreNum == 2 {
+        if scoreNum >= 2 {
             tut.delete()
         }
 
-        if eggType == "GoldenEgg"
-        {
-            scoreNum += 3
+        if eggType == "GoldenEgg" {
+            const.goldenEggs += 1
+            UserDefaults.standard.set(const.goldenEggs, forKey: "goldenEggs")
         } else {
         scoreNum += 1
         }
@@ -302,7 +343,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         HUD.scoreLabel.text = String(scoreNum)
         HUD.labelShadow.text = String(scoreNum)
        
-        if statics.gameDifficulty != 0 {
+        if const.gameDifficulty != 0 {
             if scoreNum % 15 == 1 && randomMax >= 7 {
                 randomMax -= 1
             }
@@ -345,7 +386,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //******************************************************************************
     
     func createEgg() {
-        if statics.gameOver == false {
+        if const.gameOver == false {
             
             var egg: Egg
             
@@ -382,11 +423,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func runGame() {
         Game.preload{}
         
-        statics.gameOver = false
+        const.goldenEggs += 20
+        UserDefaults.standard.set(const.goldenEggs, forKey: "goldenEggs")
+        
+        const.gameOver = false
         player.removeHome()
         //trail()
         
-        if statics.gameTutorialOn {
+        if const.gameTutorialOn {
             addChild(tut)
             tut.position = CGPoint(x: 0, y: -size.width / 1.5)
             tut.show()
@@ -416,10 +460,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         randomMax = 26
         
-        if statics.gameDifficulty == 0 {
+        if const.gameDifficulty == 0 {
             eagleSpeed = 0.0005
         }
-        else if statics.gameDifficulty == 1 {
+        else if const.gameDifficulty == 1 {
             eagleSpeed = 0.007
         }
         else {
@@ -505,7 +549,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func endGame() {
         // ~Reset Game Stuff
-        statics.gameOver = true
+        const.gameOver = true
         player.addHome()
         gameSpeed = 7
         emitter.resetSpeed()
@@ -535,7 +579,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             UserDefaults.standard.set(scoreNum, forKey: "highScore")
         }
         if scoreNum >= 10 {
-                   statics.setGameTut(value: false)
+                   const.setGameTut(value: false)
         }
         
         //Freeze Landscapes
@@ -555,7 +599,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     //~UPDATE
         override func update(_ currentTime: CFTimeInterval) {
-            if !statics.gameOver {
+            if !const.gameOver {
                 checkBackground()
             }
             
@@ -587,7 +631,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             // Spawn Enemy
-            if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) &&  (statics.gameOver == false) && (fox.isRunning() == false) && scoreNum > 0 && statics.gameDifficulty != 0{
+            if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) &&  (const.gameOver == false) && (fox.isRunning() == false) && scoreNum > 0 && const.gameDifficulty != 0{
                 spawnEnemy()
                 }
         }
@@ -625,7 +669,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if collision == PhysicsCategory.Roof | PhysicsCategory.Player {
                 
-                 if statics.gameOver == false && !eagle.isRunning(){
+                 if const.gameOver == false && !eagle.isRunning(){
                     eagle = Eagle()
                     eagle.position.x = size.width + eagle.size.width
                     eagle.position.y = size.height / 2
@@ -637,7 +681,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if collision == PhysicsCategory.Ground | PhysicsCategory.Player {
                 emitter.addEmitterOnPlayer(fileName: "grass", position: player.position, deleteTime: 0.4)
-                if statics.gameOver == false && !fox.isRunning() && scoreNum >= 1{
+                if const.gameOver == false && !fox.isRunning() && scoreNum >= 1{
                     spawnEnemy()
                 }
             }
@@ -706,7 +750,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let random = (Int.random(in: 1...2))
         
-        if statics.gameOver == false {
+        if const.gameOver == false {
             if (random == 1 && !eagle.isRunning())
              {
                 eagle = Eagle()
@@ -733,10 +777,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     func createEggGameMode() -> Double {
         var eggSpawnRate = 0.0
-        if statics.gameDifficulty == 0 {
+        if const.gameDifficulty == 0 {
             eggSpawnRate = 0.8
         }
-        else if statics.gameDifficulty == 1 {
+        else if const.gameDifficulty == 1 {
             eggSpawnRate = 1
         }
         else {

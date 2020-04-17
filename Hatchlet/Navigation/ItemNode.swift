@@ -13,6 +13,17 @@ import SpriteKit
 class ItemNode:SKSpriteNode {
     
     let item:Item
+    
+    var priceNode = SKLabelNode()
+    
+    private func label(text: String) -> SKLabelNode {
+      let label = SKLabelNode(text: text)
+      label.fontName = "AmaticSC-Bold"
+        label.fontSize = 45
+        label.position = CGPoint(x: 0, y: -60)
+        label.zPosition = 7
+      return label
+    }
 
     init(item: Item) {
         
@@ -23,31 +34,50 @@ class ItemNode:SKSpriteNode {
         super.init(texture: item.texture, color: .purple, size: size)
 
         name = item.name   // Name is needed for sorting and detecting touches.
+        priceNode = label(text: "\(item.price)")
         zPosition = 7
+        setPriceText()
+        addChild(priceNode)
       }
+    
+    func setupNodes() {
+        let price = label(text: "\(item.price)")
+        priceNode = price
+        addChild(priceNode)
+    }
+    
+    func setPriceText() { // Updates the color and text of price labels
+        var owned = false
+        for itemName in const.ownedItems {
+               if item.name == itemName {
+                  owned = true
+            }
+        }
+        if owned {
+            playerOwns()
+        } else {
+            if const.goldenEggs >=  item.price{
+                playerCanAfford()
+            } else {
+                playerCantAfford()
+            }
+        }
+    }
+    
+    func playerCanAfford() {
+      priceNode.text = "\(item.price)"
+      priceNode.fontColor = .green
+    }
 
-//      private func setPriceText() { // Updates the color and text of price labels
-//
-//        func playerCanAfford() {
-//          priceNode.text = "\(item.price)"
-//          priceNode.fontColor = .white
-//        }
-//
-//        func playerCantAfford() {
-//          priceNode.text = "\(item.price)"
-//          priceNode.fontColor = .red
-//        }
-//
-//        func playerOwns() {
-//          priceNode.text = ""
-//          priceNode.fontColor = .white
-//        }
-//
-////        if player.hasCostume(self.costume)         { playerOwns()       }
-////        else if player.coins < self.costume.price  { playerCantAfford() }
-////        else if player.coins >= self.costume.price { playerCanAfford()  }
-////        else                                       { fatalError()       }
-//     }
+    func playerCantAfford() {
+      priceNode.text = "\(item.price)"
+      priceNode.fontColor = .red
+    }
+
+    func playerOwns() {
+      priceNode.text = ""
+      priceNode.fontColor = .white
+    }
 
       required init?(coder aDecoder: NSCoder) { fatalError() }
 

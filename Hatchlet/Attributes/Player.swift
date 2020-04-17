@@ -123,8 +123,8 @@ class Player:SKSpriteNode {
     }
     
     func updateCostume() {
-        let costume = statics.playerCostume ?? ""
-        let acc = statics.playerAcc ?? ""
+        let costume = const.playerCostume ?? ""
+        let acc = const.playerAcc ?? ""
         
         switch costume {
         case "unicorn":
@@ -144,7 +144,7 @@ class Player:SKSpriteNode {
             removeAllActions()
             blink()
         case "":
-            statics.setPlayerAcc(value: costume)
+            const.setPlayerAcc(value: costume)
             playerCostume.removeFromParent()
             playerImage = Constant.textureNamed("bob")
             playerBlink = Constant.textureNamed("bobBlink")

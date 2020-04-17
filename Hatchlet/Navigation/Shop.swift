@@ -25,6 +25,13 @@ class Shop: SKNode {
     
     let title: SKLabelNode
     var titleShadow: SKLabelNode
+    let goldenEggText: SKLabelNode
+    var goldenEggTextShadow: SKLabelNode
+    
+    let goldenEgg: SKSpriteNode
+    let goldenEggTexture: SKTexture
+    
+    let Game = SKTextureAtlas(named: "Game")
     
     let bin: SKSpriteNode
     let bin1: SKSpriteNode
@@ -57,6 +64,11 @@ class Shop: SKNode {
         
         title = SKLabelNode(fontNamed: "AmaticSC-Regular")
         titleShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
+        goldenEggText = SKLabelNode(fontNamed: "AmaticSC-Bold")
+        goldenEggTextShadow = SKLabelNode(fontNamed: "AmaticSC-Bold")
+        
+        goldenEggTexture = Game.textureNamed("goldenEgg")
+        goldenEgg = Egg()
         
         bin = SKSpriteNode(texture: nil, size: CGSize(width: 336 ,height: 600))
         
@@ -93,9 +105,18 @@ class Shop: SKNode {
         titleShadow.position = CGPoint(x: title.position.x + 3, y: title.position.y - 2)
         titleShadow.zPosition = 6
         titleShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
+    
+        goldenEggText.fontSize = 45
+        goldenEggText.position = CGPoint(x: goldenEgg.size.width, y: bin.size.height * 0.19)
+        goldenEggText.zPosition = 7
+        goldenEggText.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
+        goldenEggTextShadow.fontSize = goldenEggText.fontSize
+        goldenEggTextShadow.position = CGPoint(x: goldenEggText.position.x + 3, y: goldenEggText.position.y - 2)
+        goldenEggTextShadow.zPosition = goldenEggText.zPosition - 1
+        goldenEggTextShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
         
 //----------------
-        bin.texture = MenuAtlas.textureNamed("bin")
+        //bin.texture = MenuAtlas.textureNamed("bin")
         bin.position = CGPoint(x: size.width / 2, y: size.height/1.771)
         bin.zPosition = 5
         
@@ -122,14 +143,26 @@ class Shop: SKNode {
         leftButton.position = CGPoint(x: -bin.size.width*0.25, y: -bin.size.height/2)
         rightButton.position = CGPoint(x: bin.size.width*0.25, y: -bin.size.height/2)
         
+        goldenEgg.position = CGPoint(x: 0, y: title.position.y - (goldenEgg.size.height * 2))
+        goldenEgg.alpha = 1
+        goldenEgg.scale(to: CGSize(width: 30, height: 35))
+        goldenEgg.physicsBody = nil
+        goldenEgg.texture = goldenEggTexture
+        goldenEgg.zPosition = title.zPosition + 1
+        
     }
     
     func show() {
         showPage()
+        bin.addChild(goldenEgg)
         bin.addChild(leftButton)
         bin.addChild(rightButton)
         bin.addChild(title)
         bin.addChild(titleShadow)
+        goldenEggText.text = String(const.goldenEggs)
+        goldenEggTextShadow.text = goldenEggText.text
+        bin.addChild(goldenEggText)
+        bin.addChild(goldenEggTextShadow)
         bin.addChild(backButton)
         addChild(bin)
     }
@@ -240,15 +273,17 @@ class Shop: SKNode {
         return test
         }
     
-    func doubleCheck() {
+    func doubleCheck() -> Bool {
         // Are you sure you want to purchase item.name?
+        
+        return true
     }
     
-    func setCostume(costume: String) {
+    func setCostume(costume: String, owned: Bool = false) {
         var acc = true
         for n in costumeItems {
             if costume == n.name {
-                statics.setPlayerCostume(value: costume)
+                const.setPlayerCostume(value: costume)
                 acc = false
                 if costume == "" {
                     acc = true
@@ -257,7 +292,30 @@ class Shop: SKNode {
         }
         
         if acc {
-            statics.setPlayerAcc(value: costume)
+            const.setPlayerAcc(value: costume)
         }
+        if !owned
+        {
+            finishTransaction(item: costume)
+        }
+        
+    }
+    
+    func finishTransaction(item: String) {
+        for tempItem in availableItems {
+            if tempItem.name == item {
+                // Subtract price from goldenEggs
+                const.goldenEggs -= tempItem.price
+                goldenEggText.text = String(const.goldenEggs)
+                goldenEggTextShadow.text = goldenEggText.text
+                UserDefaults.standard.set(const.goldenEggs, forKey: "goldenEggs")
+                
+                // Put into owned items
+                const.setOwnedItems(value: item)
+            }
+            pageClear()
+            showPage(pageNum: currentPageNum)
+        }
+        
     }
 }

@@ -13,6 +13,7 @@
 		842177B82439380700FDB3AF /* ItemNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842177B72439380700FDB3AF /* ItemNode.swift */; };
 		842AD9E22287D49600EE3271 /* Ground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842AD9E12287D49600EE3271 /* Ground.swift */; };
 		842AD9E42287D80500EE3271 /* Roof.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842AD9E32287D80500EE3271 /* Roof.swift */; };
+		84400C4B244759A40040B644 /* trailTest copy.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84400C4A2447599F0040B644 /* trailTest copy.sks */; };
 		8443ECFB23F0D6080095CFA8 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443ECFA23F0D6080095CFA8 /* Settings.swift */; };
 		8443ECFE23F0EB3B0095CFA8 /* Shop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443ECFD23F0EB3B0095CFA8 /* Shop.swift */; };
 		8443ED0023F0F2310095CFA8 /* Crown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443ECFF23F0F2310095CFA8 /* Crown.swift */; };
@@ -44,7 +45,6 @@
 		84C85A9F2353913000DAD310 /* newSpark.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84C85A9D2353913000DAD310 /* newSpark.sks */; };
 		84C9053A2442CF47000A2D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84832A5F22879F63003BA784 /* Assets.xcassets */; };
 		84D85C2F2414880B00B173FF /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D85C2E2414880B00B173FF /* Item.swift */; };
-		84D85C312414923B00B173FF /* oldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D85C302414923B00B173FF /* oldNode.swift */; };
 		84DB432F240384AC00BDB9AF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DB432E240384AC00BDB9AF /* Constants.swift */; };
 		84FBFF3C23556B8A00A45CCD /* grass.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84FBFF3B23556B8A00A45CCD /* grass.sks */; };
 		84FBFF412356469D00A45CCD /* airParticles.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84FBFF3F2356469D00A45CCD /* airParticles.sks */; };
@@ -57,6 +57,7 @@
 		842177B72439380700FDB3AF /* ItemNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemNode.swift; sourceTree = "<group>"; };
 		842AD9E12287D49600EE3271 /* Ground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ground.swift; sourceTree = "<group>"; };
 		842AD9E32287D80500EE3271 /* Roof.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Roof.swift; sourceTree = "<group>"; };
+		84400C4A2447599F0040B644 /* trailTest copy.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = "trailTest copy.sks"; sourceTree = "<group>"; };
 		8443ECFA23F0D6080095CFA8 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		8443ECFD23F0EB3B0095CFA8 /* Shop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shop.swift; sourceTree = "<group>"; };
 		8443ECFF23F0F2310095CFA8 /* Crown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crown.swift; sourceTree = "<group>"; };
@@ -207,6 +208,7 @@
 				84C85A992353874D00DAD310 /* playerSmoke.sks */,
 				8481F5AD24418B7A0014A17D /* milk.sks */,
 				84A5013623E6500B00B09B9E /* eggCoin.sks */,
+				84400C4A2447599F0040B644 /* trailTest copy.sks */,
 				8481F5A724403AD40014A17D /* trailTest.sks */,
 			);
 			path = Emitters;
@@ -279,6 +281,7 @@
 				84832A5E22879F60003BA784 /* Main.storyboard in Resources */,
 				841373A923F87FBC004E63BF /* AmaticSC-Regular.ttf in Resources */,
 				8481F5AE24418B7F0014A17D /* milk.sks in Resources */,
+				84400C4B244759A40040B644 /* trailTest copy.sks in Resources */,
 				84C85A9C2353874D00DAD310 /* playerSmoke.sks in Resources */,
 				84832A6322879F63003BA784 /* LaunchScreen.storyboard in Resources */,
 				84FBFF3C23556B8A00A45CCD /* grass.sks in Resources */,
@@ -320,7 +323,6 @@
 				84832A5322879F60003BA784 /* AppDelegate.swift in Sources */,
 				842AD9E22287D49600EE3271 /* Ground.swift in Sources */,
 				842AD9E42287D80500EE3271 /* Roof.swift in Sources */,
-				84D85C312414923B00B173FF /* oldNode.swift in Sources */,
 				8497FE2223550F1D00CF4C06 /* Background.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -474,7 +476,7 @@
 				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = JM23Z9GG95;
 				INFOPLIST_FILE = "$(SRCROOT)/Hatchlet/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -497,7 +499,7 @@
 				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = JM23Z9GG95;
 				INFOPLIST_FILE = "$(SRCROOT)/Hatchlet/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

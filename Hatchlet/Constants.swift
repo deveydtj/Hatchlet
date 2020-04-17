@@ -9,12 +9,13 @@
 import Foundation
 
 struct Constants {
-    
     var gameOver: Bool = true
     
     var gameDifficulty = UserDefaults.standard.integer(forKey: "gameDifficulty")
     
     var gameTutorialOn = UserDefaults.standard.bool(forKey: "gameTut")
+    
+    var goldenEggs = UserDefaults.standard.integer(forKey: "goldenEggs")
     
     //BUTTONS
     let playButton = "playButton"
@@ -29,6 +30,15 @@ struct Constants {
     //PLAYER
     var playerCostume = UserDefaults.standard.string(forKey: "playerCostume")
     var playerAcc = UserDefaults.standard.string(forKey: "playerAcc")
+    
+    //var ownedItems: [Item] = [Item.list.blank]
+    
+    var ownedItems = UserDefaults.standard.stringArray(forKey: "OwnedItems") ?? [""]
+    
+    mutating func setOwnedItems(value: String) {
+        ownedItems.append(value)
+        UserDefaults.standard.set(ownedItems, forKey: "OwnedItems")
+    }
     
     mutating func setGameTut(value: Bool) {
         UserDefaults.standard.set(value, forKey: "gameTut")

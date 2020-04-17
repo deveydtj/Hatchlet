@@ -47,28 +47,30 @@ class OldNode:SKSpriteNode {
         setupNodes(with: size)
       }
 
-      private func setPriceText() { // Updates the color and text of price labels
-
-        func playerCanAfford() {
-          priceNode.text = "\(item.price)"
-          priceNode.fontColor = .white
-        }
-
-        func playerCantAfford() {
-          priceNode.text = "\(item.price)"
-          priceNode.fontColor = .red
-        }
-
-        func playerOwns() {
-          priceNode.text = ""
-          priceNode.fontColor = .white
-        }
+     
+        
+    
+    }
 
 //        if player.hasCostume(self.costume)         { playerOwns()       }
 //        else if player.coins < self.costume.price  { playerCantAfford() }
 //        else if player.coins >= self.costume.price { playerCanAfford()  }
 //        else                                       { fatalError()       }
-     }
+    
+    func playerCanAfford() {
+      priceNode.text = "\(item.price)"
+      priceNode.fontColor = .white
+    }
+
+    func playerCantAfford() {
+      priceNode.text = "\(item.price)"
+      priceNode.fontColor = .red
+    }
+
+    func playerOwns() {
+      priceNode.text = ""
+      priceNode.fontColor = .white
+    }
 
       required init?(coder aDecoder: NSCoder) { fatalError() }
 

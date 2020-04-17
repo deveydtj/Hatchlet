@@ -85,7 +85,7 @@ class Menu: SKNode {
         titleShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
         
  
-        bin.texture = MenuAtlas.textureNamed("bin")
+        ////bin.texture = MenuAtlas.textureNamed("bin")
         bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
         bin.zPosition = 5
         

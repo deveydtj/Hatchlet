@@ -46,15 +46,8 @@ struct Item {
     covid:   Item(name: "covid",   texture: SKTexture(imageNamed: "covid"),   price: 5),
     glasses:   Item(name: "glasses",   texture: SKTexture(imageNamed: "glasses"),   price: 5),
     cow:   Item(name: "cow",   texture: SKTexture(imageNamed: "cow"),   price: 5),
-    unicorn:   Item(name: "unicorn",   texture: SKTexture(imageNamed: "unicorn"),   price: 5)
+    unicorn:   Item(name: "unicorn",   texture: SKTexture(imageNamed: "unicorn"),   price: 25)
   )
-    
-//    static let costumeList = (
-//      // Hard-code any new costumes you create here (this is a "master list" of costumes)
-//      // (make sure all of your costumes have a unique name, or the program will not work properly)
-//      cow:   Item(name: "cow",   texture: SKTexture(imageNamed: "cow"),   price: 5),
-//      unicorn:   Item(name: "unicorn",   texture: SKTexture(imageNamed: "unicorn"),   price: 5)
-//    )
 
   //static let defaultCostume = list.gray
 };
