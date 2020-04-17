@@ -18,14 +18,7 @@ struct Constants {
     var goldenEggs = UserDefaults.standard.integer(forKey: "goldenEggs")
     
     //BUTTONS
-    let playButton = "playButton"
-    let crownButton = "crownButton"
-    let crownBackButton = "crownBackButton"
-    let settingsButton = "settingsButton"
-    let settingsBackButton = "settingsBackButton"
-    let shopButton = "shopButton"
-    let shopBackButton = "shopBackButton"
-    let menu = "menu"
+    var touchableButtons = ["playButton", "crownButton", "crownBackButton", "settingsButton", "settingsBackButton", "shopButton", "shopBackButton", "menu"]
     
     //PLAYER
     var playerCostume = UserDefaults.standard.string(forKey: "playerCostume")

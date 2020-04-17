@@ -3,7 +3,7 @@
 //  Lil Jumper
 //
 //  Created by Admin on 5/11/19.
-//  Copyright © 2019 Admin. All rights reserved.
+//  Copyright © 2020 Jacob DeVeydt. All rights reserved.
 //
 //****************************
 // New Layout:
@@ -89,8 +89,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var location = CGPoint.zero
     var touched:Bool = false
-
-    let menuButtonsList = [const.playButton, const.crownButton, const.crownBackButton, const.settingsButton, const.settingsBackButton, const.shopButton, const.shopBackButton, const.menu]
+    
+    var isTouching = false
+    var prevTouchedNode = SKNode()
     
 //******************************************************************************
     
@@ -198,17 +199,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //END SETUP^^^^
     
 //******************************************************************************
-   
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-          for touch in (touches ) {
-                  location = touch.location(in: self)
+        for touch in (touches ) {
+            location = touch.location(in: self)
+        }
+        let touchedNode = self.atPoint(location)
+        
+        var touchingNode = ""
+        // This will find the tochable nodes name
+        for nodeName in const.touchableButtons {
+            if nodeName == touchedNode.name {
+                touchingNode = nodeName
+                prevTouchedNode = touchedNode
+            }
         }
         
-        let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
-        let touchedNode = self.atPoint(positionInScene)
-        
-        if touchedNode.name == const.playButton || touchedNode.name == const.crownButton || touchedNode.name == const.crownButton || touchedNode.name == const.crownBackButton || touchedNode.name == const.settingsButton || touchedNode.name == const.settingsBackButton || touchedNode.name == const.shopButton || touchedNode.name == const.shopBackButton {
-            touchedNode.run(.scale(to: 1, duration: 0.2))
+        if touchingNode != "" && !isTouching {
+            touchedNode.run(.scale(to: 0.80, duration: 0.2))
+            isTouching = true
+        } else if touchingNode == "" && prevTouchedNode.name != ""  {
+            prevTouchedNode.run(.scale(to: 1, duration: 0.2))
+            prevTouchedNode = SKNode()
+            isTouching = false
         }
     }
     
@@ -230,9 +242,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
             let touchedNode = self.atPoint(positionInScene)
             
-            for node in menuButtonsList {
-                if node == touchedNode.name {
-                touchedNode.run(.scale(to: 1.18, duration: 0.2))
+            for nodeName in const.touchableButtons {
+                if nodeName == touchedNode.name {
+                    touchedNode.run(.scale(to: 0.80, duration: 0.2))
                 }
             }
         }
@@ -269,20 +281,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     player.updateCostume()
                     touchedNode.setPriceText()
                 }
-//                
-//                    for node in Item.allItems {
-//                        if node.name == touchedNode.name  {
-//                        
-//                        }
-//                    }
             case is SKSpriteNode:
-                for node in menuButtonsList {
-                    if node == touchedNode.name {
-                    touchedNode.run(.scale(to: 1, duration: 0.2))
+                for nodeName in const.touchableButtons {
+                    if nodeName == touchedNode.name {
+                        touchedNode.run(.scale(to: 1, duration: 0.2))
                     }
                 }
             default: ()
             }
+            
             switch touchedNode.name {
             case "gameDiff":
                 settings.switchGameDiff()
@@ -422,9 +429,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func runGame() {
         Game.preload{}
-        
-        const.goldenEggs += 20
-        UserDefaults.standard.set(const.goldenEggs, forKey: "goldenEggs")
         
         const.gameOver = false
         player.removeHome()
