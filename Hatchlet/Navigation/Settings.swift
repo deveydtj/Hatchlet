@@ -113,7 +113,7 @@ class Settings: SKNode {
         tutorial.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
         tutorialShadow.text = tutorial.text
         tutorialShadow.fontSize = tutorial.fontSize
-        tutorialShadow.position = CGPoint(x: tutorial.position.x + 3, y: tutorial.position.y - 2)
+        tutorialShadow.position = CGPoint(x: tutorial.position.x + 2, y: tutorial.position.y - 1)
         tutorialShadow.zPosition = 6
         tutorialShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
  

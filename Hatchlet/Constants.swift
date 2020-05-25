@@ -10,6 +10,7 @@ import Foundation
 
 struct Constants {
     var gameOver: Bool = true
+    var checked: Bool = false
     
     var gameDifficulty = UserDefaults.standard.integer(forKey: "gameDifficulty")
     
@@ -18,7 +19,7 @@ struct Constants {
     var goldenEggs = UserDefaults.standard.integer(forKey: "goldenEggs")
     
     //BUTTONS
-    var touchableButtons = ["playButton", "crownButton", "crownBackButton", "settingsButton", "settingsBackButton", "shopButton", "shopBackButton", "menu"]
+    var touchableButtons = ["playButton", "crownButton", "crownBackButton", "settingsButton", "settingsBackButton", "shopButton", "shopBackButton", "menu", "pause", "playButton"]
     
     //PLAYER
     var playerCostume = UserDefaults.standard.string(forKey: "playerCostume")

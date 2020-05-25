@@ -32,6 +32,7 @@
 		8497FE2223550F1D00CF4C06 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8497FE2123550F1D00CF4C06 /* Background.swift */; };
 		8498FAC0240F661900CCC5B6 /* Tutorial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8498FABF240F661900CCC5B6 /* Tutorial.swift */; };
 		84A5013823E6500B00B09B9E /* eggCoin.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84A5013623E6500B00B09B9E /* eggCoin.sks */; };
+		84C0FA4F244BACCA0046F5A8 /* PauseScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C0FA4E244BACCA0046F5A8 /* PauseScreen.swift */; };
 		84C7CAC62357A8D5005D09DC /* Life.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C7CAC52357A8D5005D09DC /* Life.swift */; };
 		84C7CAD7235A103B005D09DC /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C7CAD6235A103B005D09DC /* Menu.swift */; };
 		84C85A6C234E387E00DAD310 /* Landscape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C85A6B234E387E00DAD310 /* Landscape.swift */; };
@@ -79,6 +80,7 @@
 		8497FE2123550F1D00CF4C06 /* Background.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
 		8498FABF240F661900CCC5B6 /* Tutorial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tutorial.swift; sourceTree = "<group>"; };
 		84A5013623E6500B00B09B9E /* eggCoin.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = eggCoin.sks; sourceTree = "<group>"; };
+		84C0FA4E244BACCA0046F5A8 /* PauseScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseScreen.swift; sourceTree = "<group>"; };
 		84C7CAC52357A8D5005D09DC /* Life.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Life.swift; sourceTree = "<group>"; };
 		84C7CAD6235A103B005D09DC /* Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
 		84C85A6B234E387E00DAD310 /* Landscape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Landscape.swift; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 				84DB432E240384AC00BDB9AF /* Constants.swift */,
 				8443ECFC23F0D6970095CFA8 /* Navigation */,
 				841CA11F2381134000684909 /* EndScreen.swift */,
+				84C0FA4E244BACCA0046F5A8 /* PauseScreen.swift */,
 				8498FABF240F661900CCC5B6 /* Tutorial.swift */,
 				84C85A7F23537FE000DAD310 /* Emitters.swift */,
 				84C85A72234E827800DAD310 /* Attributes */,
@@ -304,6 +307,7 @@
 				84DB432F240384AC00BDB9AF /* Constants.swift in Sources */,
 				84C85A70234E4FA400DAD310 /* Egg.swift in Sources */,
 				84C85A8023537FE000DAD310 /* Emitters.swift in Sources */,
+				84C0FA4F244BACCA0046F5A8 /* PauseScreen.swift in Sources */,
 				8443ECFE23F0EB3B0095CFA8 /* Shop.swift in Sources */,
 				84832A6B2287A027003BA784 /* Player.swift in Sources */,
 				846D2EEB235BA9B100B4402F /* Fox.swift in Sources */,

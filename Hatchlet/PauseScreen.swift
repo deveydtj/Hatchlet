@@ -8,19 +8,15 @@
 
 import SpriteKit
 
-class EndScreen: SKNode {
+class PauseScreen: SKNode {
     let size: CGSize
-    var score: Int
-    let menu: SKSpriteNode
+    let play: SKSpriteNode
     let finalScore: SKLabelNode
     let finalScoreShadow: SKLabelNode
-
-    var menuTexture = SKTexture()
     
-    init(size: CGSize, score: Int){
+    init(size: CGSize){
         self.size = size
-        self.score = score
-        menu = SKSpriteNode(texture: nil, color: .red, size: CGSize(width: 150, height: 40))
+        play = SKSpriteNode(texture: Constant.textureNamed("playButton"), color: .red, size: CGSize(width: 150, height: 40))
         
         finalScore = SKLabelNode(fontNamed: "AmaticSC-Bold")
         finalScoreShadow = SKLabelNode(fontNamed: finalScore.fontName)
@@ -35,27 +31,23 @@ class EndScreen: SKNode {
     }
     
     func setup() {
+        play.name = "playButton"
+        play.zPosition = 71
+        play.position = CGPoint(x: size.width / 2, y: size.height / 2 - 20)
+        play.size = CGSize(width: 77, height: 80)
+        addChild(play)
         
-        menuTexture = Constant.textureNamed("mainMenu")
-        
-        menu.name = "menu"
-        menu.zPosition = 71
-        menu.position = CGPoint(x: size.width / 2, y: size.height / 2 - 20)
-        menu.size = CGSize(width: 77, height: 80)
-        menu.texture = menuTexture
-        addChild(menu)
-        
-        finalScore.text = "Your Score: " + String(score)
+        finalScore.text = "Paused"
         finalScore.fontSize = 55
         finalScore.position = CGPoint(x: size.width / 2, y: size.height / 2 + (finalScore.frame.size.height))
         finalScore.zPosition = 72
         finalScore.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
         addChild(finalScore)
         
-        finalScoreShadow.text = "Your Score: " + String(score)
+        finalScoreShadow.text = finalScore.text
         finalScoreShadow.fontSize =  finalScore.fontSize
         finalScoreShadow.position = CGPoint(x:  finalScore.position.x + 2.5, y:  finalScore.position.y - 1.5)
-        finalScoreShadow.zPosition = 71
+        finalScore.zPosition -= 1
         finalScoreShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
         addChild(finalScoreShadow)
         

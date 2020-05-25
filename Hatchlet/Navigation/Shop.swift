@@ -301,14 +301,35 @@ class Shop: SKNode {
         
     }
     
+    func animateText() {
+            run(SKAction.sequence([
+                SKAction.run() { [weak self] in guard self != nil else { return }
+                    const.goldenEggs -= 1
+                    self!.goldenEggText.text = String(const.goldenEggs)
+                    self!.goldenEggTextShadow.text = self!.goldenEggText.text
+                }, SKAction.wait(forDuration: 1)])
+        )
+    }
+    
+    
     func finishTransaction(item: String) {
         for tempItem in availableItems {
             if tempItem.name == item {
                 // Subtract price from goldenEggs
-                const.goldenEggs -= tempItem.price
-                goldenEggText.text = String(const.goldenEggs)
-                goldenEggTextShadow.text = goldenEggText.text
-                UserDefaults.standard.set(const.goldenEggs, forKey: "goldenEggs")
+                let count = const.goldenEggs - tempItem.price
+                UserDefaults.standard.set(count, forKey: "goldenEggs")
+                //work
+                if tempItem.price > 0 {
+                    let wait = SKAction.wait(forDuration: 0.05)
+                    let block = SKAction.run({
+                            const.goldenEggs -= 1
+                            self.goldenEggText.text = "\(const.goldenEggs)"
+                            self.goldenEggTextShadow.text = self.goldenEggText.text
+                        })
+                    let sequence = SKAction.sequence([wait, block])
+                    run(SKAction.repeat(sequence, count: tempItem.price))
+                }
+                //end
                 
                 // Put into owned items
                 const.setOwnedItems(value: item)
@@ -316,6 +337,5 @@ class Shop: SKNode {
             pageClear()
             showPage(pageNum: currentPageNum)
         }
-        
     }
 }

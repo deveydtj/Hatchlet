@@ -39,11 +39,12 @@ extension UIColor {
     }
 }
 
-//var gameOver: Bool = true
 let Constant = SKTextureAtlas(named: "Constant")
 var const = Constants()
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    
+    //var newPaused: Bool = false
     
     var scoreNum: Int! = 0
     
@@ -52,6 +53,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let shop: Shop
     let crown: Crown
     var endScreen: EndScreen
+    var pauseScreen: PauseScreen
+    var HUD:gameHUD
     
     let tut: Tut
     
@@ -61,13 +64,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let player:Player
     var eagle:Eagle
     var fox:Fox
-    var HUD:gameHUD
-    let cameraNode: SKCameraNode
+    var pauseButton:SKSpriteNode
     
     let Game = SKTextureAtlas(named: "Game")
     let MenuAtlas = SKTextureAtlas(named: "Menu")
     
     var landscapes = [Landscape]()
+    
+    var playerVelocity = CGVector()
     
     // CONSTANTS ACROSS THE UI
     let groundHitBox: SKSpriteNode
@@ -82,6 +86,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var scrollingGround1:Parallax
     
     var gameSpeed:Double = 7
+    var eggSpeed: Double = 50
     
     var randomMax = 26
     
@@ -93,15 +98,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var isTouching = false
     var prevTouchedNode = SKNode()
     
+    var newPaused: Bool = false
+    {
+       didSet
+       {
+        self.isPaused = newPaused
+       }
+    }
+    override var isPaused : Bool
+    {
+        didSet {
+         if (self.isPaused == false && self.newPaused == true) {
+             self.isPaused = true
+            }
+       }
+    }
+    
+//    var lastUpdateTimeInterval: CFTimeInterval = 0
+//    var deltaTime: CGFloat = 0
+//    var eggs = [SKSpriteNode]()
+    
 //******************************************************************************
     
     override init(size: CGSize) {
         endScreen = EndScreen(size: size, score: scoreNum)
+        pauseScreen = PauseScreen(size: size)
         menu = Menu(size: size)
         settings = Settings(size: size)
         shop = Shop(size: size)
         crown = Crown(size: size)
         tut = Tut(size:size)
+        
+        pauseButton = SKSpriteNode(texture: nil, color: .purple, size: CGSize(width: 50, height: 50))
         
         const = Constants()
         
@@ -110,7 +138,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player = Player()
         eagle = Eagle()
         fox = Fox()
-        cameraNode = SKCameraNode()
         HUD = gameHUD(size: size, player: player)
         emitter = Emitters(size: size)
         
@@ -130,8 +157,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         physicsWorld.gravity = CGVector(dx: 0, dy: -9.81)
         
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        
         setup()
     }
+
+    @objc func appMovedToBackground() {
+        print("App moved to background!")
+        if newPaused == false && !const.gameOver {
+            showPauseScreen()
+        }
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -195,6 +233,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if UserDefaults.standard.integer(forKey: "highScore") == 0 {
             const.setGameTut(value: true)
         }
+        
+        pauseButton.position = CGPoint(x: 0 + pauseButton.size.width, y: scrollingGround.size.height)
+        pauseButton.zPosition = 101
+        pauseButton.name = "pause"
     }
 //END SETUP^^^^
     
@@ -231,20 +273,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
           for touch in (touches ) {
             location = touch.location(in: self)
         }
+        let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
+        let touchedNode = self.atPoint(positionInScene)
         touched = true
         
-        if const.gameOver == false {
+        if const.gameOver == false && newPaused == false {
             player.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 145))
              emitter.addEmitterOnPlayer(fileName: String("playerSmoke"), position: player.position, deleteTime: 1)
+            
+            if touchedNode.name == "pause"  {
+                showPauseScreen()
+            }
         }
         else {
             player.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 15))
-            let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
-            let touchedNode = self.atPoint(positionInScene)
-            
             for nodeName in const.touchableButtons {
                 if nodeName == touchedNode.name {
-                    touchedNode.run(.scale(to: 0.80, duration: 0.2))
+                    touchedNode.run(.scale(to: 0.80, duration: 0.15))
                 }
             }
         }
@@ -255,14 +300,35 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //~TOUCHES ENDED
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         touched = false
+        const.checked = false
+        
+//        if !const.checked {
+//            for nodeName in const.touchableButtons {
+//                let node = childNode(withName: nodeName)
+//                if node?.xScale ?? 2  < CGFloat(1) {
+//                    node?.run(.scale(to: 1, duration: 0.15))
+//                }
+//            }
+//            const.checked = true
+//            print("checked")
+//        }
+        for touch in (touches ) {
+            location = touch.location(in: self)
+        }
+        let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
+        let touchedNode = self.atPoint(positionInScene)
+        
+        if touchedNode.name == "playButton" {
+            newPaused = false
+            pauseScreen.removeAllActions()
+            pauseScreen.removeFromParent()
+            if !player.physicsBody!.isDynamic {
+                player.physicsBody!.isDynamic = true
+                player.physicsBody!.velocity = playerVelocity
+            }
+        }
         
         if const.gameOver {
-            for touch in (touches ) {
-                location = touch.location(in: self)
-            }
-            
-            let touch:UITouch = touches.first! as UITouch; let positionInScene = touch.location(in: self)
-            let touchedNode = self.atPoint(positionInScene)
             
             switch touchedNode {
             case is GameScene:
@@ -326,7 +392,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func setScore(eggType: String) {
         
-        if gameSpeed > 1.8 {
+        if gameSpeed > 2 {
+            eggSpeed /= 0.99
             gameSpeed *= 0.989
             eagleSpeed /= 0.99
             //speeds up other animations by accessing their speed
@@ -412,6 +479,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let eggY = maxY - CGFloat(arc4random_uniform(UInt32 (range)))
             
             egg.position = CGPoint(x:size.width, y: eggY)
+//            eggs.append(egg)
             addChild(egg)
             let moveLeft = SKAction.moveBy(x: -(size.width), y: 0, duration: gameSpeed)
                 egg.run(SKAction.sequence([moveLeft, SKAction.removeFromParent()]))
@@ -433,6 +501,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         const.gameOver = false
         player.removeHome()
         //trail()
+        
+        addChild(pauseButton)
         
         if const.gameTutorialOn {
             addChild(tut)
@@ -474,6 +544,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             eagleSpeed = 0.01
         }
     }
+    
+//******************************************************************************
+    
+//    func moveNodes(dx: CGFloat) {
+//        for egg in eggs {
+//            egg.position.x -= CGFloat(eggSpeed) * dx
+//            if egg.position.x <= 0{
+//                if let index = eggs.firstIndex(of: egg) {
+//                    eggs.remove(at: index)
+//                    egg.removeFromParent()
+//                }
+//            }
+//        }
+//    }
     
 //******************************************************************************
     // Move the node to the location of the touch
@@ -557,8 +641,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.addHome()
         gameSpeed = 7
         emitter.resetSpeed()
+        
+        //eggs.removeAll()
        
         // ~Delete Game Stuff
+        pauseButton.removeFromParent()
         HUD.removeFromParent()
         HUD.scoreLabel.text = "0"
         HUD.labelShadow.text = "0"
@@ -569,7 +656,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //delete any visisble eggs
         for child in self.children {
-            if child.name == "egg" {
+            if child.name?.hasPrefix("egg") ?? false{
                 deleteEgg(egg: child)
             }
             else if child.name == "GoldenEgg" {
@@ -599,16 +686,40 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreNum = 0
     }
     
+    func showPauseScreen() {
+        addChild(pauseScreen)
+        if player.physicsBody!.isDynamic {
+            playerVelocity = player.physicsBody!.velocity
+            player.physicsBody!.isDynamic = false
+        } else {
+            player.physicsBody!.isDynamic = true
+            player.physicsBody!.velocity = playerVelocity
+        }
+        newPaused = true
+    }
+    
 //******************************************************************************
         
     //~UPDATE
         override func update(_ currentTime: CFTimeInterval) {
+//           var deltaTime = CGFloat( currentTime - lastUpdateTimeInterval )
+//            if deltaTime > 1.0 {
+//              deltaTime = 0.0166
+//            }
+//             lastUpdateTimeInterval = currentTime
+            
             if !const.gameOver {
                 checkBackground()
-            }
-            
-            if eagle.isRunning() {
-                moveCloser()
+//                if eggs.count > 0 {
+//                    moveNodes(dx: deltaTime)
+//                }
+                if eagle.isRunning() {
+                    moveCloser()
+                }
+                if fox.isRunning() {
+                     HUD.updateShadow(userOfShadow: "fox", currentPos: fox.position.y)
+                      HUD.enemyShadow.position.x = (fox.position.x + size.width / 2) - 5
+                }
             }
             
             if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) {
@@ -628,11 +739,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             
             HUD.updateShadow(userOfShadow: "player", currentPos: player.position.y)
-            
-            if fox.isRunning() {
-                 HUD.updateShadow(userOfShadow: "fox", currentPos: fox.position.y)
-                  HUD.enemyShadow.position.x = (fox.position.x + size.width / 2) - 5
-            }
             
             // Spawn Enemy
             if player.physicsBody!.velocity == CGVector(dx: 0, dy: 0) &&  (const.gameOver == false) && (fox.isRunning() == false) && scoreNum > 0 && const.gameDifficulty != 0{
@@ -788,7 +894,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             eggSpawnRate = 1
         }
         else {
-           eggSpawnRate =  0.25
+           eggSpawnRate =  0.5
         }
         return eggSpawnRate
     }

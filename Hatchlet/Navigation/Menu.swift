@@ -58,7 +58,6 @@ class Menu: SKNode {
     func setup() {
         shopAtlas.preload {
         }
-        
         playAtlas.preload {
         }
         
