@@ -49,9 +49,9 @@ class Shop: SKNode {
     
     let MenuAtlas = SKTextureAtlas(named: "Menu")
     
-    var availableItems: [Item] = [Item.list.blank, Item.list.gangster, Item.list.covid, Item.list.glasses, Item.list.cow, Item.list.unicorn]
+    var availableItems: [Item] = [Item.list.blank, Item.list.gangster, Item.list.covid, Item.list.glasses, Item.list.cow, Item.list.unicorn, Item.list.hotdog]
     
-    var costumeItems: [Item] = [Item.list.blank, Item.list.cow, Item.list.unicorn]
+    var costumeItems: [Item] = [Item.list.blank, Item.list.cow, Item.list.unicorn, Item.list.hotdog]
     
     
     var currentPageNum = 1

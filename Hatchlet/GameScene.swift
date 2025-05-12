@@ -129,7 +129,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         crown = Crown(size: size)
         tut = Tut(size:size)
         
-        pauseButton = SKSpriteNode(texture: nil, color: .purple, size: CGSize(width: 50, height: 50))
+        pauseButton = SKSpriteNode(texture: Constant.textureNamed("playButton"), color: .red, size: CGSize(width: 77, height: 80))
         
         const = Constants()
         

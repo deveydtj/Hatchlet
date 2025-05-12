@@ -46,7 +46,8 @@ struct Item {
     covid:   Item(name: "covid",   texture: SKTexture(imageNamed: "covid"),   price: 5),
     glasses:   Item(name: "glasses",   texture: SKTexture(imageNamed: "glasses"),   price: 5),
     cow:   Item(name: "cow",   texture: SKTexture(imageNamed: "cow"),   price: 5),
-    unicorn:   Item(name: "unicorn",   texture: SKTexture(imageNamed: "unicorn"),   price: 25)
+    unicorn:   Item(name: "unicorn",   texture: SKTexture(imageNamed: "unicorn"),   price: 25),
+    hotdog:   Item(name: "hotdog",   texture: SKTexture(imageNamed: "hotdog"),   price: 100)
   )
 
   //static let defaultCostume = list.gray

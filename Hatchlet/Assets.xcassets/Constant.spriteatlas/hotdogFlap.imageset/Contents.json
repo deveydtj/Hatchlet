@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "bob.png",
+      "filename" : "hotdog_flap.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "bob@2x.png",
+      "filename" : "hotdog_flap@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "bob@3x.png",
+      "filename" : "hotdog_flap@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

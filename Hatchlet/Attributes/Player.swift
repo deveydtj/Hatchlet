@@ -127,6 +127,14 @@ class Player:SKSpriteNode {
         let acc = const.playerAcc ?? ""
         
         switch costume {
+        case "hotdog":
+            playerImage = Constant.textureNamed("hotdog")
+            playerBlink = Constant.textureNamed("hotdogBlink")
+            playerFlap = Constant.textureNamed("hotdogFlap")
+            playerOuch = Constant.textureNamed("hotdogOuch")
+            playerCostume.removeFromParent()
+            removeAllActions()
+            blink()
         case "unicorn":
             playerImage = Constant.textureNamed("unicorn")
             playerBlink = Constant.textureNamed("unicornBlink")

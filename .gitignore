@@ -1,0 +1,23 @@
+# macOS metadata
+.DS_Store
+
+# Xcode user-specific settings
+*.xcuserdata/
+*.xcuserstate
+*.xccheckout
+
+# Build artifacts
+build/
+DerivedData/
+
+# SwiftPM cache
+.swiftpm/xcode/package.xcworkspace/
+
+# Misc
+*.moved-aside
+*.swp
+*~.nib
+
+# Playground files
+timeline.xctimeline
+playground.xcworkspace
