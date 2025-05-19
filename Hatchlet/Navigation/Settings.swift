@@ -6,10 +6,13 @@
 //  Copyright © 2019 Admin. All rights reserved.
 //
 
+
 import SpriteKit
 
-
 class Settings: SKNode {
+    
+    // Use shared constants instance
+    var constants = Constants.shared
     
     let size: CGSize
     
@@ -80,10 +83,10 @@ class Settings: SKNode {
         eggSwitch.position = CGPoint(x: 72, y: 14)
         eggSwitch.zPosition = 15
         
-        if const.gameDifficulty == 0 {
+        if constants.gameDifficulty == 0 {
             gameDiff.texture = MenuAtlas.textureNamed("gameDiff0")
         }
-        else if const.gameDifficulty == 1 {
+        else if constants.gameDifficulty == 1 {
             gameDiff.texture = MenuAtlas.textureNamed("gameDiff20")
         }
         else {
@@ -142,13 +145,13 @@ class Settings: SKNode {
     }
     
     func switchButton() {
-        if const.gameTutorialOn {
-            const.setGameTut(value: false)
+        if constants.gameTutorialOn {
+            constants.setGameTut(value: false)
             eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[0] )
             let animate = SKAction.animate(with: eggSwitchArray.reversed(), timePerFrame: 0.0084)
             eggSwitch.run(animate)
         } else {
-            const.setGameTut(value: true)
+            constants.setGameTut(value: true)
             eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[55] )
             let animate = SKAction.animate(with: eggSwitchArray, timePerFrame: 0.0084)
             eggSwitch.run(animate)
@@ -156,7 +159,7 @@ class Settings: SKNode {
     }
     
     func animateSwitch() {
-        if !const.gameTutorialOn {
+        if !constants.gameTutorialOn {
             eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[0] )
             let animate = SKAction.animate(with: eggSwitchArray.reversed(), timePerFrame: 0.0084)
             eggSwitch.run(animate)
@@ -168,16 +171,16 @@ class Settings: SKNode {
     }
     
     func switchGameDiff() {
-        if const.gameDifficulty == 0 {
-            const.setGameMode(value:1)
+        if constants.gameDifficulty == 0 {
+            constants.setGameMode(value: 1)
             gameDiff.texture = MenuAtlas.textureNamed("gameDiff20")
         }
-        else if const.gameDifficulty == 1 {
-            const.setGameMode(value:2)
+        else if constants.gameDifficulty == 1 {
+            constants.setGameMode(value: 2)
             gameDiff.texture = MenuAtlas.textureNamed("gameDiff59")
         }
         else {
-            const.setGameMode(value:0)
+            constants.setGameMode(value: 0)
             gameDiff.texture = MenuAtlas.textureNamed("gameDiff0")
         }
         gameDiff.texture!.filteringMode = .linear

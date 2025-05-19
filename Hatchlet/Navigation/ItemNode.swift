@@ -11,6 +11,8 @@ import SpriteKit
 
 /// The items that are for sale in our shop:
 class ItemNode:SKSpriteNode {
+    // MARK: - Constants
+    private let const = Constants.shared
     
     let item:Item
     
@@ -33,7 +35,7 @@ class ItemNode:SKSpriteNode {
         
         super.init(texture: item.texture, color: .purple, size: size)
 
-        name = item.name   // Name is needed for sorting and detecting touches.
+        self.name = item.name   // Name is needed for sorting and detecting touches.
         priceNode = label(text: "\(item.price)")
         zPosition = 7
         setPriceText()

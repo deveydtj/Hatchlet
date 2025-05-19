@@ -3,10 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		233CD5632DD923AA001EBAB2 /* InputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CD5622DD9239D001EBAB2 /* InputManager.swift */; };
+		233CD5652DD9260F001EBAB2 /* GameLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CD5642DD925F6001EBAB2 /* GameLogic.swift */; };
+		233CD5672DD92856001EBAB2 /* PhysicsContactHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CD5662DD92853001EBAB2 /* PhysicsContactHandler.swift */; };
+		233CD5692DD92AB9001EBAB2 /* ScrollingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CD5682DD92AAC001EBAB2 /* ScrollingManager.swift */; };
 		841373A823F87FBC004E63BF /* AmaticSC-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 841373A623F87FBC004E63BF /* AmaticSC-Bold.ttf */; };
 		841373A923F87FBC004E63BF /* AmaticSC-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 841373A723F87FBC004E63BF /* AmaticSC-Regular.ttf */; };
 		841CA1202381134000684909 /* EndScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841CA11F2381134000684909 /* EndScreen.swift */; };
@@ -52,6 +56,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		233CD5622DD9239D001EBAB2 /* InputManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputManager.swift; sourceTree = "<group>"; };
+		233CD5642DD925F6001EBAB2 /* GameLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLogic.swift; sourceTree = "<group>"; };
+		233CD5662DD92853001EBAB2 /* PhysicsContactHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhysicsContactHandler.swift; sourceTree = "<group>"; };
+		233CD5682DD92AAC001EBAB2 /* ScrollingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollingManager.swift; sourceTree = "<group>"; };
 		841373A623F87FBC004E63BF /* AmaticSC-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmaticSC-Bold.ttf"; sourceTree = "<group>"; };
 		841373A723F87FBC004E63BF /* AmaticSC-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmaticSC-Regular.ttf"; sourceTree = "<group>"; };
 		841CA11F2381134000684909 /* EndScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndScreen.swift; sourceTree = "<group>"; };
@@ -110,6 +118,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		233CD5612DD91281001EBAB2 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				841CA11F2381134000684909 /* EndScreen.swift */,
+				84C0FA4E244BACCA0046F5A8 /* PauseScreen.swift */,
+				8498FABF240F661900CCC5B6 /* Tutorial.swift */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
 		8443ECFC23F0D6970095CFA8 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
@@ -145,16 +163,17 @@
 			children = (
 				84832A5F22879F63003BA784 /* Assets.xcassets */,
 				84832A5822879F60003BA784 /* GameScene.swift */,
+				233CD5682DD92AAC001EBAB2 /* ScrollingManager.swift */,
+				233CD5662DD92853001EBAB2 /* PhysicsContactHandler.swift */,
+				233CD5642DD925F6001EBAB2 /* GameLogic.swift */,
+				233CD5622DD9239D001EBAB2 /* InputManager.swift */,
 				84C85A73234E891A00DAD310 /* gameHUD.swift */,
 				84DB432E240384AC00BDB9AF /* Constants.swift */,
+				233CD5612DD91281001EBAB2 /* Scenes */,
 				8443ECFC23F0D6970095CFA8 /* Navigation */,
-				841CA11F2381134000684909 /* EndScreen.swift */,
-				84C0FA4E244BACCA0046F5A8 /* PauseScreen.swift */,
-				8498FABF240F661900CCC5B6 /* Tutorial.swift */,
 				84C85A7F23537FE000DAD310 /* Emitters.swift */,
 				84C85A72234E827800DAD310 /* Attributes */,
 				84C85A962353874D00DAD310 /* Emitters */,
-				84832A6422879F63003BA784 /* Info.plist */,
 				84C85A71234E823F00DAD310 /* Support Files */,
 			);
 			path = Hatchlet;
@@ -213,6 +232,7 @@
 				84A5013623E6500B00B09B9E /* eggCoin.sks */,
 				84400C4A2447599F0040B644 /* trailTest copy.sks */,
 				8481F5A724403AD40014A17D /* trailTest.sks */,
+				84832A6422879F63003BA784 /* Info.plist */,
 			);
 			path = Emitters;
 			sourceTree = "<group>";
@@ -243,9 +263,10 @@
 		84832A4722879F60003BA784 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				CLASSPREFIX = "";
 				LastSwiftUpdateCheck = 1020;
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1630;
 				ORGANIZATIONNAME = "Jacob DeVeydt";
 				TargetAttributes = {
 					84832A4E22879F60003BA784 = {
@@ -305,13 +326,17 @@
 				842177B82439380700FDB3AF /* ItemNode.swift in Sources */,
 				84C85A74234E891A00DAD310 /* gameHUD.swift in Sources */,
 				84DB432F240384AC00BDB9AF /* Constants.swift in Sources */,
+				233CD5692DD92AB9001EBAB2 /* ScrollingManager.swift in Sources */,
 				84C85A70234E4FA400DAD310 /* Egg.swift in Sources */,
 				84C85A8023537FE000DAD310 /* Emitters.swift in Sources */,
 				84C0FA4F244BACCA0046F5A8 /* PauseScreen.swift in Sources */,
+				233CD5652DD9260F001EBAB2 /* GameLogic.swift in Sources */,
+				233CD5632DD923AA001EBAB2 /* InputManager.swift in Sources */,
 				8443ECFE23F0EB3B0095CFA8 /* Shop.swift in Sources */,
 				84832A6B2287A027003BA784 /* Player.swift in Sources */,
 				846D2EEB235BA9B100B4402F /* Fox.swift in Sources */,
 				84C85A6E234E4CEB00DAD310 /* PhysicsCategory.swift in Sources */,
+				233CD5672DD92856001EBAB2 /* PhysicsContactHandler.swift in Sources */,
 				84832A5922879F60003BA784 /* GameScene.swift in Sources */,
 				84832A5B22879F60003BA784 /* GameViewController.swift in Sources */,
 				841CA1202381134000684909 /* EndScreen.swift in Sources */,
@@ -379,6 +404,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -388,8 +414,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = JM23Z9GG95;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -441,6 +469,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -450,8 +479,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = JM23Z9GG95;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -478,7 +509,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 11;
-				DEVELOPMENT_TEAM = JM23Z9GG95;
 				INFOPLIST_FILE = "$(SRCROOT)/Hatchlet/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -501,7 +531,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 11;
-				DEVELOPMENT_TEAM = JM23Z9GG95;
 				INFOPLIST_FILE = "$(SRCROOT)/Hatchlet/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				LD_RUNPATH_SEARCH_PATHS = (

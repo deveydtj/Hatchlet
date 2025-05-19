@@ -21,6 +21,9 @@ extension SKNode {
 
 class Shop: SKNode {
     
+    /// Shared constants instance (injected from GameScene)
+    var const: Constants
+    
     let size: CGSize
     
     let title: SKLabelNode
@@ -59,8 +62,9 @@ class Shop: SKNode {
     var currentPageStart = 0
     
     
-    init(size: CGSize){
+    init(size: CGSize, constants: Constants){
         self.size = size
+        self.const = constants
         
         title = SKLabelNode(fontNamed: "AmaticSC-Regular")
         titleShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
@@ -294,48 +298,47 @@ class Shop: SKNode {
         if acc {
             const.setPlayerAcc(value: costume)
         }
-        if !owned
-        {
+        if !owned {
             finishTransaction(item: costume)
         }
         
     }
     
-    func animateText() {
-            run(SKAction.sequence([
-                SKAction.run() { [weak self] in guard self != nil else { return }
-                    const.goldenEggs -= 1
-                    self!.goldenEggText.text = String(const.goldenEggs)
-                    self!.goldenEggTextShadow.text = self!.goldenEggText.text
-                }, SKAction.wait(forDuration: 1)])
-        )
+    /// Animates the on-screen golden egg label from `start` down to `end` over a brief delay.
+    func animateText(from start: Int, to end: Int) {
+        var displayed = start
+        let steps = start - end
+        guard steps > 0 else { return }
+        let decrement = SKAction.run { [weak self] in
+            guard let self = self else { return }
+            displayed -= 1
+            let text = "\(displayed)"
+            self.goldenEggText.text = text
+            self.goldenEggTextShadow.text = text
+        }
+        let wait = SKAction.wait(forDuration: 0.05)
+        let sequence = SKAction.sequence([decrement, wait])
+        run(SKAction.repeat(sequence, count: steps))
     }
     
     
     func finishTransaction(item: String) {
         for tempItem in availableItems {
             if tempItem.name == item {
-                // Subtract price from goldenEggs
-                let count = const.goldenEggs - tempItem.price
-                UserDefaults.standard.set(count, forKey: "goldenEggs")
-                //work
-                if tempItem.price > 0 {
-                    let wait = SKAction.wait(forDuration: 0.05)
-                    let block = SKAction.run({
-                            const.goldenEggs -= 1
-                            self.goldenEggText.text = "\(const.goldenEggs)"
-                            self.goldenEggTextShadow.text = self.goldenEggText.text
-                        })
-                    let sequence = SKAction.sequence([wait, block])
-                    run(SKAction.repeat(sequence, count: tempItem.price))
-                }
-                //end
+                let oldCount = const.goldenEggs
+                let newCount = oldCount - tempItem.price
+                const.setGoldenEggs(value: newCount)
                 
-                // Put into owned items
+                // Animate label from oldCount down to newCount
+                animateText(from: oldCount, to: newCount)
+                
+                // Mark item as owned
                 const.setOwnedItems(value: item)
+                break
             }
-            pageClear()
-            showPage(pageNum: currentPageNum)
         }
+        // Refresh the displayed items so price colors update based on new goldenEggs
+        pageClear()
+        showPage(pageNum: currentPageNum)
     }
 }

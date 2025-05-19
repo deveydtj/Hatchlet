@@ -9,7 +9,7 @@ import SpriteKit
 
 
 class Player:SKSpriteNode {
-
+    
     //Player Images
     var playerBlink = SKTexture()
     var playerImage = SKTexture()
@@ -123,52 +123,58 @@ class Player:SKSpriteNode {
     }
     
     func updateCostume() {
-        let costume = const.playerCostume ?? ""
-        let acc = const.playerAcc ?? ""
+        guard let gameScene = self.scene as? GameScene else { return }
+        let constants = gameScene.const
+        let costume   = constants.playerCostume ?? ""
+        let acc       = constants.playerAcc ?? ""
         
         switch costume {
         case "hotdog":
             playerImage = Constant.textureNamed("hotdog")
             playerBlink = Constant.textureNamed("hotdogBlink")
-            playerFlap = Constant.textureNamed("hotdogFlap")
-            playerOuch = Constant.textureNamed("hotdogOuch")
+            playerFlap  = Constant.textureNamed("hotdogFlap")
+            playerOuch  = Constant.textureNamed("hotdogOuch")
             playerCostume.removeFromParent()
-            removeAllActions()
-            blink()
+            
         case "unicorn":
             playerImage = Constant.textureNamed("unicorn")
             playerBlink = Constant.textureNamed("unicornBlink")
-            playerFlap = Constant.textureNamed("unicornFlap")
-            playerOuch = Constant.textureNamed("unicornOuch")
+            playerFlap  = Constant.textureNamed("unicornFlap")
+            playerOuch  = Constant.textureNamed("unicornOuch")
             playerCostume.removeFromParent()
-            removeAllActions()
-            blink()
+            
         case "cow":
             playerImage = Constant.textureNamed("cow")
             playerBlink = Constant.textureNamed("cowBlink")
-            playerFlap = Constant.textureNamed("cowFlap")
-            playerOuch = Constant.textureNamed("cowOuch")
+            playerFlap  = Constant.textureNamed("cowFlap")
+            playerOuch  = Constant.textureNamed("cowOuch")
             playerCostume.removeFromParent()
-            removeAllActions()
-            blink()
+            
         case "":
-            const.setPlayerAcc(value: costume)
+            // back to default “bob” skin
+            constants.setPlayerAcc(value: costume)
             playerCostume.removeFromParent()
             playerImage = Constant.textureNamed("bob")
             playerBlink = Constant.textureNamed("bobBlink")
-            playerFlap = Constant.textureNamed("bobFlap")
-            playerOuch = Constant.textureNamed("bobOuch")
-            removeAllActions()
-            blink()
+            playerFlap  = Constant.textureNamed("bobFlap")
+            playerOuch  = Constant.textureNamed("bobOuch")
+            
         default:
+            // any other custom case (if you ever add more)
+            playerCostume.removeFromParent()
             playerImage = Constant.textureNamed("bob")
             playerBlink = Constant.textureNamed("bobBlink")
-            playerFlap = Constant.textureNamed("bobFlap")
-            playerOuch = Constant.textureNamed("bobOuch")
-            texture = playerImage
+            playerFlap  = Constant.textureNamed("bobFlap")
+            playerOuch  = Constant.textureNamed("bobOuch")
         }
+        
+        // --- apply the chosen skin and restart the blink action ---
+        texture = playerImage
+        removeAllActions()
+        blink()
+        
+        // --- now add any accessory on top ---
         if acc != "" {
-            playerCostume.removeFromParent()
             playerCostume.texture = Constant.textureNamed(acc)
             addChild(playerCostume)
         }
