@@ -21,3 +21,5 @@ DerivedData/
 # Playground files
 timeline.xctimeline
 playground.xcworkspace
+
+.DS_Store
