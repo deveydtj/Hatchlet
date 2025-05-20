@@ -16,7 +16,9 @@ class Menu: SKNode {
     var titleShadow: SKLabelNode
     
     var shopAtlas = SKTextureAtlas()
+    var playAtlas = SKTextureAtlas()
     var shopArrary = [SKTexture]()
+    var playArray = [SKTexture]()
     
     let bin: SKSpriteNode
     
@@ -35,6 +37,7 @@ class Menu: SKNode {
         titleShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
         
         shopAtlas = SKTextureAtlas(named: "images")
+        playAtlas = SKTextureAtlas(named: "play")
         
         bin = SKSpriteNode(texture: nil, size: CGSize(width: 336 ,height: 400))
         
@@ -55,10 +58,12 @@ class Menu: SKNode {
     func setup() {
         shopAtlas.preload {
         }
+        playAtlas.preload {
+        }
         
-        for i in 0...(shopAtlas.textureNames.count - 1) {
-            let name = "shop\(i).png"
-            shopArrary.append(SKTexture(imageNamed: name))
+        for i in 0...(playAtlas.textureNames.count - 1) {
+            let name = "playButton\(i).png"
+            playArray.append(SKTexture(imageNamed: name))
         }
         
         name = "MENU"
@@ -73,8 +78,6 @@ class Menu: SKNode {
         titleShadow.zPosition = 6
         titleShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
         
- 
-        bin.texture = MenuAtlas.textureNamed("bin")
         bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
         bin.zPosition = 5
         
@@ -84,8 +87,11 @@ class Menu: SKNode {
         playButton.position = CGPoint(x: 0, y: 0)
         playButton.zPosition = 15
         
+        //shopButton.texture = MenuAtlas.textureNamed(shopAtlas.textureNames[1] )
         
-        shopButton.texture = MenuAtlas.textureNamed(shopAtlas.textureNames[1] )
+        playButton.texture = MenuAtlas.textureNamed(playAtlas.textureNames[1] )
+        
+        shopButton.texture = MenuAtlas.textureNamed("shop")
         shopButton.name = "shopButton"
         shopButton.size = CGSize(width: 58, height: 60)
         shopButton.position = CGPoint(x: 0, y: 0)
@@ -106,22 +112,29 @@ class Menu: SKNode {
         crownButton.position = CGPoint(x: 80, y: -100)
         crownButton.zPosition = 15
         
-        
+        // Add menu nodes once during setup
+        addChild(bin)
+        addChild(title)
+        addChild(titleShadow)
+        addChild(playButton)
+        addChild(shopButton)
+        addChild(settingsButton)
+        addChild(crownButton)
     }
     
     func show() {
-        bin.addChild(title)
-        bin.addChild(titleShadow)
-        bin.addChild(playButton)
-        bin.addChild(shopButton)
-        bin.addChild(settingsButton)
-        bin.addChild(crownButton)
-        addChild(bin)
+        let animate = SKAction.animate(with: playArray, timePerFrame: 0.0084)
         
-        shopButton.run(SKAction.repeatForever(SKAction.animate(with: shopArrary, timePerFrame: 0.006)))
+        let seq = SKAction.sequence([animate, SKAction.wait(forDuration: 0.3)])
+        let seq2 = SKAction.sequence([animate, SKAction.wait(forDuration: 2.0)])
+        let seq3 = SKAction.sequence([seq,seq2])
+        
+        playButton.run(SKAction.repeatForever(seq3))
+        
+        //shopButton.run(SKAction.repeatForever(SKAction.animate(with: shopArrary, timePerFrame: 0.006)))
     }
     
-    func delete() {
+    func hide() {
         bin.removeAllChildren()
         removeAllActions()
         removeAllChildren()

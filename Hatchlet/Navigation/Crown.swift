@@ -78,7 +78,7 @@ class Crown: SKNode {
         highScore.text = "HighScore: " + String(UserDefaults.standard.integer(forKey: "highScore"))
         highScoreShadow.text = highScore.text
 
-        bin.texture = MenuAtlas.textureNamed("bin")
+        //bin.texture = MenuAtlas.textureNamed("bin")
         bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
         bin.zPosition = 5
         

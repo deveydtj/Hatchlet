@@ -77,8 +77,8 @@ class gameHUD: SKNode {
         scoreLabel.fontSize = 55
         scoreLabel.fontName = "AmaticSC-Bold"
         scoreLabel.text = String(score)
-        scoreLabel.position.x = (size.width / 2) + scoreLabel.frame.width + 20
-        scoreLabel.position.y = size.height - 50
+        scoreLabel.position.x = (size.width / 2) + scoreLabel.frame.width + 30
+        scoreLabel.position.y = size.height - 60
         scoreLabel.zPosition = 20
         
         addChild(labelShadow)

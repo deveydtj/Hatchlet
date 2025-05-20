@@ -24,6 +24,7 @@ class GameViewController: UIViewController {
         view.showsDrawCount = true
         view.showsFPS = true
         view.showsNodeCount = true
+        view.showsQuadCount = true
         // Present the scene
         view.presentScene(scene)
         

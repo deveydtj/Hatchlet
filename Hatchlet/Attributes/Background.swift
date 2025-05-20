@@ -11,17 +11,14 @@ import SpriteKit
 class Background: SKNode {
     
     let background: SKSpriteNode
-    let backgroundTexture: SKTexture
     
     let size: CGSize
 
 // ~Init
     init(size: CGSize) {
         
-        backgroundTexture = Constant.textureNamed("background")
-        
-        background = SKSpriteNode(texture: backgroundTexture, size: CGSize(width: size.width, height: size.height))
-        
+        background = SKSpriteNode(texture: nil, size: CGSize(width: size.width, height: size.height))
+    
         self.size = background.size
         super.init()
         
@@ -37,9 +34,20 @@ class Background: SKNode {
         
         addChild(background)
         background.anchorPoint = CGPoint(x: 0, y: 0)
-        background.blendMode = .replace
         background.zPosition = 1
+        changeBackGround()
+        background.blendMode = .replace
+    }
+    
+    func changeBackGround() {
+        let random = (Int.random(in: 1...2))
         
+        if random == 1 {
+            background.texture = Constant.textureNamed("night_background1")
+        }
+        else {
+            background.texture = Constant.textureNamed("background")
+        }
     }
 }
 

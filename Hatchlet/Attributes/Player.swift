@@ -9,7 +9,7 @@ import SpriteKit
 
 
 class Player:SKSpriteNode {
-
+    
     //Player Images
     var playerBlink = SKTexture()
     var playerImage = SKTexture()
@@ -22,9 +22,15 @@ class Player:SKSpriteNode {
     var playerFlapSick = SKTexture()
     var playerOuchSick = SKTexture()
     
+    var playerCostume: SKSpriteNode
+    
+    let eggHome: SKSpriteNode
     
     init() {
         let size = CGSize(width: 135 / 1.85, height: 118.3 / 1.85)
+        
+        eggHome = SKSpriteNode()
+        playerCostume = SKSpriteNode()
         
         super.init(texture: nil, color: UIColor.purple, size: size)
         
@@ -39,15 +45,13 @@ class Player:SKSpriteNode {
     
     func setup() {
         
-        playerImage = Constant.textureNamed("bob")
-        texture = playerImage
-        playerBlink = Constant.textureNamed("bobBlink")
-        playerBlinkSick = Constant.textureNamed("bobBlinkSick")
-        playerImageSick = Constant.textureNamed("bobSick")
-        playerFlap = Constant.textureNamed("bobFlap")
-        playerFlapSick = Constant.textureNamed("bobFlapSick")
-        playerOuch = Constant.textureNamed("bobOuch")
-        playerOuchSick = Constant.textureNamed("bobOuchSick")
+        eggHome.size = CGSize(width: size.width * 1.1, height: size.height * 1.1)
+        eggHome.texture = Constant.textureNamed("eggHome")
+        eggHome.zPosition = zPosition + 2
+        addChild(eggHome)
+        
+        playerCostume.size = CGSize(width: size.width * 1.1, height: size.height * 1.15)
+        playerCostume.zPosition = zPosition + 1
         
         physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
         physicsBody!.isDynamic = true
@@ -107,5 +111,72 @@ class Player:SKSpriteNode {
         let seq = SKAction.sequence([colorize, unColorize])
         
         run(SKAction.repeat(seq, count: 2))
+    }
+    
+    func removeHome() {
+        eggHome.run(.fadeOut(withDuration: 0.2))
+        eggHome.isHidden = true
+    }
+    func addHome() {
+        eggHome.isHidden = false
+        eggHome.run(.fadeIn(withDuration: 0.2))
+    }
+    
+    func updateCostume() {
+        guard let gameScene = self.scene as? GameScene else { return }
+        let constants = gameScene.const
+        let costume   = constants.playerCostume ?? ""
+        let acc       = constants.playerAcc ?? ""
+        
+        switch costume {
+        case "hotdog":
+            playerImage = Constant.textureNamed("hotdog")
+            playerBlink = Constant.textureNamed("hotdogBlink")
+            playerFlap  = Constant.textureNamed("hotdogFlap")
+            playerOuch  = Constant.textureNamed("hotdogOuch")
+            playerCostume.removeFromParent()
+            
+        case "unicorn":
+            playerImage = Constant.textureNamed("unicorn")
+            playerBlink = Constant.textureNamed("unicornBlink")
+            playerFlap  = Constant.textureNamed("unicornFlap")
+            playerOuch  = Constant.textureNamed("unicornOuch")
+            playerCostume.removeFromParent()
+            
+        case "cow":
+            playerImage = Constant.textureNamed("cow")
+            playerBlink = Constant.textureNamed("cowBlink")
+            playerFlap  = Constant.textureNamed("cowFlap")
+            playerOuch  = Constant.textureNamed("cowOuch")
+            playerCostume.removeFromParent()
+            
+        case "":
+            // back to default “bob” skin
+            constants.setPlayerAcc(value: costume)
+            playerCostume.removeFromParent()
+            playerImage = Constant.textureNamed("bob")
+            playerBlink = Constant.textureNamed("bobBlink")
+            playerFlap  = Constant.textureNamed("bobFlap")
+            playerOuch  = Constant.textureNamed("bobOuch")
+            
+        default:
+            // any other custom case (if you ever add more)
+            playerCostume.removeFromParent()
+            playerImage = Constant.textureNamed("bob")
+            playerBlink = Constant.textureNamed("bobBlink")
+            playerFlap  = Constant.textureNamed("bobFlap")
+            playerOuch  = Constant.textureNamed("bobOuch")
+        }
+        
+        // --- apply the chosen skin and restart the blink action ---
+        texture = playerImage
+        removeAllActions()
+        blink()
+        
+        // --- now add any accessory on top ---
+        if acc != "" {
+            playerCostume.texture = Constant.textureNamed(acc)
+            addChild(playerCostume)
+        }
     }
 }
