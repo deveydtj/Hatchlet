@@ -22,7 +22,7 @@ extension SKNode {
 class Shop: SKNode {
     
     /// Shared constants instance (injected from GameScene)
-    var const: Constants
+    var const: Common
     
     let size: CGSize
     
@@ -62,7 +62,7 @@ class Shop: SKNode {
     var currentPageStart = 0
     
     
-    init(size: CGSize, constants: Constants){
+    init(size: CGSize, constants: Common){
         self.size = size
         self.const = constants
         

@@ -1,5 +1,5 @@
 //
-//  Constants.swift
+//  Common.swift
 //  Hatchlet
 //
 //  Created by Admin on 2/23/20.
@@ -8,8 +8,8 @@
 
 import Foundation
 
-class Constants {
-    static let shared = Constants()
+class Common {
+    static let shared = Common()
     private init() {
         // Load saved items or start empty
         if let saved = UserDefaults.standard.stringArray(forKey: "OwnedItems") {

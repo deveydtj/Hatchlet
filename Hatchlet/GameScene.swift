@@ -31,8 +31,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var contactHandler: PhysicsContactHandler!
     var scrollingManager: ScrollingManager!
 
-    // MARK: - Constants
-    var const = Constants.shared
+    // MARK: - Common
+    var const = Common.shared
 
     // MARK: - Scene Nodes & State
     var scoreNum: Int = 0

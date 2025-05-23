@@ -1,5 +1,5 @@
 //
-//  Constants.swift
+//  Common.swift
 //  Hatchlet
 //
 //  Created by Admin on 2/23/20.
@@ -11,8 +11,8 @@ import SpriteKit
 
 /// The items that are for sale in our shop:
 class ItemNode:SKSpriteNode {
-    // MARK: - Constants
-    private let const = Constants.shared
+    // MARK: - Common
+    private let const = Common.shared
     
     let item:Item
     

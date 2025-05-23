@@ -12,7 +12,7 @@ import SpriteKit
 class Settings: SKNode {
     
     // Use shared constants instance
-    var constants = Constants.shared
+    var constants = Common.shared
     
     let size: CGSize
     

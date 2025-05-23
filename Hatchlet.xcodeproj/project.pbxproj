@@ -11,6 +11,7 @@
 		233CD5652DD9260F001EBAB2 /* GameLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CD5642DD925F6001EBAB2 /* GameLogic.swift */; };
 		233CD5672DD92856001EBAB2 /* PhysicsContactHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CD5662DD92853001EBAB2 /* PhysicsContactHandler.swift */; };
 		233CD5692DD92AB9001EBAB2 /* ScrollingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CD5682DD92AAC001EBAB2 /* ScrollingManager.swift */; };
+		233CD56B2DDFFE6C001EBAB2 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CD56A2DDFFE5A001EBAB2 /* Extensions.swift */; };
 		841373A823F87FBC004E63BF /* AmaticSC-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 841373A623F87FBC004E63BF /* AmaticSC-Bold.ttf */; };
 		841373A923F87FBC004E63BF /* AmaticSC-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 841373A723F87FBC004E63BF /* AmaticSC-Regular.ttf */; };
 		841CA1202381134000684909 /* EndScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841CA11F2381134000684909 /* EndScreen.swift */; };
@@ -50,7 +51,7 @@
 		84C85A9F2353913000DAD310 /* newSpark.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84C85A9D2353913000DAD310 /* newSpark.sks */; };
 		84C9053A2442CF47000A2D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84832A5F22879F63003BA784 /* Assets.xcassets */; };
 		84D85C2F2414880B00B173FF /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D85C2E2414880B00B173FF /* Item.swift */; };
-		84DB432F240384AC00BDB9AF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DB432E240384AC00BDB9AF /* Constants.swift */; };
+		84DB432F240384AC00BDB9AF /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DB432E240384AC00BDB9AF /* Common.swift */; };
 		84FBFF3C23556B8A00A45CCD /* grass.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84FBFF3B23556B8A00A45CCD /* grass.sks */; };
 		84FBFF412356469D00A45CCD /* airParticles.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84FBFF3F2356469D00A45CCD /* airParticles.sks */; };
 /* End PBXBuildFile section */
@@ -60,6 +61,7 @@
 		233CD5642DD925F6001EBAB2 /* GameLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLogic.swift; sourceTree = "<group>"; };
 		233CD5662DD92853001EBAB2 /* PhysicsContactHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhysicsContactHandler.swift; sourceTree = "<group>"; };
 		233CD5682DD92AAC001EBAB2 /* ScrollingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollingManager.swift; sourceTree = "<group>"; };
+		233CD56A2DDFFE5A001EBAB2 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		841373A623F87FBC004E63BF /* AmaticSC-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmaticSC-Bold.ttf"; sourceTree = "<group>"; };
 		841373A723F87FBC004E63BF /* AmaticSC-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmaticSC-Regular.ttf"; sourceTree = "<group>"; };
 		841CA11F2381134000684909 /* EndScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndScreen.swift; sourceTree = "<group>"; };
@@ -102,7 +104,7 @@
 		84C85A9D2353913000DAD310 /* newSpark.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = newSpark.sks; sourceTree = "<group>"; };
 		84D85C2E2414880B00B173FF /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		84D85C302414923B00B173FF /* oldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = oldNode.swift; sourceTree = "<group>"; };
-		84DB432E240384AC00BDB9AF /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = Hatchlet/Constants.swift; sourceTree = SOURCE_ROOT; };
+		84DB432E240384AC00BDB9AF /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Common.swift; path = Hatchlet/Common.swift; sourceTree = SOURCE_ROOT; };
 		84FBFF3B23556B8A00A45CCD /* grass.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = grass.sks; sourceTree = "<group>"; };
 		84FBFF3F2356469D00A45CCD /* airParticles.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = airParticles.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -168,7 +170,8 @@
 				233CD5642DD925F6001EBAB2 /* GameLogic.swift */,
 				233CD5622DD9239D001EBAB2 /* InputManager.swift */,
 				84C85A73234E891A00DAD310 /* gameHUD.swift */,
-				84DB432E240384AC00BDB9AF /* Constants.swift */,
+				84DB432E240384AC00BDB9AF /* Common.swift */,
+				233CD56A2DDFFE5A001EBAB2 /* Extensions.swift */,
 				233CD5612DD91281001EBAB2 /* Scenes */,
 				8443ECFC23F0D6970095CFA8 /* Navigation */,
 				84C85A7F23537FE000DAD310 /* Emitters.swift */,
@@ -325,7 +328,7 @@
 			files = (
 				842177B82439380700FDB3AF /* ItemNode.swift in Sources */,
 				84C85A74234E891A00DAD310 /* gameHUD.swift in Sources */,
-				84DB432F240384AC00BDB9AF /* Constants.swift in Sources */,
+				84DB432F240384AC00BDB9AF /* Common.swift in Sources */,
 				233CD5692DD92AB9001EBAB2 /* ScrollingManager.swift in Sources */,
 				84C85A70234E4FA400DAD310 /* Egg.swift in Sources */,
 				84C85A8023537FE000DAD310 /* Emitters.swift in Sources */,
@@ -342,6 +345,7 @@
 				841CA1202381134000684909 /* EndScreen.swift in Sources */,
 				84C7CAC62357A8D5005D09DC /* Life.swift in Sources */,
 				8443ED0023F0F2310095CFA8 /* Crown.swift in Sources */,
+				233CD56B2DDFFE6C001EBAB2 /* Extensions.swift in Sources */,
 				84C85A782352381700DAD310 /* ParallaxBG.swift in Sources */,
 				8458A4CE23F9226B000922A4 /* Eagle.swift in Sources */,
 				84D85C2F2414880B00B173FF /* Item.swift in Sources */,

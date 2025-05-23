@@ -1,5 +1,5 @@
 //
-//  Constants.swift
+//  Common.swift
 //  Hatchlet
 //
 //  Created by Admin on 2/23/20.
