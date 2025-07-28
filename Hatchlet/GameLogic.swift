@@ -12,6 +12,13 @@ import SpriteKit
 
 class GameLogic {
     private weak var scene: GameScene?
+    
+    // Object pools for performance optimization
+    private var eggPool: [Egg] = []
+    private var goldEggPool: [Egg] = []
+    private var foxPool: [Fox] = []
+    private var eaglePool: [Eagle] = []
+    private let maxPoolSize = 10
 
     init(scene: GameScene) {
         self.scene = scene
@@ -21,7 +28,21 @@ class GameLogic {
     func setup() {
         guard let s = scene else { return }
         s.physicsWorld.contactDelegate = s
-        Constant.preload { }
+        
+        // Preload all texture atlases at once for better performance
+        let preloadGroup = DispatchGroup()
+        
+        preloadGroup.enter()
+        Constant.preload { preloadGroup.leave() }
+        
+        preloadGroup.enter()
+        s.MenuAtlas.preload { preloadGroup.leave() }
+        
+        preloadGroup.enter()
+        s.GameAtlas.preload { preloadGroup.leave() }
+        
+        preloadGroup.enter()
+        s.emitter.Particles.preload { preloadGroup.leave() }
 
         // Background & ground
         s.addChild(s.background)
@@ -71,7 +92,7 @@ class GameLogic {
         s.addChild(s.scrollingGroundBin)
 
 
-        if UserDefaults.standard.integer(forKey: "highScore") == 0 {
+        if s.const.highScore == 0 {
             s.const.setGameTut(value: true)
         }
 
@@ -83,7 +104,7 @@ class GameLogic {
     /// Present initial menu at game startup
     func presentInitialMenu() {
         guard let s = scene else { return }
-        s.MenuAtlas.preload { }
+        // Texture already preloaded in setup()
         // Create and configure the main menu
         s.menu = Menu(size: s.size)
         s.menu.position = CGPoint(x: s.size.width/2, y: s.size.height/2)
@@ -131,7 +152,7 @@ class GameLogic {
     /// Start or restart gameplay
     func runGame() {
         guard let s = scene else { return }
-        s.GameAtlas.preload { }
+        // Texture already preloaded in setup()
 
         s.const.gameOver = false
         s.player.removeHome()
@@ -199,8 +220,8 @@ class GameLogic {
          }
 
         // High score
-        if s.scoreNum > UserDefaults.standard.integer(forKey: "highScore") {
-            UserDefaults.standard.set(s.scoreNum, forKey: "highScore")
+        if s.scoreNum > s.const.highScore {
+            s.const.highScore = s.scoreNum
         }
         if s.scoreNum >= 10 {
             s.const.setGameTut(value: false)
@@ -235,34 +256,38 @@ class GameLogic {
     /// Spawn a standard or golden egg
     func createEgg() {
         guard let s = scene, !s.const.gameOver else { return }
-        let egg: Egg
-        if Int.random(in: 1...15) == 7 {
-            egg = Egg(isGold: true)
+        
+        let isGold = Int.random(in: 1...15) == 7
+        let egg = getPooledEgg(isGold: isGold)
+        
+        if isGold {
             if let emitter = SKEmitterNode(fileNamed: "eggCoin") {
                 emitter.targetNode = s
                 egg.addChild(emitter)
             }
-        } else {
-            egg = Egg()
         }
+        
         let maxY = s.size.height - egg.size.height * 3
         let minY = egg.size.height + 100
         let range = maxY - minY
-        let y = maxY - CGFloat(arc4random_uniform(UInt32(range)))
+        let y = maxY - CGFloat.random(in: 0...range)
         egg.position = CGPoint(x: s.size.width, y: y)
 
         s.addChild(egg)
         egg.run(
             .sequence([
                 .moveBy(x: -s.size.width, y: 0, duration: s.gameSpeed),
-                .removeFromParent()
+                .run { [weak self] in
+                    self?.returnEggToPool(egg)
+                }
             ])
         )
     }
 
     /// Animate and remove a collected egg
     func deleteEgg(egg: SKNode) {
-        guard let s = scene else { return }
+        guard let s = scene, let eggNode = egg as? Egg else { return }
+        
         if egg.name == "GoldenEgg" {
             egg.removeAllActions()
             egg.physicsBody = nil
@@ -272,16 +297,13 @@ class GameLogic {
                 duration: 0.85
             )
             move.timingMode = .easeInEaseOut
-            let reset = SKAction.run {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    egg.removeFromParent()
-                }
+            let returnToPool = SKAction.run { [weak self] in
+                self?.returnEggToPool(eggNode)
             }
-            egg.run(.sequence([move, reset]))
+            egg.run(.sequence([move, .wait(forDuration: 1.0), returnToPool]))
         } else {
             s.emitter.addEmitter(position: egg.position)
-            egg.removeAllChildren()
-            egg.removeFromParent()
+            returnEggToPool(eggNode)
         }
     }
 
@@ -318,7 +340,10 @@ class GameLogic {
     func spawnEnemy() {
         guard let s = scene else { return }
         s.HUD.enemyShadow.isHidden = false
-        s.fox = Fox()
+        s.fox = getPooledFox()
+        s.fox.onStopped = { [weak self] fox in
+            self?.returnFoxToPool(fox)
+        }
         s.fox.position = CGPoint(
             x: s.size.width,
             y: s.groundHitBox.position.y + s.fox.size.height
@@ -332,7 +357,10 @@ class GameLogic {
     func randomEnemy() {
         guard let s = scene, !s.const.gameOver else { return }
         if Int.random(in: 1...2) == 1, !s.eagle.isRunning() {
-            s.eagle = Eagle()
+            s.eagle = getPooledEagle()
+            s.eagle.onStopped = { [weak self] eagle in
+                self?.returnEagleToPool(eagle)
+            }
             s.eagle.position = CGPoint(x: s.size.width + s.eagle.size.width, y: s.size.height/2)
             s.addChild(s.eagle)
             s.eagle.run(speed: s.gameSpeed, viewSize: s.size)
@@ -354,9 +382,14 @@ class GameLogic {
     /// Per-frame game logic updates (called from GameScene.update)
     func update(currentTime: TimeInterval) {
         guard let s = scene else { return }
+        
+        // Cache velocity for reuse to avoid multiple property access
+        guard let playerPhysicsBody = s.player.physicsBody else { return }
+        let playerVelocity = playerPhysicsBody.velocity
+        let isPlayerStationary = playerVelocity == CGVector(dx: 0, dy: 0)
 
         // Handle player flap animation
-        if s.player.physicsBody?.velocity == CGVector(dx: 0, dy: 0) {
+        if isPlayerStationary {
             s.player.removeAction(forKey: "flap")
             s.player.texture = s.player.playerImage
         } else if s.player.action(forKey: "flap") == nil {
@@ -384,12 +417,118 @@ class GameLogic {
         }
 
         // Spawn additional fox if conditions are met
-        if s.player.physicsBody?.velocity == CGVector(dx: 0, dy: 0)
+        if isPlayerStationary
             && !s.const.gameOver
             && !s.fox.isRunning()
             && s.scoreNum > 0
             && s.const.gameDifficulty != 0 {
             spawnEnemy()
         }
+    }
+    
+    // MARK: - Object Pool Management
+    
+    /// Get an egg from the pool or create a new one
+    private func getPooledEgg(isGold: Bool = false) -> Egg {
+        let pool = isGold ? goldEggPool : eggPool
+        
+        if let egg = pool.last {
+            if isGold {
+                goldEggPool.removeLast()
+            } else {
+                eggPool.removeLast()
+            }
+            // Reset egg properties
+            egg.removeAllActions()
+            egg.removeAllChildren()
+            egg.physicsBody?.isDynamic = false
+            egg.alpha = 1.0
+            return egg
+        } else {
+            // Create new egg if pool is empty
+            return Egg(isGold: isGold)
+        }
+    }
+    
+    /// Return an egg to the pool
+    private func returnEggToPool(_ egg: Egg) {
+        egg.removeFromParent()
+        egg.removeAllActions()
+        egg.removeAllChildren()
+        
+        let isGold = egg.name == "GoldenEgg"
+        let pool = isGold ? goldEggPool : eggPool
+        
+        if pool.count < maxPoolSize {
+            if isGold {
+                goldEggPool.append(egg)
+            } else {
+                eggPool.append(egg)
+            }
+        }
+        // If pool is full, let the egg be deallocated naturally
+    }
+    
+    /// Get a fox from the pool or create a new one
+    private func getPooledFox() -> Fox {
+        if let fox = foxPool.last {
+            foxPool.removeLast()
+            fox.removeAllActions()
+            fox.removeAllChildren()
+            fox.running = false
+            return fox
+        } else {
+            return Fox()
+        }
+    }
+    
+    /// Return a fox to the pool
+    private func returnFoxToPool(_ fox: Fox) {
+        fox.removeFromParent()
+        fox.removeAllActions()
+        fox.removeAllChildren()
+        fox.running = false
+        
+        if foxPool.count < maxPoolSize {
+            foxPool.append(fox)
+        }
+    }
+    
+    /// Get an eagle from the pool or create a new one
+    private func getPooledEagle() -> Eagle {
+        if let eagle = eaglePool.last {
+            eaglePool.removeLast()
+            eagle.removeAllActions()
+            eagle.removeAllChildren()
+            eagle.running = false
+            return eagle
+        } else {
+            return Eagle()
+        }
+    }
+    
+    /// Return an eagle to the pool
+    private func returnEagleToPool(_ eagle: Eagle) {
+        eagle.removeFromParent()
+        eagle.removeAllActions()
+        eagle.removeAllChildren()
+        eagle.running = false
+        
+        if eaglePool.count < maxPoolSize {
+            eaglePool.append(eagle)
+        }
+    }
+    
+    /// Spawn eagle from roof collision (called by PhysicsContactHandler)
+    func spawnEagleFromRoof() {
+        guard let s = scene else { return }
+        s.eagle = getPooledEagle()
+        s.eagle.onStopped = { [weak self] eagle in
+            self?.returnEagleToPool(eagle)
+        }
+        s.eagle.position = CGPoint(x: s.size.width + s.eagle.size.width,
+                                   y: s.size.height / 2)
+        s.addChild(s.eagle)
+        s.eagle.run(speed: s.gameSpeed, viewSize: s.size)
     }
 }

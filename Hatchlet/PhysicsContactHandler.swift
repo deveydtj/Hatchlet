@@ -38,11 +38,7 @@ class PhysicsContactHandler {
         // Roof hits player → spawn eagle
         if collision == PhysicsCategory.Roof | PhysicsCategory.Player {
             if !s.const.gameOver && !s.eagle.isRunning() {
-                s.eagle = Eagle()
-                s.eagle.position = CGPoint(x: s.size.width + s.eagle.size.width,
-                                           y: s.size.height / 2)
-                s.addChild(s.eagle)
-                s.eagle.run(speed: s.gameSpeed, viewSize: s.size)
+                s.gameLogic.spawnEagleFromRoof()
             }
             s.emitter.addEmitterOnPlayer(fileName: "feathers",
                                          position: s.player.position)

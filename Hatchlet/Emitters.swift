@@ -25,7 +25,7 @@ class Emitters:SKNode {
     }
     
     func setup() {
-        Particles.preload {}
+        // Texture already preloaded in GameLogic.setup() for better performance
     }
     
     func addEmitter(position: CGPoint, texture: String = "sparkTest") {
@@ -36,10 +36,12 @@ class Emitters:SKNode {
         emitter.position = position
         addChild(emitter)
         
-        //below code creates a delay before deleting the emitter
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            emitter.removeFromParent()
-        }
+        // Use SKAction instead of DispatchQueue to avoid memory leaks
+        let removeAction = SKAction.sequence([
+            SKAction.wait(forDuration: 2.0),
+            SKAction.removeFromParent()
+        ])
+        emitter.run(removeAction)
     }
     
     func addEmitterOnPlayer(fileName: String, position: CGPoint, deleteTime: Double = 2) {
@@ -79,9 +81,12 @@ class Emitters:SKNode {
         //below code creates a delay before deleting the emitter
         if deleteTime == -1 {
         } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + deleteTime) {
-                emitter.removeFromParent()
-            }
+            // Use SKAction instead of DispatchQueue to avoid memory leaks
+            let removeAction = SKAction.sequence([
+                SKAction.wait(forDuration: deleteTime),
+                SKAction.removeFromParent()
+            ])
+            emitter.run(removeAction)
         }
     }
     
