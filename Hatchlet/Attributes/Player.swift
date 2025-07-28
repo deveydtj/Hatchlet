@@ -54,14 +54,15 @@ class Player:SKSpriteNode {
         playerCostume.zPosition = zPosition + 1
         
         physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2)
-        physicsBody!.isDynamic = true
-        physicsBody!.affectedByGravity = true
-        physicsBody!.allowsRotation = false
-        physicsBody!.linearDamping = 0.9
+        guard let body = physicsBody else { return }
+        body.isDynamic = true
+        body.affectedByGravity = true
+        body.allowsRotation = false
+        body.linearDamping = 0.9
         
-        physicsBody!.categoryBitMask = PhysicsCategory.Player
-        physicsBody!.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Roof
-        physicsBody!.contactTestBitMask = PhysicsCategory.Egg | PhysicsCategory.Roof | PhysicsCategory.Ground | PhysicsCategory.Enemy
+        body.categoryBitMask = PhysicsCategory.Player
+        body.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Roof
+        body.contactTestBitMask = PhysicsCategory.Egg | PhysicsCategory.Roof | PhysicsCategory.Ground | PhysicsCategory.Enemy
     
     }
     

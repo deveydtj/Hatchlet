@@ -96,13 +96,14 @@ class gameHUD: SKNode {
         eggDelete.position.y = size.height / 2
         eggDelete.physicsBody = SKPhysicsBody(rectangleOf: eggDelete.size)
         
-        eggDelete.physicsBody!.isDynamic = true
-        eggDelete.physicsBody!.affectedByGravity = false
-        eggDelete.physicsBody!.allowsRotation = false
+        guard let eggDeleteBody = eggDelete.physicsBody else { return }
+        eggDeleteBody.isDynamic = true
+        eggDeleteBody.affectedByGravity = false
+        eggDeleteBody.allowsRotation = false
         
-        eggDelete.physicsBody!.categoryBitMask = PhysicsCategory.eggDelete
-        eggDelete.physicsBody!.collisionBitMask = PhysicsCategory.Player
-        eggDelete.physicsBody!.contactTestBitMask = PhysicsCategory.Egg
+        eggDeleteBody.categoryBitMask = PhysicsCategory.eggDelete
+        eggDeleteBody.collisionBitMask = PhysicsCategory.Player
+        eggDeleteBody.contactTestBitMask = PhysicsCategory.Egg
         
 // ~Add Golden Egg
         addChild(goldenEgg)

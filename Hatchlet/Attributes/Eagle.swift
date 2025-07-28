@@ -38,13 +38,14 @@ class Eagle:SKSpriteNode {
 
         name = "eagle"
         physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2.64)
-        physicsBody!.isDynamic = true
-        physicsBody!.affectedByGravity = false
-        physicsBody!.allowsRotation = false
+        guard let body = physicsBody else { return }
+        body.isDynamic = true
+        body.affectedByGravity = false
+        body.allowsRotation = false
 
-        physicsBody!.categoryBitMask = PhysicsCategory.Enemy
-        physicsBody!.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Roof
-        physicsBody!.contactTestBitMask = PhysicsCategory.Player | PhysicsCategory.Roof | PhysicsCategory.Ground
+        body.categoryBitMask = PhysicsCategory.Enemy
+        body.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Roof
+        body.contactTestBitMask = PhysicsCategory.Player | PhysicsCategory.Roof | PhysicsCategory.Ground
 
         zPosition = 101
     }
