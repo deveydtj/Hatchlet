@@ -29,7 +29,7 @@ class Emitters:SKNode {
     }
     
     func addEmitter(position: CGPoint, texture: String = "sparkTest") {
-        let emitter = SKEmitterNode(fileNamed: "spark")!
+        guard let emitter = SKEmitterNode(fileNamed: "spark") else { return }
         let textureAtlas = Particles.textureNamed(texture)
         emitter.particleTexture = textureAtlas
         emitter.zPosition = 6
@@ -43,7 +43,7 @@ class Emitters:SKNode {
     }
     
     func addEmitterOnPlayer(fileName: String, position: CGPoint, deleteTime: Double = 2) {
-        let emitter = SKEmitterNode(fileNamed: fileName)!
+        guard let emitter = SKEmitterNode(fileNamed: fileName) else { return }
         emitter.zPosition = 6
         
         
@@ -86,14 +86,14 @@ class Emitters:SKNode {
     }
     
     func updateSpeed() {
-        let test: SKEmitterNode = childNode(withName: "airParticles") as! SKEmitterNode
+        guard let test = childNode(withName: "airParticles") as? SKEmitterNode else { return }
         
         print(test.particleSpeed)
         test.particleSpeed += 0.90
     }
     
     func resetSpeed() {
-        let test: SKEmitterNode = childNode(withName: "airParticles") as! SKEmitterNode
+        guard let test = childNode(withName: "airParticles") as? SKEmitterNode else { return }
         
         test.particleSpeed = 45
     }

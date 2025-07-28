@@ -21,16 +21,14 @@ class InputManager {
         scene.touched = true
         
         // Update touch location
-        for touch in touches {
-            scene.location = touch.location(in: scene)
-        }
-        let touch = touches.first!
+        guard let touch = touches.first else { return }
+        scene.location = touch.location(in: scene)
         let positionInScene = touch.location(in: scene)
         let touchedNode = scene.atPoint(positionInScene)
 
         if !scene.const.gameOver && !scene.newPaused {
             // Regular flap
-            scene.player.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 145))
+            scene.player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 145))
             scene.emitter.addEmitterOnPlayer(
                 fileName: "playerSmoke",
                 position: scene.player.position,
@@ -42,7 +40,7 @@ class InputManager {
             }
         } else {
             // Post-game or paused: small hop & menu button presses
-            scene.player.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 15))
+            scene.player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 15))
             for nodeName in scene.const.touchableButtons {
                 if nodeName == touchedNode.name {
                     touchedNode.run(.scale(to: 0.80, duration: 0.15))
@@ -82,10 +80,8 @@ class InputManager {
         scene.touched = false
         scene.const.checked = false
 
-        for touch in touches {
-            scene.location = touch.location(in: scene)
-        }
-        let touch = touches.first!
+        guard let touch = touches.first else { return }
+        scene.location = touch.location(in: scene)
         let positionInScene = touch.location(in: scene)
         let touchedNode = scene.atPoint(positionInScene)
 
@@ -94,9 +90,9 @@ class InputManager {
             scene.newPaused = false
             scene.pauseScreen.removeAllActions()
             scene.pauseScreen.removeFromParent()
-            if !scene.player.physicsBody!.isDynamic {
-                scene.player.physicsBody!.isDynamic = true
-                scene.player.physicsBody!.velocity = scene.playerVelocity
+            if let physicsBody = scene.player.physicsBody, !physicsBody.isDynamic {
+                physicsBody.isDynamic = true
+                physicsBody.velocity = scene.playerVelocity
             }
         }
 

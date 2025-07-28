@@ -36,13 +36,14 @@ class Fox:SKSpriteNode {
         
         name = "fox"
         physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2.15)
-        physicsBody!.isDynamic = true
-        physicsBody!.affectedByGravity = true
-        physicsBody!.allowsRotation = false
+        guard let body = physicsBody else { return }
+        body.isDynamic = true
+        body.affectedByGravity = true
+        body.allowsRotation = false
         
-        physicsBody!.categoryBitMask = PhysicsCategory.Enemy
-        physicsBody!.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Roof
-        physicsBody!.contactTestBitMask = PhysicsCategory.Player | PhysicsCategory.Roof | PhysicsCategory.Ground
+        body.categoryBitMask = PhysicsCategory.Enemy
+        body.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Roof
+        body.contactTestBitMask = PhysicsCategory.Player | PhysicsCategory.Roof | PhysicsCategory.Ground
     }
     
     func run(speed: Double, viewSize: CGSize) {
@@ -55,8 +56,9 @@ class Fox:SKSpriteNode {
         
         
         
-        let jump = SKAction.run() { [weak self] in guard self != nil else { return }
-            self!.physicsBody!.applyImpulse(CGVector(dx: 0, dy: 90 * Double.random(in: 1.5..<3.0)))
+        let jump = SKAction.run() { [weak self] in 
+            guard let self = self, let physicsBody = self.physicsBody else { return }
+            physicsBody.applyImpulse(CGVector(dx: 0, dy: 90 * Double.random(in: 1.5..<3.0)))
         }
         let wait = SKAction.wait(forDuration: 2)
         
