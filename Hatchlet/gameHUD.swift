@@ -13,7 +13,7 @@ class gameHUD: SKNode {
     
     let size:CGSize
 
-    var score: Int! = 0
+    var score: Int = 0
     var scoreLabel = SKLabelNode()
     var labelShadow = SKLabelNode()
     

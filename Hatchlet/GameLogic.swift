@@ -221,12 +221,13 @@ class GameLogic {
     func showPauseScreen() {
         guard let s = scene else { return }
         s.addChild(s.pauseScreen)
-        if s.player.physicsBody!.isDynamic {
-            s.playerVelocity = s.player.physicsBody!.velocity
-            s.player.physicsBody!.isDynamic = false
+        guard let physicsBody = s.player.physicsBody else { return }
+        if physicsBody.isDynamic {
+            s.playerVelocity = physicsBody.velocity
+            physicsBody.isDynamic = false
         } else {
-            s.player.physicsBody!.isDynamic = true
-            s.player.physicsBody!.velocity = s.playerVelocity
+            physicsBody.isDynamic = true
+            physicsBody.velocity = s.playerVelocity
         }
         s.newPaused = true
     }

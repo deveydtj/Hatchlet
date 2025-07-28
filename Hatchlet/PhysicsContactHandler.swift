@@ -23,11 +23,15 @@ class PhysicsContactHandler {
         // Egg hits player
         if collision == PhysicsCategory.Egg | PhysicsCategory.Player {
             if contact.bodyA.categoryBitMask == PhysicsCategory.Egg {
-                s.gameLogic.setScore(eggType: contact.bodyA.node!.name!)
-                s.gameLogic.deleteEgg(egg: contact.bodyA.node!)
+                if let node = contact.bodyA.node, let eggType = node.name {
+                    s.gameLogic.setScore(eggType: eggType)
+                    s.gameLogic.deleteEgg(egg: node)
+                }
             } else {
-                s.gameLogic.setScore(eggType: contact.bodyB.node!.name!)
-                s.gameLogic.deleteEgg(egg: contact.bodyB.node!)
+                if let node = contact.bodyB.node, let eggType = node.name {
+                    s.gameLogic.setScore(eggType: eggType)
+                    s.gameLogic.deleteEgg(egg: node)
+                }
             }
         }
 
