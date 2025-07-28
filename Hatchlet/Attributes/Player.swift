@@ -8,7 +8,7 @@
 import SpriteKit
 
 
-class Player:SKSpriteNode {
+class Player: SKSpriteNode {
     
     //Player Images
     var playerBlink = SKTexture()
@@ -25,6 +25,9 @@ class Player:SKSpriteNode {
     var playerCostume: SKSpriteNode
     
     let eggHome: SKSpriteNode
+    
+    // Cached random value for performance optimization
+    private var nextBlinkRandom = Int.random(in: 1...20)
     
     init() {
         let size = CGSize(width: 135 / 1.85, height: 118.3 / 1.85)
@@ -73,8 +76,10 @@ class Player:SKSpriteNode {
         
         run(SKAction.sequence([
                        SKAction.run() { [weak self] in guard let `self` = self else { return }
-                        if ((Int.random(in: 1...20)) == 5 ) {
+                        if self.nextBlinkRandom == 5 {
                             self.quickBlink()
+                            // Generate new random number for next time
+                            self.nextBlinkRandom = Int.random(in: 1...20)
                         }
             }, sequence2]),withKey: "flap")
     }

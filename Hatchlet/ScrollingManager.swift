@@ -63,10 +63,15 @@ class ScrollingManager {
 
     private func moveEagleCloser(deltaTime: TimeInterval) {
         guard let s = scene else { return }
+        
+        // Cache positions to avoid multiple property access
+        let eaglePos = s.eagle.position
+        let playerY = s.player.position.y
+        
         // Non-linear y-approach towards the player
-        let deltaY = s.player.position.y - s.eagle.position.y
-        if s.eagle.position.x > s.size.width / 2 {
-            let adjustment = CGFloat(s.eagleSpeed) * CGFloat(deltaTime)
+        let deltaY = playerY - eaglePos.y
+        if eaglePos.x > s.size.width / 2 {
+            let adjustment = CGFloat(s.eagleSpeed * deltaTime)
             s.eagle.position.y += deltaY * adjustment
         }
     }

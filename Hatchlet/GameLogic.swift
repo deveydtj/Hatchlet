@@ -12,6 +12,11 @@ import SpriteKit
 
 class GameLogic {
     private weak var scene: GameScene?
+    
+    // Object pools for performance optimization
+    private var eggPool: [Egg] = []
+    private var goldEggPool: [Egg] = []
+    private let maxPoolSize = 10
 
     init(scene: GameScene) {
         self.scene = scene
@@ -249,16 +254,17 @@ class GameLogic {
     /// Spawn a standard or golden egg
     func createEgg() {
         guard let s = scene, !s.const.gameOver else { return }
-        let egg: Egg
-        if Int.random(in: 1...15) == 7 {
-            egg = Egg(isGold: true)
+        
+        let isGold = Int.random(in: 1...15) == 7
+        let egg = getPooledEgg(isGold: isGold)
+        
+        if isGold {
             if let emitter = SKEmitterNode(fileNamed: "eggCoin") {
                 emitter.targetNode = s
                 egg.addChild(emitter)
             }
-        } else {
-            egg = Egg()
         }
+        
         let maxY = s.size.height - egg.size.height * 3
         let minY = egg.size.height + 100
         let range = maxY - minY
@@ -269,14 +275,17 @@ class GameLogic {
         egg.run(
             .sequence([
                 .moveBy(x: -s.size.width, y: 0, duration: s.gameSpeed),
-                .removeFromParent()
+                .run { [weak self] in
+                    self?.returnEggToPool(egg)
+                }
             ])
         )
     }
 
     /// Animate and remove a collected egg
     func deleteEgg(egg: SKNode) {
-        guard let s = scene else { return }
+        guard let s = scene, let eggNode = egg as? Egg else { return }
+        
         if egg.name == "GoldenEgg" {
             egg.removeAllActions()
             egg.physicsBody = nil
@@ -286,15 +295,13 @@ class GameLogic {
                 duration: 0.85
             )
             move.timingMode = .easeInEaseOut
-            let removeAction = SKAction.sequence([
-                SKAction.wait(forDuration: 1.0),
-                SKAction.removeFromParent()
-            ])
-            egg.run(.sequence([move, removeAction]))
+            let returnToPool = SKAction.run { [weak self] in
+                self?.returnEggToPool(eggNode)
+            }
+            egg.run(.sequence([move, .wait(forDuration: 1.0), returnToPool]))
         } else {
             s.emitter.addEmitter(position: egg.position)
-            egg.removeAllChildren()
-            egg.removeFromParent()
+            returnEggToPool(eggNode)
         }
     }
 
@@ -409,5 +416,48 @@ class GameLogic {
             && s.const.gameDifficulty != 0 {
             spawnEnemy()
         }
+    }
+    
+    // MARK: - Object Pool Management
+    
+    /// Get an egg from the pool or create a new one
+    private func getPooledEgg(isGold: Bool = false) -> Egg {
+        let pool = isGold ? goldEggPool : eggPool
+        
+        if let egg = pool.last {
+            if isGold {
+                goldEggPool.removeLast()
+            } else {
+                eggPool.removeLast()
+            }
+            // Reset egg properties
+            egg.removeAllActions()
+            egg.removeAllChildren()
+            egg.physicsBody?.isDynamic = false
+            egg.alpha = 1.0
+            return egg
+        } else {
+            // Create new egg if pool is empty
+            return Egg(isGold: isGold)
+        }
+    }
+    
+    /// Return an egg to the pool
+    private func returnEggToPool(_ egg: Egg) {
+        egg.removeFromParent()
+        egg.removeAllActions()
+        egg.removeAllChildren()
+        
+        let isGold = egg.name == "GoldenEgg"
+        let pool = isGold ? goldEggPool : eggPool
+        
+        if pool.count < maxPoolSize {
+            if isGold {
+                goldEggPool.append(egg)
+            } else {
+                eggPool.append(egg)
+            }
+        }
+        // If pool is full, let the egg be deallocated naturally
     }
 }
