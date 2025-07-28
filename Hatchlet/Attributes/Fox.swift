@@ -8,13 +8,16 @@
 import SpriteKit
 
 
-class Fox:SKSpriteNode {
+class Fox: SKSpriteNode {
     
     let Game = SKTextureAtlas(named: "Game")
     var enemyImage = SKTexture()
-    var running:Bool = false
+    var running: Bool = false
     
     var prevPos: CGFloat = 0
+    
+    // Callback for when fox is stopped (for object pooling)
+    var onStopped: ((Fox) -> Void)?
     
     init() {
         let size = CGSize(width: 135 / 1.25, height: 118.3 / 1.25)
@@ -66,12 +69,15 @@ class Fox:SKSpriteNode {
         
     }
     
-    func stop()
-    {
+    func stop() {
         removeAllActions()
         removeAllChildren()
         removeFromParent()
         running = false
+        
+        // Notify that this fox can be returned to pool
+        onStopped?(self)
+        onStopped = nil
     }
     
     func isRunning() -> Bool{

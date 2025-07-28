@@ -16,6 +16,8 @@ class GameLogic {
     // Object pools for performance optimization
     private var eggPool: [Egg] = []
     private var goldEggPool: [Egg] = []
+    private var foxPool: [Fox] = []
+    private var eaglePool: [Eagle] = []
     private let maxPoolSize = 10
 
     init(scene: GameScene) {
@@ -338,7 +340,10 @@ class GameLogic {
     func spawnEnemy() {
         guard let s = scene else { return }
         s.HUD.enemyShadow.isHidden = false
-        s.fox = Fox()
+        s.fox = getPooledFox()
+        s.fox.onStopped = { [weak self] fox in
+            self?.returnFoxToPool(fox)
+        }
         s.fox.position = CGPoint(
             x: s.size.width,
             y: s.groundHitBox.position.y + s.fox.size.height
@@ -352,7 +357,10 @@ class GameLogic {
     func randomEnemy() {
         guard let s = scene, !s.const.gameOver else { return }
         if Int.random(in: 1...2) == 1, !s.eagle.isRunning() {
-            s.eagle = Eagle()
+            s.eagle = getPooledEagle()
+            s.eagle.onStopped = { [weak self] eagle in
+                self?.returnEagleToPool(eagle)
+            }
             s.eagle.position = CGPoint(x: s.size.width + s.eagle.size.width, y: s.size.height/2)
             s.addChild(s.eagle)
             s.eagle.run(speed: s.gameSpeed, viewSize: s.size)
@@ -459,5 +467,68 @@ class GameLogic {
             }
         }
         // If pool is full, let the egg be deallocated naturally
+    }
+    
+    /// Get a fox from the pool or create a new one
+    private func getPooledFox() -> Fox {
+        if let fox = foxPool.last {
+            foxPool.removeLast()
+            fox.removeAllActions()
+            fox.removeAllChildren()
+            fox.running = false
+            return fox
+        } else {
+            return Fox()
+        }
+    }
+    
+    /// Return a fox to the pool
+    private func returnFoxToPool(_ fox: Fox) {
+        fox.removeFromParent()
+        fox.removeAllActions()
+        fox.removeAllChildren()
+        fox.running = false
+        
+        if foxPool.count < maxPoolSize {
+            foxPool.append(fox)
+        }
+    }
+    
+    /// Get an eagle from the pool or create a new one
+    private func getPooledEagle() -> Eagle {
+        if let eagle = eaglePool.last {
+            eaglePool.removeLast()
+            eagle.removeAllActions()
+            eagle.removeAllChildren()
+            eagle.running = false
+            return eagle
+        } else {
+            return Eagle()
+        }
+    }
+    
+    /// Return an eagle to the pool
+    private func returnEagleToPool(_ eagle: Eagle) {
+        eagle.removeFromParent()
+        eagle.removeAllActions()
+        eagle.removeAllChildren()
+        eagle.running = false
+        
+        if eaglePool.count < maxPoolSize {
+            eaglePool.append(eagle)
+        }
+    }
+    
+    /// Spawn eagle from roof collision (called by PhysicsContactHandler)
+    func spawnEagleFromRoof() {
+        guard let s = scene else { return }
+        s.eagle = getPooledEagle()
+        s.eagle.onStopped = { [weak self] eagle in
+            self?.returnEagleToPool(eagle)
+        }
+        s.eagle.position = CGPoint(x: s.size.width + s.eagle.size.width,
+                                   y: s.size.height / 2)
+        s.addChild(s.eagle)
+        s.eagle.run(speed: s.gameSpeed, viewSize: s.size)
     }
 }

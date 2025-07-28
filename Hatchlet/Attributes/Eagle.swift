@@ -8,14 +8,17 @@
 import SpriteKit
 
 
-class Eagle:SKSpriteNode {
+class Eagle: SKSpriteNode {
     
     let Game = SKTextureAtlas(named: "Game")
     var enemyImage = SKTexture()
     var enemyFlap = SKTexture()
-    var running:Bool = false
+    var running: Bool = false
     
     var prevPos: CGFloat = 0
+    
+    // Callback for when eagle is stopped (for object pooling)
+    var onStopped: ((Eagle) -> Void)?
     
     init() {
         let size = CGSize(width: 207 / 1.9, height: 140 / 1.9)
@@ -95,12 +98,15 @@ class Eagle:SKSpriteNode {
             }, sequence2])))
     }
     
-    func stop()
-    {
+    func stop() {
         removeAllActions()
         removeAllChildren()
         removeFromParent()
         running = false
+        
+        // Notify that this eagle can be returned to pool
+        onStopped?(self)
+        onStopped = nil
     }
     
     func isRunning() -> Bool{
