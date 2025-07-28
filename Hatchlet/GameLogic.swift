@@ -21,7 +21,21 @@ class GameLogic {
     func setup() {
         guard let s = scene else { return }
         s.physicsWorld.contactDelegate = s
-        Constant.preload { }
+        
+        // Preload all texture atlases at once for better performance
+        let preloadGroup = DispatchGroup()
+        
+        preloadGroup.enter()
+        Constant.preload { preloadGroup.leave() }
+        
+        preloadGroup.enter()
+        s.MenuAtlas.preload { preloadGroup.leave() }
+        
+        preloadGroup.enter()
+        s.GameAtlas.preload { preloadGroup.leave() }
+        
+        preloadGroup.enter()
+        s.emitter.Particles.preload { preloadGroup.leave() }
 
         // Background & ground
         s.addChild(s.background)
@@ -71,7 +85,7 @@ class GameLogic {
         s.addChild(s.scrollingGroundBin)
 
 
-        if UserDefaults.standard.integer(forKey: "highScore") == 0 {
+        if s.const.highScore == 0 {
             s.const.setGameTut(value: true)
         }
 
@@ -83,7 +97,7 @@ class GameLogic {
     /// Present initial menu at game startup
     func presentInitialMenu() {
         guard let s = scene else { return }
-        s.MenuAtlas.preload { }
+        // Texture already preloaded in setup()
         // Create and configure the main menu
         s.menu = Menu(size: s.size)
         s.menu.position = CGPoint(x: s.size.width/2, y: s.size.height/2)
@@ -131,7 +145,7 @@ class GameLogic {
     /// Start or restart gameplay
     func runGame() {
         guard let s = scene else { return }
-        s.GameAtlas.preload { }
+        // Texture already preloaded in setup()
 
         s.const.gameOver = false
         s.player.removeHome()
@@ -199,8 +213,8 @@ class GameLogic {
          }
 
         // High score
-        if s.scoreNum > UserDefaults.standard.integer(forKey: "highScore") {
-            UserDefaults.standard.set(s.scoreNum, forKey: "highScore")
+        if s.scoreNum > s.const.highScore {
+            s.const.highScore = s.scoreNum
         }
         if s.scoreNum >= 10 {
             s.const.setGameTut(value: false)
@@ -248,7 +262,7 @@ class GameLogic {
         let maxY = s.size.height - egg.size.height * 3
         let minY = egg.size.height + 100
         let range = maxY - minY
-        let y = maxY - CGFloat(arc4random_uniform(UInt32(range)))
+        let y = maxY - CGFloat.random(in: 0...range)
         egg.position = CGPoint(x: s.size.width, y: y)
 
         s.addChild(egg)
@@ -272,12 +286,11 @@ class GameLogic {
                 duration: 0.85
             )
             move.timingMode = .easeInEaseOut
-            let reset = SKAction.run {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    egg.removeFromParent()
-                }
-            }
-            egg.run(.sequence([move, reset]))
+            let removeAction = SKAction.sequence([
+                SKAction.wait(forDuration: 1.0),
+                SKAction.removeFromParent()
+            ])
+            egg.run(.sequence([move, removeAction]))
         } else {
             s.emitter.addEmitter(position: egg.position)
             egg.removeAllChildren()
@@ -354,9 +367,14 @@ class GameLogic {
     /// Per-frame game logic updates (called from GameScene.update)
     func update(currentTime: TimeInterval) {
         guard let s = scene else { return }
+        
+        // Cache velocity for reuse to avoid multiple property access
+        guard let playerPhysicsBody = s.player.physicsBody else { return }
+        let playerVelocity = playerPhysicsBody.velocity
+        let isPlayerStationary = playerVelocity == CGVector(dx: 0, dy: 0)
 
         // Handle player flap animation
-        if s.player.physicsBody?.velocity == CGVector(dx: 0, dy: 0) {
+        if isPlayerStationary {
             s.player.removeAction(forKey: "flap")
             s.player.texture = s.player.playerImage
         } else if s.player.action(forKey: "flap") == nil {
@@ -384,7 +402,7 @@ class GameLogic {
         }
 
         // Spawn additional fox if conditions are met
-        if s.player.physicsBody?.velocity == CGVector(dx: 0, dy: 0)
+        if isPlayerStationary
             && !s.const.gameOver
             && !s.fox.isRunning()
             && s.scoreNum > 0

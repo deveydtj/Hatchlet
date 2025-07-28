@@ -10,6 +10,17 @@ import Foundation
 
 class Constants {
     static let shared = Constants()
+    
+    // Cached high score to avoid frequent UserDefaults access
+    private var _highScore: Int = 0
+    var highScore: Int {
+        get { return _highScore }
+        set {
+            _highScore = newValue
+            UserDefaults.standard.set(newValue, forKey: "highScore")
+        }
+    }
+    
     private init() {
         // Load saved items or start empty
         if let saved = UserDefaults.standard.stringArray(forKey: "OwnedItems") {
@@ -22,6 +33,9 @@ class Constants {
             ownedItems.insert("bob", at: 0)
             UserDefaults.standard.set(ownedItems, forKey: "OwnedItems")
         }
+        
+        // Cache the high score on initialization
+        _highScore = UserDefaults.standard.integer(forKey: "highScore")
     }
     
     var gameOver: Bool = true
