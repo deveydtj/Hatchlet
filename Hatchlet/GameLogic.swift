@@ -443,6 +443,17 @@ class GameLogic {
             egg.removeAllChildren()
             egg.physicsBody?.isDynamic = false
             egg.alpha = 1.0
+            
+            // Ensure egg properties match the requested type
+            egg.isGoldenEgg = isGold
+            if isGold {
+                egg.texture = egg.goldenEggTexture
+                egg.name = "GoldenEgg"
+            } else {
+                egg.texture = egg.eggTexture
+                egg.name = "egg"
+            }
+            
             return egg
         } else {
             // Create new egg if pool is empty

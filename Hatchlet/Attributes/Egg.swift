@@ -37,10 +37,9 @@ class Egg: SKSpriteNode {
     func setup() {
         
         eggTexture = Game.textureNamed("egg")
-        
+        goldenEggTexture = Game.textureNamed("goldenEgg")
         
         if isGoldenEgg {
-            goldenEggTexture = Game.textureNamed("goldenEgg")
             texture = goldenEggTexture
             name = "GoldenEgg"
             
