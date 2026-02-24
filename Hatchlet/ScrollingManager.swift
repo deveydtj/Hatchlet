@@ -11,9 +11,11 @@ import SpriteKit
 class ScrollingManager {
     private weak var scene: GameScene?
     private var lastUpdateTime: TimeInterval = 0
+    private var scrollDistances: [String: CGFloat] = [:]
 
     init(scene: GameScene) {
         self.scene = scene
+        cacheScrollDistances()
     }
 
     /// Call this from GameScene.update(_:)
@@ -25,8 +27,8 @@ class ScrollingManager {
         lastUpdateTime = currentTime
         if deltaTime > 1 { deltaTime = 0 }
 
-        // Don’t scroll if game over
-        guard !s.const.gameOver else { return }
+        // Only scroll during active gameplay (no game-over/menu/pause states).
+        guard !s.const.gameOver, !s.newPaused, s.menu.parent == nil else { return }
 
         // Reset and restart landscape loop
         checkAndScroll(node: s.landscapeBin, speed: s.gameSpeed)
@@ -43,22 +45,39 @@ class ScrollingManager {
     // MARK: - Private Helpers
 
     private func checkAndScroll(node: SKNode, speed: Double) {
-        guard let s = scene else { return }
-        // Once the node has fully scrolled off-screen, reset it
-        if node.position.x < -s.size.width {
-            node.removeAllActions()
-            node.position = .zero
+        guard let nodeName = node.name else { return }
+        let actionKey = nodeName + "MoveLeft"
+
+        // Ensure scrolling is running when gameplay is active.
+        if node.action(forKey: actionKey) == nil {
             scroll(node: node, speed: speed)
         }
     }
 
     private func scroll(node: SKNode, speed: Double) {
-        // Scroll by half the node’s width, then snap back
-        let distance = node.calculateAccumulatedFrame().width / 2
+        guard let nodeName = node.name else { return }
+        // Scroll by half the node's width, then snap back.
+        let distance = cachedDistance(for: node)
         let moveLeft  = SKAction.moveBy(x: -distance, y: 0, duration: speed)
         let reset     = SKAction.run { node.position = .zero }
         let sequence  = SKAction.sequence([moveLeft, reset])
-        node.run(.repeatForever(sequence), withKey: node.name! + "MoveLeft")
+        node.run(.repeatForever(sequence), withKey: nodeName + "MoveLeft")
+    }
+
+    private func cacheScrollDistances() {
+        guard let s = scene else { return }
+        scrollDistances[s.landscapeBin.name ?? "landscapeBin"] = s.landscapeBin.calculateAccumulatedFrame().width / 2
+        scrollDistances[s.scrollingGroundBin.name ?? "scrollingGroundBin"] = s.scrollingGroundBin.calculateAccumulatedFrame().width / 2
+    }
+
+    private func cachedDistance(for node: SKNode) -> CGFloat {
+        let key = node.name ?? ""
+        if let distance = scrollDistances[key], distance > 0 {
+            return distance
+        }
+        let fallback = node.calculateAccumulatedFrame().width / 2
+        scrollDistances[key] = fallback
+        return fallback
     }
 
     private func moveEagleCloser(deltaTime: TimeInterval) {

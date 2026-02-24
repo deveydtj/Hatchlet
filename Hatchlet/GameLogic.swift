@@ -104,6 +104,8 @@ class GameLogic {
     /// Present initial menu at game startup
     func presentInitialMenu() {
         guard let s = scene else { return }
+        s.landscapeBin.isPaused = true
+        s.scrollingGroundBin.isPaused = true
         // Texture already preloaded in setup()
         // Create and configure the main menu
         s.menu = Menu(size: s.size)
@@ -116,6 +118,8 @@ class GameLogic {
     /// Show the main menu
     func showMenu() {
         guard let s = scene else { return }
+        s.landscapeBin.isPaused = true
+        s.scrollingGroundBin.isPaused = true
         let fade = SKAction.fadeOut(withDuration: 0.25)
         s.endScreen.run(fade) {
             s.endScreen.removeFromParent()
@@ -261,7 +265,7 @@ class GameLogic {
         let egg = getPooledEgg(isGold: isGold)
         
         if isGold {
-            if let emitter = SKEmitterNode(fileNamed: "eggCoin") {
+            if let emitter = s.emitter.makeEmitter(fileName: "eggCoin") {
                 emitter.targetNode = s
                 egg.addChild(emitter)
             }

@@ -13,6 +13,11 @@ class Emitters:SKNode {
     let size:CGSize
     
     let Particles = SKTextureAtlas(named: "Particles")
+    private var emitterTemplates: [String: SKEmitterNode] = [:]
+    private let cachedEmitterNames = [
+        "spark", "playerSmoke", "airParticles",
+        "feathers", "grass", "newSpark", "eggCoin"
+    ]
     
     init(size: CGSize){
         self.size = size
@@ -26,10 +31,11 @@ class Emitters:SKNode {
     
     func setup() {
         // Texture already preloaded in GameLogic.setup() for better performance
+        preloadEmitterTemplates()
     }
     
     func addEmitter(position: CGPoint, texture: String = "sparkTest") {
-        guard let emitter = SKEmitterNode(fileNamed: "spark") else { return }
+        guard let emitter = makeEmitter(fileName: "spark") else { return }
         let textureAtlas = Particles.textureNamed(texture)
         emitter.particleTexture = textureAtlas
         emitter.zPosition = 6
@@ -45,7 +51,7 @@ class Emitters:SKNode {
     }
     
     func addEmitterOnPlayer(fileName: String, position: CGPoint, deleteTime: Double = 2) {
-        guard let emitter = SKEmitterNode(fileNamed: fileName) else { return }
+        guard let emitter = makeEmitter(fileName: fileName) else { return }
         emitter.zPosition = 6
         
         
@@ -88,6 +94,31 @@ class Emitters:SKNode {
             ])
             emitter.run(removeAction)
         }
+    }
+
+    func makeEmitter(fileName: String) -> SKEmitterNode? {
+        if let template = emitterTemplates[fileName] {
+            return template.copy() as? SKEmitterNode
+        }
+
+        guard let emitter = SKEmitterNode(fileNamed: fileName) else { return nil }
+        tuneEmitterForPerformance(emitter, fileName: fileName)
+        emitterTemplates[fileName] = emitter
+        return emitter.copy() as? SKEmitterNode
+    }
+
+    private func preloadEmitterTemplates() {
+        for fileName in cachedEmitterNames {
+            _ = makeEmitter(fileName: fileName)
+        }
+    }
+
+    private func tuneEmitterForPerformance(_ emitter: SKEmitterNode, fileName: String) {
+        guard fileName == "spark" || fileName == "playerSmoke" || fileName == "newSpark" else { return }
+
+        // These emitters are fired frequently; reduce burst cost while keeping the same style.
+        emitter.particleBirthRate *= 0.35
+        emitter.numParticlesToEmit = max(10, Int(Double(emitter.numParticlesToEmit) * 0.6))
     }
     
     func updateSpeed() {

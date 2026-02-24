@@ -21,10 +21,18 @@ class GameViewController: UIViewController {
         scene.scaleMode = .aspectFill
         
         view.ignoresSiblingOrder = true
-        view.showsDrawCount = true
+        view.preferredFramesPerSecond = 60
+#if DEBUG
+        view.showsDrawCount = false
         view.showsFPS = true
-        view.showsNodeCount = true
-        view.showsQuadCount = true
+        view.showsNodeCount = false
+        view.showsQuadCount = false
+#else
+        view.showsDrawCount = false
+        view.showsFPS = false
+        view.showsNodeCount = false
+        view.showsQuadCount = false
+#endif
         // Present the scene
         view.presentScene(scene)
         
