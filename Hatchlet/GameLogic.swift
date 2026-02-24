@@ -44,6 +44,9 @@ class GameLogic {
         preloadGroup.enter()
         s.emitter.Particles.preload { preloadGroup.leave() }
 
+        // Warm enemy pools so first spawn never allocates/setup on-frame.
+        prewarmEnemyPools()
+
         // Background & ground
         s.addChild(s.background)
         s.groundHitBox.physicsBody = SKPhysicsBody(
@@ -99,6 +102,26 @@ class GameLogic {
         s.pauseButton.position = CGPoint(x: s.pauseButton.size.width, y: s.scrollingGround.size.height)
         s.pauseButton.zPosition = 101
         s.pauseButton.name = "pause"
+    }
+
+    private func prewarmEnemyPools() {
+        guard let s = scene else { return }
+
+        if foxPool.isEmpty {
+            s.fox.removeAllActions()
+            s.fox.removeAllChildren()
+            s.fox.removeFromParent()
+            s.fox.running = false
+            foxPool.append(s.fox)
+        }
+
+        if eaglePool.isEmpty {
+            s.eagle.removeAllActions()
+            s.eagle.removeAllChildren()
+            s.eagle.removeFromParent()
+            s.eagle.running = false
+            eaglePool.append(s.eagle)
+        }
     }
 
     /// Present initial menu at game startup
