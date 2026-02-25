@@ -424,6 +424,12 @@ class GameLogic {
         carriedEgg.run(.repeat(shakeEgg, count: 3))
 
         let pauseBeforeRun = SKAction.wait(forDuration: 1.25)
+        let throwEgg = SKAction.run { [weak self, weak introFox, weak carriedEgg] in
+            guard let self, let s = self.scene, let introFox, let carriedEgg else { return }
+            let eggWorldPos = introFox.convert(carriedEgg.position, to: s)
+            carriedEgg.removeFromParent()
+            self.launchIntroEgg(from: eggWorldPos)
+        }
         let moveOffscreenRight = SKAction.moveTo(
             x: s.frame.maxX + introFox.size.width * 1.6,
             duration: 1.55
@@ -435,7 +441,23 @@ class GameLogic {
             self.introFoxNode = nil
             self.beginEggLaunching()
         }
-        introFox.run(.sequence([pauseBeforeRun, moveOffscreenRight, finishIntro]))
+        introFox.run(.sequence([pauseBeforeRun, throwEgg, moveOffscreenRight, finishIntro]))
+    }
+
+    private func launchIntroEgg(from position: CGPoint) {
+        guard let s = scene, !s.const.gameOver else { return }
+        let egg = getPooledEgg(isGold: false)
+        egg.configurePhysicsForFlight()
+        egg.position = position
+        if egg.parent == nil {
+            s.addChild(egg)
+        }
+        egg.physicsBody?.isDynamic = true
+        egg.physicsBody?.velocity = CGVector(
+            dx: CGFloat.random(in: -200 ... -120),
+            dy: CGFloat.random(in: 700 ... 950)
+        )
+        egg.physicsBody?.angularVelocity = CGFloat.random(in: -4.5 ... 4.5)
     }
 
     private func beginEggLaunching() {
@@ -549,11 +571,11 @@ class GameLogic {
         }
 
         // Spawn additional fox if conditions are met
+        let foxScoreThreshold = s.const.gameDifficulty == 0 ? 5 : 1
         if isPlayerStationary
             && !s.const.gameOver
             && !s.fox.isRunning()
-            && s.scoreNum > 0
-            && s.const.gameDifficulty != 0 {
+            && s.scoreNum >= foxScoreThreshold {
             spawnEnemy()
         }
     }
