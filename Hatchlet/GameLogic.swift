@@ -22,6 +22,8 @@ class GameLogic {
     private let extraEggGravity: CGFloat = -70
     private var lastUpdateTime: TimeInterval = 0
     private var eggSpawnAccumulator: TimeInterval = 0
+    private var eggLaunchingEnabled: Bool = false
+    private weak var introFoxNode: SKSpriteNode?
 
     init(scene: GameScene) {
         self.scene = scene
@@ -190,6 +192,7 @@ class GameLogic {
         s.eggSpeed = 50
         lastUpdateTime = 0
         eggSpawnAccumulator = 0
+        eggLaunchingEnabled = false
         s.player.removeHome()
         s.addChild(s.pauseButton)
 
@@ -210,8 +213,8 @@ class GameLogic {
         // Remove menu
         s.menu.removeFromParent()
 
-        // Spawn one immediately; subsequent spawns are timer-driven in update().
-        createEgg()
+        // Start with an intro fox pass, then begin normal egg launching.
+        startIntroFoxSequence()
 
         s.scrollingGroundBin.isPaused = false
         s.landscapeBin.isPaused = false
@@ -228,6 +231,10 @@ class GameLogic {
     func endGame() {
         guard let s = scene else { return }
         s.const.gameOver = true
+        eggLaunchingEnabled = false
+        introFoxNode?.removeAllActions()
+        introFoxNode?.removeFromParent()
+        introFoxNode = nil
         s.player.addHome()
         s.gameSpeed = 7
         s.emitter.resetSpeed()
@@ -285,7 +292,7 @@ class GameLogic {
 
     /// Spawn a standard or golden egg
     func createEgg() {
-        guard let s = scene, !s.const.gameOver else { return }
+        guard let s = scene, !s.const.gameOver, eggLaunchingEnabled else { return }
 
         let isGold = Int.random(in: 1...15) == 7
         let egg = getPooledEgg(isGold: isGold)
@@ -375,6 +382,70 @@ class GameLogic {
         s.fox.run(speed: s.gameSpeed, viewSize: s.size)
     }
 
+    private func startIntroFoxSequence() {
+        guard let s = scene, !s.const.gameOver else { return }
+
+        introFoxNode?.removeAllActions()
+        introFoxNode?.removeFromParent()
+
+        let introFox = SKSpriteNode(
+            texture: s.GameAtlas.textureNamed("fox"),
+            color: .clear,
+            size: s.fox.size
+        )
+        introFox.name = "introFox"
+        introFox.zPosition = 100
+
+        let carriedEgg = SKSpriteNode(
+            texture: s.GameAtlas.textureNamed("egg"),
+            color: .clear,
+            size: CGSize(width: 24, height: 28)
+        )
+        carriedEgg.name = "introCarriedEgg"
+        carriedEgg.position = CGPoint(
+            x: -(introFox.size.width * 0.5) + (carriedEgg.size.width * 0.55),
+            y: introFox.size.height * 0.02
+        )
+        carriedEgg.zPosition = 1
+        introFox.addChild(carriedEgg)
+
+        let groundY = s.groundHitBox.position.y + introFox.size.height * 0.52
+        introFox.position = CGPoint(
+            x: s.frame.maxX - introFox.size.width * 0.72,
+            y: groundY
+        )
+        s.addChild(introFox)
+        introFoxNode = introFox
+
+        let shakeLeft = SKAction.rotate(toAngle: 0.28, duration: 0.06, shortestUnitArc: true)
+        let shakeRight = SKAction.rotate(toAngle: -0.28, duration: 0.06, shortestUnitArc: true)
+        let settleShake = SKAction.rotate(toAngle: 0, duration: 0.10, shortestUnitArc: true)
+        let shakeEgg = SKAction.sequence([shakeLeft, shakeRight, shakeLeft, shakeRight, shakeLeft, shakeRight, settleShake])
+        carriedEgg.run(.repeat(shakeEgg, count: 3))
+
+        let pauseBeforeRun = SKAction.wait(forDuration: 1.25)
+        let moveOffscreenRight = SKAction.moveTo(
+            x: s.frame.maxX + introFox.size.width * 1.6,
+            duration: 1.55
+        )
+        moveOffscreenRight.timingMode = .easeInEaseOut
+        let finishIntro = SKAction.run { [weak self] in
+            guard let self else { return }
+            self.introFoxNode?.removeFromParent()
+            self.introFoxNode = nil
+            self.beginEggLaunching()
+        }
+        introFox.run(.sequence([pauseBeforeRun, moveOffscreenRight, finishIntro]))
+    }
+
+    private func beginEggLaunching() {
+        guard let s = scene, !s.const.gameOver else { return }
+        eggLaunchingEnabled = true
+        eggSpawnAccumulator = 0
+        createEgg()
+        s.HUD.enemyShadow.isHidden = true
+    }
+
     /// Randomly spawn fox or eagle
     func randomEnemy() {
         guard let s = scene, !s.const.gameOver else { return }
@@ -413,7 +484,7 @@ class GameLogic {
         }
         lastUpdateTime = currentTime
 
-        if !s.const.gameOver && !s.newPaused && s.menu.parent == nil {
+        if !s.const.gameOver && !s.newPaused && s.menu.parent == nil && eggLaunchingEnabled {
             eggSpawnAccumulator += TimeInterval(deltaTime)
             let spawnInterval = createEggGameMode()
             while eggSpawnAccumulator >= spawnInterval {
