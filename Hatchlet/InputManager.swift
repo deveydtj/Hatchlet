@@ -84,6 +84,13 @@ class InputManager {
         scene.location = touch.location(in: scene)
         let positionInScene = touch.location(in: scene)
         let touchedNode = scene.atPoint(positionInScene)
+        let nodeName = touchedNode.name ?? ""
+
+        // Always allow menu play button to start gameplay.
+        if nodeName == "playButton", scene.menu.parent != nil {
+            scene.gameLogic.runGame()
+            return
+        }
 
         // Resume from pause
         if touchedNode.name == "playButton" {
@@ -98,8 +105,6 @@ class InputManager {
 
         // Game-over menu interactions
         if scene.const.gameOver {
-            let nodeName = touchedNode.name ?? ""
-
             if nodeName == "bob" && scene.shop.parent != nil {
                 scene.const.setPlayerCostume(value: "")
                 scene.const.setPlayerAcc(value: "")
