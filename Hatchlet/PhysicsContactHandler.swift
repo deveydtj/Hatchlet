@@ -37,14 +37,11 @@ class PhysicsContactHandler {
                                          position: s.player.position)
         }
 
-        // Ground hits player → grass puff + maybe fox
+        // Ground hits player → grass puff
         if collision == PhysicsCategory.Ground | PhysicsCategory.Player {
             s.emitter.addEmitterOnPlayer(fileName: "grass",
                                          position: s.player.position,
                                          deleteTime: 0.4)
-            if !s.const.gameOver && !s.fox.isRunning() && s.scoreNum >= 1 {
-                s.gameLogic.spawnEnemy()
-            }
         }
 
         // Enemy hits ground → grass
