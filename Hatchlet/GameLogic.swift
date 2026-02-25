@@ -413,7 +413,7 @@ class GameLogic {
         }
         lastUpdateTime = currentTime
 
-        if !s.const.gameOver {
+        if !s.const.gameOver && !s.newPaused && s.menu.parent == nil {
             eggSpawnAccumulator += TimeInterval(deltaTime)
             let spawnInterval = createEggGameMode()
             while eggSpawnAccumulator >= spawnInterval {
@@ -456,13 +456,16 @@ class GameLogic {
         }
 
         // Boost gravity for eggs so trajectories form readable arcs.
+        let gameplayActive = !s.const.gameOver && !s.newPaused && s.menu.parent == nil
         let visibleFrame = s.frame
         for egg in s.children.compactMap({ $0 as? Egg }) {
             guard let eggBody = egg.physicsBody, eggBody.isDynamic else { continue }
 
-            var velocity = eggBody.velocity
-            velocity.dy += extraEggGravity * deltaTime
-            eggBody.velocity = velocity
+            if gameplayActive {
+                var velocity = eggBody.velocity
+                velocity.dy += extraEggGravity * deltaTime
+                eggBody.velocity = velocity
+            }
 
             let outOfBoundsLeft = egg.position.x < visibleFrame.minX - egg.size.width * 6
             let outOfBoundsRight = egg.position.x > visibleFrame.maxX + egg.size.width * 6
