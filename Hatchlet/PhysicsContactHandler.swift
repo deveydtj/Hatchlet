@@ -22,16 +22,9 @@ class PhysicsContactHandler {
 
         // Egg hits player
         if collision == PhysicsCategory.Egg | PhysicsCategory.Player {
-            if contact.bodyA.categoryBitMask == PhysicsCategory.Egg {
-                if let node = contact.bodyA.node, let eggType = node.name {
-                    s.gameLogic.setScore(eggType: eggType)
-                    s.gameLogic.deleteEgg(egg: node)
-                }
-            } else {
-                if let node = contact.bodyB.node, let eggType = node.name {
-                    s.gameLogic.setScore(eggType: eggType)
-                    s.gameLogic.deleteEgg(egg: node)
-                }
+            if let eggNode = eggNode(from: contact), let eggType = eggNode.name {
+                s.gameLogic.setScore(eggType: eggType)
+                s.gameLogic.deleteEgg(egg: eggNode)
             }
         }
 
@@ -82,5 +75,15 @@ class PhysicsContactHandler {
     /// Called when two physics bodies end contact (no-op for now)
     func didEnd(_ contact: SKPhysicsContact) {
         // nothing to do here yet
+    }
+
+    private func eggNode(from contact: SKPhysicsContact) -> SKNode? {
+        if contact.bodyA.categoryBitMask == PhysicsCategory.Egg {
+            return contact.bodyA.node
+        }
+        if contact.bodyB.categoryBitMask == PhysicsCategory.Egg {
+            return contact.bodyB.node
+        }
+        return nil
     }
 }

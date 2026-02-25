@@ -33,25 +33,36 @@ class Egg: SKSpriteNode {
     }
     
     //SETUP
-    
+
     func setup() {
-        
         eggTexture = Game.textureNamed("egg")
         goldenEggTexture = Game.textureNamed("goldenEgg")
-        
+
         if isGoldenEgg {
             texture = goldenEggTexture
             name = "GoldenEgg"
-            
         } else {
             texture = eggTexture
             name = "egg"
         }
-    
+
         zPosition = 98
-        physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2.3)
-        physicsBody!.categoryBitMask = PhysicsCategory.Egg
-        physicsBody!.contactTestBitMask = PhysicsCategory.Player | PhysicsCategory.eggDelete | PhysicsCategory.Enemy
-        physicsBody!.isDynamic = false
+        configurePhysicsForFlight()
+    }
+
+    func configurePhysicsForFlight() {
+        if physicsBody == nil {
+            physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2.3)
+        }
+
+        guard let body = physicsBody else { return }
+        body.categoryBitMask = PhysicsCategory.Egg
+        body.contactTestBitMask = PhysicsCategory.Player | PhysicsCategory.Enemy
+        body.collisionBitMask = PhysicsCategory.None
+        body.isDynamic = true
+        body.affectedByGravity = true
+        body.allowsRotation = true
+        body.linearDamping = 0
+        body.angularDamping = 0
     }
 }
