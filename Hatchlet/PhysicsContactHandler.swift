@@ -39,6 +39,7 @@ class PhysicsContactHandler {
 
         // Ground hits player → grass puff
         if collision == PhysicsCategory.Ground | PhysicsCategory.Player {
+            s.playerGroundContactCount += 1
             s.emitter.addEmitterOnPlayer(fileName: "grass",
                                          position: s.player.position,
                                          deleteTime: 0.4)
@@ -69,9 +70,14 @@ class PhysicsContactHandler {
         }
     }
 
-    /// Called when two physics bodies end contact (no-op for now)
+    /// Called when two physics bodies end contact
     func didEnd(_ contact: SKPhysicsContact) {
-        // nothing to do here yet
+        guard let s = scene else { return }
+        let collision = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
+
+        if collision == PhysicsCategory.Ground | PhysicsCategory.Player {
+            s.playerGroundContactCount = max(0, s.playerGroundContactCount - 1)
+        }
     }
 
     private func eggNode(from contact: SKPhysicsContact) -> SKNode? {

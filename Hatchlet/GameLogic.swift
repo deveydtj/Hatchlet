@@ -20,8 +20,12 @@ class GameLogic {
     private var eaglePool: [Eagle] = []
     private let maxPoolSize = 10
     private let extraEggGravity: CGFloat = -70
+    private let groundTrailSpawnDistance: CGFloat = 18
+    private let groundedVerticalSpeedThreshold: CGFloat = 25
     private var lastUpdateTime: TimeInterval = 0
     private var eggSpawnAccumulator: TimeInterval = 0
+    private var groundTrailDistanceAccumulator: CGFloat = 0
+    private var previousPlayerX: CGFloat?
     private var eggLaunchingEnabled: Bool = false
     private weak var introFoxNode: SKSpriteNode?
 
@@ -192,6 +196,9 @@ class GameLogic {
         s.eggSpeed = 50
         lastUpdateTime = 0
         eggSpawnAccumulator = 0
+        groundTrailDistanceAccumulator = 0
+        previousPlayerX = nil
+        s.playerGroundContactCount = 0
         eggLaunchingEnabled = false
         s.player.removeHome()
         s.addChild(s.pauseButton)
@@ -248,6 +255,9 @@ class GameLogic {
         s.eagle.stop()
         s.removeAction(forKey: "createEgg")
         eggSpawnAccumulator = 0
+        groundTrailDistanceAccumulator = 0
+        previousPlayerX = nil
+        s.playerGroundContactCount = 0
 
         // Remove eggs
         s.children
@@ -315,15 +325,23 @@ class GameLogic {
             egg.removeAllActions()
             egg.physicsBody = nil
             s.HUD.goldenEggUpdate()
+            let hudGoldenEggTarget = s.HUD.convert(s.HUD.goldenEgg.position, to: s)
+            let moveDuration: TimeInterval = 0.85
             let move = SKAction.move(
-                to: CGPoint(x: egg.frame.width, y: s.HUD.goldenEgg.position.y),
-                duration: 0.85
+                to: hudGoldenEggTarget,
+                duration: moveDuration
             )
             move.timingMode = .easeInEaseOut
+            let alignRotation = SKAction.rotate(
+                toAngle: s.HUD.goldenEgg.zRotation,
+                duration: moveDuration,
+                shortestUnitArc: true
+            )
+            let moveAndAlign = SKAction.group([move, alignRotation])
             let returnToPool = SKAction.run { [weak self] in
                 self?.returnEggToPool(eggNode)
             }
-            egg.run(.sequence([move, .wait(forDuration: 1.0), returnToPool]))
+            egg.run(.sequence([moveAndAlign, .wait(forDuration: 1.0), returnToPool]))
         } else {
             s.emitter.addEmitter(position: egg.position)
             returnEggToPool(eggNode)
@@ -497,6 +515,7 @@ class GameLogic {
         guard let playerPhysicsBody = s.player.physicsBody else { return }
         let playerVelocity = playerPhysicsBody.velocity
         let isPlayerStationary = playerVelocity == CGVector(dx: 0, dy: 0)
+        let gameplayActive = !s.const.gameOver && !s.newPaused && s.menu.parent == nil
 
         // Handle player flap animation
         if isPlayerStationary {
@@ -526,8 +545,31 @@ class GameLogic {
             s.HUD.enemyShadow.position.x = (s.fox.position.x + s.size.width / 2) - 5
         }
 
+        if previousPlayerX == nil {
+            previousPlayerX = s.player.position.x
+        }
+        let deltaX = abs(s.player.position.x - (previousPlayerX ?? s.player.position.x))
+        previousPlayerX = s.player.position.x
+
+        let shouldSpawnGroundTrail =
+            gameplayActive
+            && s.isPlayerGrounded
+            && abs(playerVelocity.dy) < groundedVerticalSpeedThreshold
+            && deltaX > 0.2
+
+        if shouldSpawnGroundTrail {
+            groundTrailDistanceAccumulator += deltaX
+            while groundTrailDistanceAccumulator >= groundTrailSpawnDistance {
+                s.emitter.addEmitterOnPlayer(fileName: "grass",
+                                             position: s.player.position,
+                                             deleteTime: 0.22)
+                groundTrailDistanceAccumulator -= groundTrailSpawnDistance
+            }
+        } else if !s.isPlayerGrounded {
+            groundTrailDistanceAccumulator = 0
+        }
+
         // Boost gravity for eggs so trajectories form readable arcs.
-        let gameplayActive = !s.const.gameOver && !s.newPaused && s.menu.parent == nil
         let visibleFrame = s.frame
         for egg in s.children.compactMap({ $0 as? Egg }) {
             guard let eggBody = egg.physicsBody, eggBody.isDynamic else { continue }

@@ -77,6 +77,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var touched: Bool = false
     var isTouching: Bool = false
     var prevTouchedNode = SKNode()
+    var playerGroundContactCount: Int = 0
+    var isPlayerGrounded: Bool { playerGroundContactCount > 0 }
 
     var newPaused: Bool = false {
         didSet {
