@@ -27,6 +27,7 @@ class GameLogic {
     private var groundTrailDistanceAccumulator: CGFloat = 0
     private var previousPlayerX: CGFloat?
     private var eggLaunchingEnabled: Bool = false
+    private var pendingGoldenEggCountIncrements: Int = 0
     private weak var introFoxNode: SKSpriteNode?
 
     init(scene: GameScene) {
@@ -200,6 +201,7 @@ class GameLogic {
         previousPlayerX = nil
         s.playerGroundContactCount = 0
         eggLaunchingEnabled = false
+        pendingGoldenEggCountIncrements = 0
         s.player.removeHome()
         s.addChild(s.pauseButton)
 
@@ -216,6 +218,7 @@ class GameLogic {
         s.HUD.addLife(howMany: 3)
         s.HUD.position.x = -(s.size.width/2)
         s.addChild(s.HUD)
+        s.HUD.setGoldenEggCount(s.const.goldenEggs)
 
         // Remove menu
         s.menu.removeFromParent()
@@ -239,6 +242,7 @@ class GameLogic {
         guard let s = scene else { return }
         s.const.gameOver = true
         eggLaunchingEnabled = false
+        pendingGoldenEggCountIncrements = 0
         introFoxNode?.removeAllActions()
         introFoxNode?.removeFromParent()
         introFoxNode = nil
@@ -324,6 +328,9 @@ class GameLogic {
         if egg.name == "GoldenEgg" {
             egg.removeAllActions()
             egg.physicsBody = nil
+            pendingGoldenEggCountIncrements += 1
+            let pendingDisplayCount = s.const.goldenEggs + pendingGoldenEggCountIncrements
+            s.HUD.setGoldenEggCount(pendingDisplayCount)
             s.HUD.goldenEggUpdate()
             let hudGoldenEggTarget = s.HUD.convert(s.HUD.goldenEgg.position, to: s)
             let moveDuration: TimeInterval = 0.85
@@ -338,10 +345,18 @@ class GameLogic {
                 shortestUnitArc: true
             )
             let moveAndAlign = SKAction.group([move, alignRotation])
+            let updateGoldenEggCount = SKAction.run { [weak self, weak s] in
+                guard let self, let s else { return }
+                let committedCount = s.const.goldenEggs + 1
+                s.const.setGoldenEggs(value: committedCount)
+                self.pendingGoldenEggCountIncrements = max(0, self.pendingGoldenEggCountIncrements - 1)
+                let displayCount = s.const.goldenEggs + self.pendingGoldenEggCountIncrements
+                s.HUD.setGoldenEggCount(displayCount, animated: true)
+            }
             let returnToPool = SKAction.run { [weak self] in
                 self?.returnEggToPool(eggNode)
             }
-            egg.run(.sequence([moveAndAlign, .wait(forDuration: 1.0), returnToPool]))
+            egg.run(.sequence([moveAndAlign, updateGoldenEggCount, .wait(forDuration: 1.0), returnToPool]))
         } else {
             s.emitter.addEmitter(position: egg.position)
             returnEggToPool(eggNode)
@@ -367,10 +382,7 @@ class GameLogic {
         if s.scoreNum >= 2 {
             s.tut.delete()
         }
-        if eggType == "GoldenEgg" {
-            s.const.goldenEggs += 1
-            UserDefaults.standard.set(s.const.goldenEggs, forKey: "goldenEggs")
-        } else {
+        if eggType != "GoldenEgg" {
             s.scoreNum += 1
         }
         s.HUD.scoreLabel.text = "\(s.scoreNum)"

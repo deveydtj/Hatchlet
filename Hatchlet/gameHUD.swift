@@ -21,6 +21,8 @@ class gameHUD: SKNode {
     
     let goldenEgg: SKSpriteNode
     let goldenEggTexture: SKTexture
+    var goldenEggCountLabel: SKLabelNode
+    var goldenEggCountShadow: SKLabelNode
     
     let eggDelete: SKSpriteNode
     
@@ -41,6 +43,8 @@ class gameHUD: SKNode {
         
         goldenEggTexture = Game.textureNamed("goldenEgg")
         goldenEgg = Egg()
+        goldenEggCountLabel = SKLabelNode()
+        goldenEggCountShadow = SKLabelNode()
         
         emitter = Emitters(size: size)
         scoreLabel = SKLabelNode()
@@ -112,6 +116,30 @@ class gameHUD: SKNode {
         goldenEgg.scale(to: CGSize(width: 0.1, height: 0.1))
         goldenEgg.physicsBody = nil
         goldenEgg.texture = goldenEggTexture
+
+        addChild(goldenEggCountShadow)
+        goldenEggCountShadow.fontColor = .init(displayP3Red: 0.0, green: 0.0, blue: 0.0, alpha: 0.7)
+        goldenEggCountShadow.fontSize = 35
+        goldenEggCountShadow.fontName = "AmaticSC-Bold"
+        goldenEggCountShadow.horizontalAlignmentMode = .left
+        goldenEggCountShadow.verticalAlignmentMode = .center
+        goldenEggCountShadow.position = CGPoint(x: goldenEgg.position.x + 2, y: goldenEgg.position.y - 2)
+        goldenEggCountShadow.zPosition = 119
+        goldenEggCountShadow.alpha = 0
+
+        addChild(goldenEggCountLabel)
+        goldenEggCountLabel.fontColor = .init(displayP3Red: 250.0/255.0, green: 209.0/255.0, blue: 92.0/255.0, alpha: 1)
+        goldenEggCountLabel.fontSize = 35
+        goldenEggCountLabel.fontName = "AmaticSC-Bold"
+        goldenEggCountLabel.horizontalAlignmentMode = .left
+        goldenEggCountLabel.verticalAlignmentMode = .center
+        goldenEggCountLabel.position = CGPoint(
+            x: goldenEgg.position.x + (goldenEgg.size.width * 0.5) + 6,
+            y: goldenEgg.position.y
+        )
+        goldenEggCountLabel.zPosition = 120
+        goldenEggCountLabel.alpha = 0
+        setGoldenEggCount(0)
         
         
         playerShadow.position.y = 48
@@ -217,18 +245,60 @@ class gameHUD: SKNode {
     }
     
     func goldenEggUpdate() {
-        let wait = SKAction.wait(forDuration: 1.9)
-        let upScale = SKAction.scale(to: 1, duration: 0.25)
-        let fadeIn = SKAction.fadeIn(withDuration: 0.25)
+        updateGoldenEggCountLayout()
+
+        let scaleUpDuration: TimeInterval = 0.25
+        let visibleHoldDuration: TimeInterval = 1.9
+        let fadeOutDuration: TimeInterval = 0.5
+
+        let wait = SKAction.wait(forDuration: visibleHoldDuration)
+        let upScale = SKAction.scale(to: 1, duration: scaleUpDuration)
+        let fadeIn = SKAction.fadeIn(withDuration: scaleUpDuration)
         let sequence1 = SKAction.sequence([upScale, fadeIn])
         
         goldenEgg.run(sequence1)
         
-        let downScale = SKAction.scale(to: 0.1, duration: 0.5)
-        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+        let downScale = SKAction.scale(to: 0.1, duration: fadeOutDuration)
+        let fadeOut = SKAction.fadeOut(withDuration: fadeOutDuration)
         let sequence2 = SKAction.sequence([downScale, fadeOut])
         let seq = SKAction.sequence([wait,sequence2])
 
         goldenEgg.run(seq)
+
+        goldenEggCountLabel.removeAction(forKey: "goldenEggCountVisibility")
+        goldenEggCountShadow.removeAction(forKey: "goldenEggCountVisibility")
+
+        let countStartDelay = SKAction.wait(forDuration: scaleUpDuration)
+        let countFadeIn = SKAction.fadeIn(withDuration: scaleUpDuration)
+        let countHoldDuration = max(0, visibleHoldDuration - scaleUpDuration)
+        let countHold = SKAction.wait(forDuration: countHoldDuration)
+        let countVisibilitySequence = SKAction.sequence([countStartDelay, countFadeIn, countHold, fadeOut])
+        goldenEggCountLabel.run(countVisibilitySequence, withKey: "goldenEggCountVisibility")
+        goldenEggCountShadow.run(countVisibilitySequence, withKey: "goldenEggCountVisibility")
+    }
+
+    func setGoldenEggCount(_ value: Int, animated: Bool = false) {
+        let text = "\(value)"
+        goldenEggCountLabel.text = text
+        goldenEggCountShadow.text = text
+        updateGoldenEggCountLayout()
+
+        guard animated else { return }
+        let pulse = SKAction.sequence([
+            SKAction.scale(to: 1.2, duration: 0.08),
+            SKAction.scale(to: 1.0, duration: 0.12)
+        ])
+        goldenEggCountLabel.run(pulse, withKey: "goldenEggCountPulse")
+        goldenEggCountShadow.run(pulse, withKey: "goldenEggCountPulse")
+    }
+
+    private func updateGoldenEggCountLayout() {
+        let eggHalfWidth = goldenEgg.size.width * 0.5
+        let buffer: CGFloat = 6
+        let baseX = goldenEgg.position.x + eggHalfWidth + buffer
+        let baseY = goldenEgg.position.y
+
+        goldenEggCountLabel.position = CGPoint(x: baseX, y: baseY)
+        goldenEggCountShadow.position = CGPoint(x: baseX + 2, y: baseY - 2)
     }
 }

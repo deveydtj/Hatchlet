@@ -126,6 +126,10 @@ The game includes rich visual assets:
 - **Consistent naming** and file organization
 - **Modular design** for easy maintenance and feature additions
 
+## 📝 Feature Specifications
+
+- [Golden Egg HUD Text Behavior (documentation-only)](docs/golden-egg-hud-text.md)
+
 ## 🐛 Known Issues
 
 This project has been analyzed and several improvements have been made:
