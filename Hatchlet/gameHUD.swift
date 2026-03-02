@@ -264,17 +264,35 @@ class gameHUD: SKNode {
         let seq = SKAction.sequence([wait,sequence2])
 
         goldenEgg.run(seq)
+    }
+
+    /// Shows the golden egg counter text after the traveling golden egg reaches the HUD.
+    /// The counter remains hidden at run start; this method reveals it on first completion.
+    ///
+    /// `travelDuration` should match the duration used for the traveling egg move action.
+    func goldenEggCounterShow(travelDuration: TimeInterval) {
+        updateGoldenEggCountLayout()
+
+        let fadeInDuration: TimeInterval = 0.12
+        let iconVisibleHoldDuration: TimeInterval = 1.9
+        let fadeOutDuration: TimeInterval = 0.5
+
+        // Try to roughly align the counter fade-out with the icon fade-out end.
+        // Icon fade-out begins at `iconVisibleHoldDuration` after collision and ends
+        // after `fadeOutDuration`.
+        let totalUntilIconFadeOutEnd = iconVisibleHoldDuration + fadeOutDuration
+        let holdDuration = max(0, totalUntilIconFadeOutEnd - travelDuration - fadeInDuration - fadeOutDuration)
 
         goldenEggCountLabel.removeAction(forKey: "goldenEggCountVisibility")
         goldenEggCountShadow.removeAction(forKey: "goldenEggCountVisibility")
 
-        let countStartDelay = SKAction.wait(forDuration: scaleUpDuration)
-        let countFadeIn = SKAction.fadeIn(withDuration: scaleUpDuration)
-        let countHoldDuration = max(0, visibleHoldDuration - scaleUpDuration)
-        let countHold = SKAction.wait(forDuration: countHoldDuration)
-        let countVisibilitySequence = SKAction.sequence([countStartDelay, countFadeIn, countHold, fadeOut])
-        goldenEggCountLabel.run(countVisibilitySequence, withKey: "goldenEggCountVisibility")
-        goldenEggCountShadow.run(countVisibilitySequence, withKey: "goldenEggCountVisibility")
+        let fadeIn = SKAction.fadeIn(withDuration: fadeInDuration)
+        let hold = SKAction.wait(forDuration: holdDuration)
+        let fadeOut = SKAction.fadeOut(withDuration: fadeOutDuration)
+        let seq = SKAction.sequence([fadeIn, hold, fadeOut])
+
+        goldenEggCountLabel.run(seq, withKey: "goldenEggCountVisibility")
+        goldenEggCountShadow.run(seq, withKey: "goldenEggCountVisibility")
     }
 
     func setGoldenEggCount(_ value: Int, animated: Bool = false) {

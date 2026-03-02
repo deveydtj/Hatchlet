@@ -27,6 +27,8 @@ class GameLogic {
     private var groundTrailDistanceAccumulator: CGFloat = 0
     private var previousPlayerX: CGFloat?
     private var eggLaunchingEnabled: Bool = false
+    // Tracks golden egg HUD travel animations that have been triggered but not yet
+    // applied to the displayed HUD count (which updates only after travel completes).
     private var pendingGoldenEggCountIncrements: Int = 0
     private weak var introFoxNode: SKSpriteNode?
 
@@ -328,12 +330,32 @@ class GameLogic {
         if egg.name == "GoldenEgg" {
             egg.removeAllActions()
             egg.physicsBody = nil
+
+            // 1) Update authoritative currency immediately.
+            let committedCount = s.const.goldenEggs + 1
+            s.const.setGoldenEggs(value: committedCount)
+
+            // 2) Trigger HUD icon feedback immediately, but delay the displayed
+            //    number update until the traveling egg animation completes.
             pendingGoldenEggCountIncrements += 1
-            let pendingDisplayCount = s.const.goldenEggs + pendingGoldenEggCountIncrements
-            s.HUD.setGoldenEggCount(pendingDisplayCount)
             s.HUD.goldenEggUpdate()
+
             let hudGoldenEggTarget = s.HUD.convert(s.HUD.goldenEgg.position, to: s)
-            let moveDuration: TimeInterval = 0.85
+
+            // Distance-aware duration (subtle) so eggs already near the HUD don't
+            // feel laggy, but also never look unnaturally fast.
+            let dx = hudGoldenEggTarget.x - egg.position.x
+            let dy = hudGoldenEggTarget.y - egg.position.y
+            let distance = sqrt((dx * dx) + (dy * dy))
+            let moveDuration: TimeInterval
+            if distance < 160 {
+                moveDuration = 0.60
+            } else if distance < 320 {
+                moveDuration = 0.72
+            } else {
+                moveDuration = 0.85
+            }
+
             let move = SKAction.move(
                 to: hudGoldenEggTarget,
                 duration: moveDuration
@@ -347,11 +369,10 @@ class GameLogic {
             let moveAndAlign = SKAction.group([move, alignRotation])
             let updateGoldenEggCount = SKAction.run { [weak self, weak s] in
                 guard let self, let s else { return }
-                let committedCount = s.const.goldenEggs + 1
-                s.const.setGoldenEggs(value: committedCount)
                 self.pendingGoldenEggCountIncrements = max(0, self.pendingGoldenEggCountIncrements - 1)
-                let displayCount = s.const.goldenEggs + self.pendingGoldenEggCountIncrements
+                let displayCount = s.const.goldenEggs - self.pendingGoldenEggCountIncrements
                 s.HUD.setGoldenEggCount(displayCount, animated: true)
+                s.HUD.goldenEggCounterShow(travelDuration: moveDuration)
             }
             let returnToPool = SKAction.run { [weak self] in
                 self?.returnEggToPool(eggNode)
