@@ -165,7 +165,9 @@ class Menu: SKNode {
         guard textureNames.count > targetCount else { return textureNames }
 
         let frameStep = max(1, Int(ceil(Double(textureNames.count) / Double(targetCount))))
-        var sampledNames = Swift.stride(from: 0, to: textureNames.count, by: frameStep).map { textureNames[$0] }
+        var sampledNames = Swift.stride(from: 0, to: textureNames.count, by: frameStep)
+            .prefix(targetCount - 1)
+            .map { textureNames[$0] }
 
         if let lastName = textureNames.last, sampledNames.last != lastName {
             sampledNames.append(lastName)
