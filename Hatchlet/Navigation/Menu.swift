@@ -66,7 +66,7 @@ class Menu: SKNode {
         let targetPlayFrameCount = Self.recommendedPlayFrameCount(
             fullCount: playAtlas.textureNames.count
         )
-        let sortedPlayFrameNames = playAtlas.textureNames.sorted(by: compareFrameNames)
+        let sortedPlayFrameNames = sortedByFrameIndex(playAtlas.textureNames)
         let sampledPlayFrameNames = Self.sampledFrameNames(
             from: sortedPlayFrameNames,
             targetCount: targetPlayFrameCount
