@@ -7,14 +7,15 @@ func frameIndex(from textureName: String) -> Int {
 
 /// Sorts texture atlas frame names in ascending frame order, parsing each
 /// name's numeric index only once to avoid repeated work during comparison.
+/// Names with equal numeric indices are ordered lexicographically for determinism.
 func sortedByFrameIndex(_ names: [String]) -> [String] {
     names
         .map { ($0, frameIndex(from: $0)) }
-        .sorted { $0.1 < $1.1 }
+        .sorted { lhs, rhs in
+            if lhs.1 != rhs.1 {
+                return lhs.1 < rhs.1
+            }
+            return lhs.0 < rhs.0
+        }
         .map { $0.0 }
-}
-
-/// Comparator for sorting texture atlas frame names in ascending frame order.
-func compareFrameNames(_ lhs: String, _ rhs: String) -> Bool {
-    frameIndex(from: lhs) < frameIndex(from: rhs)
 }
