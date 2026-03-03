@@ -28,7 +28,7 @@ class Player: SKSpriteNode {
     let eggHome: SKSpriteNode
     
     // Cached flap action so gameplay does not rebuild it every cycle.
-    private var flapAction = SKAction.wait(forDuration: 0)
+    private var flapAction = SKAction.wait(forDuration: 0.0)
     
     // Cached random value for performance optimization
     private var nextBlinkRandom = Int.random(in: 1...20)
