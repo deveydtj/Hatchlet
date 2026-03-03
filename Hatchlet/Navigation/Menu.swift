@@ -156,10 +156,8 @@ class Menu: SKNode {
     private static func sampledFrameNames(from textureNames: [String], targetCount: Int) -> [String] {
         guard !textureNames.isEmpty else { return [] }
 
-        guard targetCount > 0 else { return [] }
-
-        if targetCount == 1 {
-            return [textureNames[0]]
+        guard targetCount > 1 else {
+            return targetCount == 1 ? [textureNames[0]] : []
         }
 
         guard textureNames.count > targetCount else { return textureNames }
