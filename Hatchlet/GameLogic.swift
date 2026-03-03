@@ -338,6 +338,7 @@ class GameLogic {
         // End screen
         s.endScreen = EndScreen(size: s.size, score: s.scoreNum)
         s.addChild(s.endScreen)
+        setIdlePresentationState(isIdle: true)
         s.scoreNum = 0
     }
 
