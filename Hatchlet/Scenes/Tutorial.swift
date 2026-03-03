@@ -48,7 +48,7 @@ class Tut: SKNode {
         tutAtlas.preload {
         }
         
-        let tutTextureNames = tutAtlas.textureNames.sorted(by: compareFrameNames)
+        let tutTextureNames = sortedByFrameIndex(tutAtlas.textureNames)
         tutArray = tutTextureNames.map { tutAtlas.textureNamed($0) }
         
     

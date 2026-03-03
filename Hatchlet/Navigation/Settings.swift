@@ -67,7 +67,7 @@ class Settings: SKNode {
         eggSwitchAtlas.preload {
         }
         
-        let eggSwitchTextureNames = eggSwitchAtlas.textureNames.sorted(by: compareFrameNames)
+        let eggSwitchTextureNames = sortedByFrameIndex(eggSwitchAtlas.textureNames)
         eggSwitchArray = eggSwitchTextureNames.map { eggSwitchAtlas.textureNamed($0) }
         
 //        for i in 0...(gameDiffAtlas.textureNames.count - 1) {
