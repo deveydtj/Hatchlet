@@ -164,16 +164,21 @@ class Menu: SKNode {
 
         guard textureNames.count > targetCount else { return textureNames }
 
-        let frameStep = max(1, Int(ceil(Double(textureNames.count) / Double(targetCount))))
-        var sampledNames = Swift.stride(from: 0, to: textureNames.count, by: frameStep)
-            .prefix(targetCount - 1)
-            .map { textureNames[$0] }
+        let lastIndex = textureNames.count - 1
+        let step = Double(lastIndex) / Double(targetCount - 1)
 
-        if let lastName = textureNames.last, sampledNames.last != lastName {
-            sampledNames.append(lastName)
+        var indices: [Int] = []
+        indices.reserveCapacity(targetCount)
+
+        for i in 0..<targetCount {
+            var index = Int(round(Double(i) * step))
+            if let last = indices.last, index <= last {
+                index = min(last + 1, lastIndex)
+            }
+            indices.append(index)
         }
 
-        return sampledNames
+        return indices.map { textureNames[$0] }
     }
     
     private static func recommendedPlayFrameCount(fullCount: Int) -> Int {
