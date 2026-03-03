@@ -22,6 +22,7 @@ class Tut: SKNode {
     
     var tutAtlas = SKTextureAtlas()
     var tutArray = [SKTexture]()
+    private var tutTextureNames = [String]()
     
     init(size: CGSize){
         self.size = size
@@ -48,13 +49,11 @@ class Tut: SKNode {
         tutAtlas.preload {
         }
         
-        for i in 0...(tutAtlas.textureNames.count - 1) {
-            let name = "tutorial\(i).png"
-            tutArray.append(SKTexture(imageNamed: name))
-        }
+        tutTextureNames = tutAtlas.textureNames.sorted(by: Self.compareFrameNames)
+        tutArray = tutTextureNames.map { tutAtlas.textureNamed($0) }
         
     
-        tut.texture = tutAtlas.textureNamed(tutAtlas.textureNames[1])
+        tut.texture = tutArray.indices.contains(1) ? tutArray[1] : tutArray.first
         tut.name = "tut"
         tut.size = CGSize(width: 80, height: 122)
         tut.position = CGPoint(x: 0, y: 0)
@@ -105,5 +104,14 @@ class Tut: SKNode {
             self.removeFromParent()
         }
 
+    }
+    
+    private static func compareFrameNames(_ lhs: String, _ rhs: String) -> Bool {
+        frameIndex(from: lhs) < frameIndex(from: rhs)
+    }
+    
+    private static func frameIndex(from textureName: String) -> Int {
+        let digits = textureName.filter(\.isNumber)
+        return Int(digits) ?? 0
     }
 }

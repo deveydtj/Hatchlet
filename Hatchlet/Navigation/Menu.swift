@@ -11,6 +11,7 @@ import SpriteKit
 
 class Menu: SKNode {
     let size: CGSize
+    private let playAnimationDuration: TimeInterval = 1.0
     
     let title: SKLabelNode
     var titleShadow: SKLabelNode
@@ -19,6 +20,7 @@ class Menu: SKNode {
     var playAtlas = SKTextureAtlas()
     var shopArrary = [SKTexture]()
     var playArray = [SKTexture]()
+    private var playAnimationAction = SKAction()
     
     let bin: SKSpriteNode
     
@@ -61,10 +63,15 @@ class Menu: SKNode {
         playAtlas.preload {
         }
         
-        for i in 0...(playAtlas.textureNames.count - 1) {
-            let name = "playButton\(i).png"
-            playArray.append(SKTexture(imageNamed: name))
-        }
+        let targetPlayFrameCount = Self.recommendedPlayFrameCount(
+            fullCount: playAtlas.textureNames.count
+        )
+        let sortedPlayFrameNames = playAtlas.textureNames.sorted(by: Self.comparePlayFrames)
+        let sampledPlayFrameNames = Self.sampledFrameNames(
+            from: sortedPlayFrameNames,
+            targetCount: targetPlayFrameCount
+        )
+        playArray = sampledPlayFrameNames.map { playAtlas.textureNamed($0) }
         
         name = "MENU"
         title.text = "Hatchlet"
@@ -87,9 +94,9 @@ class Menu: SKNode {
         playButton.position = CGPoint(x: 0, y: 0)
         playButton.zPosition = 15
         
-        //shopButton.texture = MenuAtlas.textureNamed(shopAtlas.textureNames[1] )
-        
-        playButton.texture = MenuAtlas.textureNamed(playAtlas.textureNames[1] )
+        if let firstFrame = playArray.first {
+            playButton.texture = firstFrame
+        }
         
         shopButton.texture = MenuAtlas.textureNamed("shop")
         shopButton.name = "shopButton"
@@ -120,17 +127,22 @@ class Menu: SKNode {
         addChild(shopButton)
         addChild(settingsButton)
         addChild(crownButton)
+        
+        if playArray.count > 1 {
+            let frameDuration = playAnimationDuration / Double(playArray.count)
+            let animate = SKAction.animate(with: playArray, timePerFrame: frameDuration, resize: false, restore: false)
+            let intro = SKAction.sequence([animate, SKAction.wait(forDuration: 0.3)])
+            let loop = SKAction.sequence([animate, SKAction.wait(forDuration: 2.0)])
+            playAnimationAction = SKAction.repeatForever(SKAction.sequence([intro, loop]))
+        } else {
+            playAnimationAction = SKAction()
+        }
     }
     
     func show() {
-        let animate = SKAction.animate(with: playArray, timePerFrame: 0.0084)
-        
-        let seq = SKAction.sequence([animate, SKAction.wait(forDuration: 0.3)])
-        let seq2 = SKAction.sequence([animate, SKAction.wait(forDuration: 2.0)])
-        let seq3 = SKAction.sequence([seq,seq2])
-        
-        playButton.run(SKAction.repeatForever(seq3))
-        
+        if playArray.count > 1, playButton.action(forKey: "menuPlayAnimation") == nil {
+            playButton.run(playAnimationAction, withKey: "menuPlayAnimation")
+        }
         //shopButton.run(SKAction.repeatForever(SKAction.animate(with: shopArrary, timePerFrame: 0.006)))
     }
     
@@ -139,5 +151,42 @@ class Menu: SKNode {
         removeAllActions()
         removeAllChildren()
         removeFromParent()
+    }
+    
+    private static func comparePlayFrames(_ lhs: String, _ rhs: String) -> Bool {
+        frameIndex(from: lhs) < frameIndex(from: rhs)
+    }
+    
+    private static func frameIndex(from textureName: String) -> Int {
+        let digits = textureName.filter(\.isNumber)
+        return Int(digits) ?? 0
+    }
+    
+    private static func sampledFrameNames(from textureNames: [String], targetCount: Int) -> [String] {
+        guard textureNames.count > targetCount, targetCount > 1 else { return textureNames }
+        
+        let frameStep = max(1, Int(ceil(Double(textureNames.count) / Double(targetCount))))
+        var sampledNames = Swift.stride(from: 0, to: textureNames.count, by: frameStep).map { textureNames[$0] }
+        
+        if let lastName = textureNames.last, sampledNames.last != lastName {
+            sampledNames.append(lastName)
+        }
+        
+        return sampledNames
+    }
+    
+    private static func recommendedPlayFrameCount(fullCount: Int) -> Int {
+        if ProcessInfo.processInfo.isLowPowerModeEnabled {
+            return 1
+        }
+
+        let physicalMemory = ProcessInfo.processInfo.physicalMemory
+        if physicalMemory >= 5_000_000_000 {
+            return fullCount
+        }
+        if physicalMemory >= 4_000_000_000 {
+            return min(24, fullCount)
+        }
+        return min(12, fullCount)
     }
 }

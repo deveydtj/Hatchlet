@@ -21,6 +21,7 @@ class GameViewController: UIViewController {
         scene.scaleMode = .aspectFill
         
         view.ignoresSiblingOrder = true
+        view.isMultipleTouchEnabled = false
         view.preferredFramesPerSecond = 60
 #if DEBUG
         view.showsDrawCount = false
