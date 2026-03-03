@@ -35,7 +35,6 @@ class Settings: SKNode {
     var gameDiff: SKSpriteNode
     
     let MenuAtlas = SKTextureAtlas(named: "Menu")
-    private var eggSwitchTextureNames = [String]()
     
     init(size: CGSize){
         self.size = size
@@ -68,7 +67,7 @@ class Settings: SKNode {
         eggSwitchAtlas.preload {
         }
         
-        eggSwitchTextureNames = eggSwitchAtlas.textureNames.sorted(by: Self.compareFrameNames)
+        let eggSwitchTextureNames = eggSwitchAtlas.textureNames.sorted(by: compareFrameNames)
         eggSwitchArray = eggSwitchTextureNames.map { eggSwitchAtlas.textureNamed($0) }
         
 //        for i in 0...(gameDiffAtlas.textureNames.count - 1) {
@@ -190,14 +189,5 @@ class Settings: SKNode {
         removeAllActions()
         removeAllChildren()
         removeFromParent()
-    }
-    
-    private static func compareFrameNames(_ lhs: String, _ rhs: String) -> Bool {
-        frameIndex(from: lhs) < frameIndex(from: rhs)
-    }
-    
-    private static func frameIndex(from textureName: String) -> Int {
-        let digits = textureName.filter(\.isNumber)
-        return Int(digits) ?? 0
     }
 }

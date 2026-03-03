@@ -22,7 +22,6 @@ class Tut: SKNode {
     
     var tutAtlas = SKTextureAtlas()
     var tutArray = [SKTexture]()
-    private var tutTextureNames = [String]()
     
     init(size: CGSize){
         self.size = size
@@ -49,7 +48,7 @@ class Tut: SKNode {
         tutAtlas.preload {
         }
         
-        tutTextureNames = tutAtlas.textureNames.sorted(by: Self.compareFrameNames)
+        let tutTextureNames = tutAtlas.textureNames.sorted(by: compareFrameNames)
         tutArray = tutTextureNames.map { tutAtlas.textureNamed($0) }
         
     
@@ -104,14 +103,5 @@ class Tut: SKNode {
             self.removeFromParent()
         }
 
-    }
-    
-    private static func compareFrameNames(_ lhs: String, _ rhs: String) -> Bool {
-        frameIndex(from: lhs) < frameIndex(from: rhs)
-    }
-    
-    private static func frameIndex(from textureName: String) -> Int {
-        let digits = textureName.filter(\.isNumber)
-        return Int(digits) ?? 0
     }
 }

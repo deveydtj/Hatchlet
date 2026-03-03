@@ -66,7 +66,7 @@ class Menu: SKNode {
         let targetPlayFrameCount = Self.recommendedPlayFrameCount(
             fullCount: playAtlas.textureNames.count
         )
-        let sortedPlayFrameNames = playAtlas.textureNames.sorted(by: Self.comparePlayFrames)
+        let sortedPlayFrameNames = playAtlas.textureNames.sorted(by: compareFrameNames)
         let sampledPlayFrameNames = Self.sampledFrameNames(
             from: sortedPlayFrameNames,
             targetCount: targetPlayFrameCount
@@ -151,15 +151,6 @@ class Menu: SKNode {
         removeAllActions()
         removeAllChildren()
         removeFromParent()
-    }
-    
-    private static func comparePlayFrames(_ lhs: String, _ rhs: String) -> Bool {
-        frameIndex(from: lhs) < frameIndex(from: rhs)
-    }
-    
-    private static func frameIndex(from textureName: String) -> Int {
-        let digits = textureName.filter(\.isNumber)
-        return Int(digits) ?? 0
     }
     
     private static func sampledFrameNames(from textureNames: [String], targetCount: Int) -> [String] {
