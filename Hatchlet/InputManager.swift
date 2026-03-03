@@ -15,18 +15,47 @@ class InputManager {
     init(scene: GameScene) {
         self.scene = scene
     }
+    
+    private func currentInteractionRoot(in scene: GameScene) -> SKNode {
+        if scene.pauseScreen.parent != nil { return scene.pauseScreen }
+        if scene.shop.parent != nil { return scene.shop }
+        if scene.settings.parent != nil { return scene.settings }
+        if scene.crown.parent != nil { return scene.crown }
+        if scene.endScreen.parent != nil { return scene.endScreen }
+        if scene.menu.parent != nil { return scene.menu }
+        return scene
+    }
+    
+    private func touchedNode(for touch: UITouch, in scene: GameScene) -> SKNode {
+        if scene.menu.parent != nil {
+            let location = touch.location(in: scene.menu)
+            let buttons = [
+                scene.menu.playButton,
+                scene.menu.shopButton,
+                scene.menu.settingsButton,
+                scene.menu.crownButton
+            ]
+            return buttons.first(where: { $0.frame.contains(location) }) ?? scene.menu
+        }
+        
+        let interactionRoot = currentInteractionRoot(in: scene)
+        let location = touch.location(in: interactionRoot)
+        return interactionRoot.atPoint(location)
+    }
 
     func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let scene = scene else { return }
-        scene.touched = true
-        
+
         // Update touch location
         guard let touch = touches.first else { return }
         scene.location = touch.location(in: scene)
-        let positionInScene = touch.location(in: scene)
-        let touchedNode = scene.atPoint(positionInScene)
+        let touchedNode = touchedNode(for: touch, in: scene)
+        let isGameplayActive = !scene.const.gameOver && !scene.newPaused && scene.menu.parent == nil
+        let isMainMenuActive = scene.menu.parent != nil
+        let isEndScreenActive = scene.endScreen.parent != nil
 
-        if !scene.const.gameOver && !scene.newPaused {
+        if isGameplayActive {
+            scene.touched = true
             // Regular flap
             scene.player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 145))
             scene.emitter.addEmitterOnPlayer(
@@ -39,10 +68,16 @@ class InputManager {
                 scene.gameLogic.showPauseScreen()
             }
         } else {
-            // Post-game or paused: small hop & menu button presses
-            scene.player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 15))
+            let allowsPlayerInteraction = isMainMenuActive || isEndScreenActive
+            scene.touched = allowsPlayerInteraction
+            if allowsPlayerInteraction {
+                scene.player.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 15))
+            }
+            // Menu / overlay state: only animate actual button presses.
             for nodeName in scene.const.touchableButtons {
                 if nodeName == touchedNode.name {
+                    scene.prevTouchedNode = touchedNode
+                    scene.isTouching = true
                     touchedNode.run(.scale(to: 0.80, duration: 0.15))
                 }
             }
@@ -51,11 +86,17 @@ class InputManager {
 
     func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let scene = scene else { return }
-        // Track drag-over button highlighting
-        for touch in touches {
-            scene.location = touch.location(in: scene)
+        let isGameplayActive = !scene.const.gameOver && !scene.newPaused && scene.menu.parent == nil
+        let isMainMenuActive = scene.menu.parent != nil
+        let isEndScreenActive = scene.endScreen.parent != nil
+        if !isGameplayActive, !isMainMenuActive, !isEndScreenActive, !scene.isTouching {
+            return
         }
-        let touchedNode = scene.atPoint(scene.location)
+        
+        // Track drag-over button highlighting
+        guard let touch = touches.first else { return }
+        scene.location = touch.location(in: scene)
+        let touchedNode = touchedNode(for: touch, in: scene)
         
         var touchingNode = ""
         for nodeName in scene.const.touchableButtons {
@@ -79,11 +120,11 @@ class InputManager {
         guard let scene = scene else { return }
         scene.touched = false
         scene.const.checked = false
+        scene.isTouching = false
 
         guard let touch = touches.first else { return }
         scene.location = touch.location(in: scene)
-        let positionInScene = touch.location(in: scene)
-        let touchedNode = scene.atPoint(positionInScene)
+        let touchedNode = touchedNode(for: touch, in: scene)
         let nodeName = touchedNode.name ?? ""
 
         // Always allow menu play button to start gameplay.
@@ -95,6 +136,7 @@ class InputManager {
         // Resume from pause
         if touchedNode.name == "playButton" {
             scene.newPaused = false
+            scene.emitter.setAirParticlesActive(true)
             scene.pauseScreen.removeAllActions()
             scene.pauseScreen.removeFromParent()
             if let physicsBody = scene.player.physicsBody, !physicsBody.isDynamic {

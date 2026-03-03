@@ -14,6 +14,7 @@ class Emitters:SKNode {
     
     let Particles = SKTextureAtlas(named: "Particles")
     private var emitterTemplates: [String: SKEmitterNode] = [:]
+    private var ambientAirParticleBirthRate: CGFloat?
     private let cachedEmitterNames = [
         "spark", "playerSmoke", "airParticles",
         "feathers", "grass", "newSpark", "eggCoin"
@@ -64,6 +65,7 @@ class Emitters:SKNode {
             emitter.name = "airParticles"
             emitter.zPosition = 4
             emitter.particlePositionRange = CGVector(dx: 0, dy: size.height / 1.5)
+            ambientAirParticleBirthRate = emitter.particleBirthRate
         }
         
         if fileName == "playerSmoke"  {
@@ -132,5 +134,14 @@ class Emitters:SKNode {
         guard let test = childNode(withName: "airParticles") as? SKEmitterNode else { return }
         
         test.particleSpeed = 45
+    }
+    
+    func setAirParticlesActive(_ isActive: Bool) {
+        guard let airParticles = childNode(withName: "airParticles") as? SKEmitterNode else { return }
+        if ambientAirParticleBirthRate == nil {
+            ambientAirParticleBirthRate = airParticles.particleBirthRate
+        }
+        guard let cachedRate = ambientAirParticleBirthRate else { return }
+        airParticles.particleBirthRate = isActive ? cachedRate : 0
     }
 }

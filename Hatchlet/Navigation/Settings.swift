@@ -67,17 +67,15 @@ class Settings: SKNode {
         eggSwitchAtlas.preload {
         }
         
-        for i in 0...(eggSwitchAtlas.textureNames.count - 1) {
-                   let name = "eggSwitch\(i).png"
-                   eggSwitchArray.append(SKTexture(imageNamed: name))
-               }
+        let eggSwitchTextureNames = sortedByFrameIndex(eggSwitchAtlas.textureNames)
+        eggSwitchArray = eggSwitchTextureNames.map { eggSwitchAtlas.textureNamed($0) }
         
 //        for i in 0...(gameDiffAtlas.textureNames.count - 1) {
 //                   let name = "gameDiff\(i).png"
 //                   gameDiffArray.append(SKTexture(imageNamed: name))
 //               }
         
-        eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[1] )
+        eggSwitch.texture = eggSwitchArray.indices.contains(1) ? eggSwitchArray[1] : eggSwitchArray.first
         eggSwitch.name = "eggSwitchTutorial"
         eggSwitch.size = CGSize(width: 132.6, height: 41.05)
         eggSwitch.position = CGPoint(x: 72, y: 14)
@@ -147,12 +145,12 @@ class Settings: SKNode {
     func switchButton() {
         if constants.gameTutorialOn {
             constants.setGameTut(value: false)
-            eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[0] )
+            eggSwitch.texture = eggSwitchArray.first
             let animate = SKAction.animate(with: eggSwitchArray.reversed(), timePerFrame: 0.0084)
             eggSwitch.run(animate)
         } else {
             constants.setGameTut(value: true)
-            eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[55] )
+            eggSwitch.texture = eggSwitchArray.last
             let animate = SKAction.animate(with: eggSwitchArray, timePerFrame: 0.0084)
             eggSwitch.run(animate)
         }
@@ -160,11 +158,11 @@ class Settings: SKNode {
     
     func animateSwitch() {
         if !constants.gameTutorialOn {
-            eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[0] )
+            eggSwitch.texture = eggSwitchArray.first
             let animate = SKAction.animate(with: eggSwitchArray.reversed(), timePerFrame: 0.0084)
             eggSwitch.run(animate)
         } else {
-            eggSwitch.texture = eggSwitchAtlas.textureNamed(eggSwitchAtlas.textureNames[51] )
+            eggSwitch.texture = eggSwitchArray.indices.contains(51) ? eggSwitchArray[51] : eggSwitchArray.last
             let animate = SKAction.animate(with: eggSwitchArray, timePerFrame: 0.0084)
             eggSwitch.run(animate)
         }

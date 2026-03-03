@@ -53,6 +53,7 @@
 		84DB432F240384AC00BDB9AF /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DB432E240384AC00BDB9AF /* Constants.swift */; };
 		84FBFF3C23556B8A00A45CCD /* grass.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84FBFF3B23556B8A00A45CCD /* grass.sks */; };
 		84FBFF412356469D00A45CCD /* airParticles.sks in Resources */ = {isa = PBXBuildFile; fileRef = 84FBFF3F2356469D00A45CCD /* airParticles.sks */; };
+		BAF8E92B0CD04DDA90912AB6 /* TextureFrameSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0157C21C4D4745F99795C654 /* TextureFrameSort.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +61,7 @@
 		233CD5642DD925F6001EBAB2 /* GameLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLogic.swift; sourceTree = "<group>"; };
 		233CD5662DD92853001EBAB2 /* PhysicsContactHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhysicsContactHandler.swift; sourceTree = "<group>"; };
 		233CD5682DD92AAC001EBAB2 /* ScrollingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollingManager.swift; sourceTree = "<group>"; };
+		0157C21C4D4745F99795C654 /* TextureFrameSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureFrameSort.swift; sourceTree = "<group>"; };
 		841373A623F87FBC004E63BF /* AmaticSC-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmaticSC-Bold.ttf"; sourceTree = "<group>"; };
 		841373A723F87FBC004E63BF /* AmaticSC-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmaticSC-Regular.ttf"; sourceTree = "<group>"; };
 		841CA11F2381134000684909 /* EndScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndScreen.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 				84832A5F22879F63003BA784 /* Assets.xcassets */,
 				84832A5822879F60003BA784 /* GameScene.swift */,
 				233CD5682DD92AAC001EBAB2 /* ScrollingManager.swift */,
+				0157C21C4D4745F99795C654 /* TextureFrameSort.swift */,
 				233CD5662DD92853001EBAB2 /* PhysicsContactHandler.swift */,
 				233CD5642DD925F6001EBAB2 /* GameLogic.swift */,
 				233CD5622DD9239D001EBAB2 /* InputManager.swift */,
@@ -353,6 +356,7 @@
 				842AD9E22287D49600EE3271 /* Ground.swift in Sources */,
 				842AD9E42287D80500EE3271 /* Roof.swift in Sources */,
 				8497FE2223550F1D00CF4C06 /* Background.swift in Sources */,
+				BAF8E92B0CD04DDA90912AB6 /* TextureFrameSort.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

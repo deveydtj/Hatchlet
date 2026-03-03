@@ -9,8 +9,9 @@ import SpriteKit
 
 
 class Player: SKSpriteNode {
+    private static let baseSpriteSize = CGSize(width: 135 / 1.85, height: 118.3 / 1.85)
     
-    //Player Images
+    // Player Images
     var playerBlink = SKTexture()
     var playerImage = SKTexture()
     var playerFlap = SKTexture()
@@ -26,16 +27,17 @@ class Player: SKSpriteNode {
     
     let eggHome: SKSpriteNode
     
+    // Cached flap action so gameplay does not rebuild it every cycle.
+    private var flapAction = SKAction.wait(forDuration: 0.0)
+    
     // Cached random value for performance optimization
     private var nextBlinkRandom = Int.random(in: 1...20)
     
     init() {
-        let size = CGSize(width: 135 / 1.85, height: 118.3 / 1.85)
-        
         eggHome = SKSpriteNode()
         playerCostume = SKSpriteNode()
         
-        super.init(texture: nil, color: UIColor.purple, size: size)
+        super.init(texture: nil, color: UIColor.purple, size: Self.baseSpriteSize)
         
         setup()
     }
@@ -70,18 +72,7 @@ class Player: SKSpriteNode {
     }
     
     func flap() {
-        let flap = SKAction.animate(with: [playerFlap], timePerFrame: 0.17)
-        let noFlap = SKAction.animate(with: [playerImage], timePerFrame: 0.17)
-        let sequence2 = SKAction.sequence([flap, noFlap])
-        
-        run(SKAction.sequence([
-                       SKAction.run() { [weak self] in guard let `self` = self else { return }
-                        if self.nextBlinkRandom == 5 {
-                            self.quickBlink()
-                            // Generate new random number for next time
-                            self.nextBlinkRandom = Int.random(in: 1...20)
-                        }
-            }, sequence2]),withKey: "flap")
+        run(flapAction, withKey: "flap")
     }
     
     func hurtHead() {
@@ -94,21 +85,20 @@ class Player: SKSpriteNode {
     }
     
     func quickBlink() {
-        let ouch = SKAction.animate(with: [self.playerBlink], timePerFrame: 0.2)
-        let noOuch = SKAction.animate(with: [self.playerImage], timePerFrame: 0.2)
+        let ouch = SKAction.animate(with: [self.playerBlink], timePerFrame: 0.2, resize: false, restore: false)
+        let noOuch = SKAction.animate(with: [self.playerImage], timePerFrame: 0.2, resize: false, restore: false)
         let sequence2 = SKAction.sequence([ouch, noOuch])
         sequence2.timingMode = SKActionTimingMode.easeInEaseOut
         
         run(SKAction.sequence([sequence2]))
-        
     }
     
     func blink() {
-        let ouch = SKAction.animate(with: [playerBlink], timePerFrame: 0.2)
-        let noOuch = SKAction.animate(with: [playerImage], timePerFrame: 0.5)
+        let ouch = SKAction.animate(with: [playerBlink], timePerFrame: 0.2, resize: false, restore: false)
+        let noOuch = SKAction.animate(with: [playerImage], timePerFrame: 0.5, resize: false, restore: false)
         let sequence = SKAction.sequence([ouch, noOuch])
             
-        run(SKAction.repeatForever(SKAction.sequence([sequence, SKAction.wait(forDuration: Double.random(in: 1 ... 6))])))
+        run(SKAction.repeatForever(SKAction.sequence([sequence, SKAction.wait(forDuration: Double.random(in: 1 ... 6))])), withKey: "blink")
     }
     
     func hurt() {
@@ -175,8 +165,9 @@ class Player: SKSpriteNode {
         }
         
         // --- apply the chosen skin and restart the blink action ---
-        texture = playerImage
+        showDefaultTexture()
         removeAllActions()
+        rebuildActions()
         blink()
         
         // --- now add any accessory on top ---
@@ -184,5 +175,27 @@ class Player: SKSpriteNode {
             playerCostume.texture = Constant.textureNamed(acc)
             addChild(playerCostume)
         }
+    }
+
+    // MARK: - Animation helpers
+
+    /// Build and cache only the flap animation so its textures are reused without
+    /// changing the original SpriteKit behavior.
+    private func rebuildActions() {
+        let flap = SKAction.animate(with: [playerFlap], timePerFrame: 0.17, resize: false, restore: false)
+        let noFlap = SKAction.animate(with: [playerImage], timePerFrame: 0.17, resize: false, restore: false)
+        flapAction = SKAction.sequence([flap, noFlap])
+    }
+
+    func maybeQuickBlinkOnFlap() {
+        if nextBlinkRandom == 5 {
+            quickBlink()
+            nextBlinkRandom = Int.random(in: 1...20)
+        }
+    }
+    
+    func showDefaultTexture() {
+        texture = playerImage
+        size = Self.baseSpriteSize
     }
 }

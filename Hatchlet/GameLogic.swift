@@ -40,6 +40,7 @@ class GameLogic {
     func setup() {
         guard let s = scene else { return }
         s.physicsWorld.contactDelegate = s
+        s.isUserInteractionEnabled = false
         
         // Preload all texture atlases at once for better performance
         let preloadGroup = DispatchGroup()
@@ -80,6 +81,7 @@ class GameLogic {
             position: CGPoint(x: s.size.width + 10, y: s.size.height / 2),
             deleteTime: -1
         )
+        s.emitter.setAirParticlesActive(false)
 
         // Menu
         presentInitialMenu()
@@ -114,6 +116,15 @@ class GameLogic {
         s.pauseButton.position = CGPoint(x: s.pauseButton.size.width, y: s.scrollingGround.size.height)
         s.pauseButton.zPosition = 101
         s.pauseButton.name = "pause"
+        
+        preloadGroup.enter()
+        SKTexture.preload(initialUITextures(in: s)) {
+            preloadGroup.leave()
+        }
+        
+        preloadGroup.notify(queue: .main) { [weak s] in
+            s?.isUserInteractionEnabled = true
+        }
     }
 
     private func prewarmEnemyPools() {
@@ -135,6 +146,41 @@ class GameLogic {
             eaglePool.append(s.eagle)
         }
     }
+    
+    private func initialUITextures(in scene: GameScene) -> [SKTexture] {
+        let menuTextures = [
+            scene.menu.playButton.texture,
+            scene.menu.shopButton.texture,
+            scene.menu.settingsButton.texture,
+            scene.menu.crownButton.texture
+        ].compactMap { $0 } + scene.menu.playArray
+        
+        let settingsTextures = [
+            scene.settings.backButton.texture,
+            scene.settings.eggSwitch.texture,
+            scene.settings.gameDiff.texture
+        ].compactMap { $0 } + scene.settings.eggSwitchArray
+        
+        let tutorialTextures = [
+            scene.tut.tut.texture
+        ].compactMap { $0 } + scene.tut.tutArray
+        
+        let overlayTextures = [
+            scene.pauseButton.texture,
+            scene.shop.backButton.texture,
+            scene.shop.goldenEgg.texture,
+            scene.crown.backButton.texture,
+            scene.player.texture,
+            scene.player.playerImage,
+            scene.player.playerBlink,
+            scene.player.playerFlap,
+            scene.player.playerOuch
+        ].compactMap { $0 }
+        
+        let itemTextures = scene.shop.availableItems.map(\.texture)
+        
+        return menuTextures + settingsTextures + tutorialTextures + overlayTextures + itemTextures
+    }
 
     /// Present initial menu at game startup
     func presentInitialMenu() {
@@ -148,6 +194,7 @@ class GameLogic {
         s.menu.zPosition = 100
         s.addChild(s.menu)
         s.menu.show()
+        setIdlePresentationState(isIdle: true)
     }
 
     /// Show the main menu
@@ -161,6 +208,7 @@ class GameLogic {
             s.addChild(s.menu)
             s.menu.playButton.removeAllActions()
             s.menu.show()
+            self.setIdlePresentationState(isIdle: true)
         }
     }
 
@@ -194,6 +242,7 @@ class GameLogic {
         // Texture already preloaded in setup()
 
         s.const.gameOver = false
+        setIdlePresentationState(isIdle: false)
         s.newPaused = false
         s.pauseScreen.removeFromParent()
         s.eggSpeed = 50
@@ -243,6 +292,7 @@ class GameLogic {
     func endGame() {
         guard let s = scene else { return }
         s.const.gameOver = true
+        s.emitter.setAirParticlesActive(false)
         eggLaunchingEnabled = false
         pendingGoldenEggCountIncrements = 0
         introFoxNode?.removeAllActions()
@@ -288,6 +338,7 @@ class GameLogic {
         // End screen
         s.endScreen = EndScreen(size: s.size, score: s.scoreNum)
         s.addChild(s.endScreen)
+        setIdlePresentationState(isIdle: true)
         s.scoreNum = 0
     }
 
@@ -295,6 +346,7 @@ class GameLogic {
     func showPauseScreen() {
         guard let s = scene else { return }
         s.addChild(s.pauseScreen)
+        s.emitter.setAirParticlesActive(false)
         guard let physicsBody = s.player.physicsBody else { return }
         if physicsBody.isDynamic {
             s.playerVelocity = physicsBody.velocity
@@ -535,7 +587,11 @@ class GameLogic {
         }
         lastUpdateTime = currentTime
 
-        if !s.const.gameOver && !s.newPaused && s.menu.parent == nil && eggLaunchingEnabled {
+        let gameplayActive = !s.const.gameOver && !s.newPaused && s.menu.parent == nil
+        let idleInteractiveActive = s.const.gameOver && (s.menu.parent != nil || s.endScreen.parent != nil)
+        let playerInteractiveActive = gameplayActive || idleInteractiveActive
+
+        if gameplayActive && eggLaunchingEnabled {
             eggSpawnAccumulator += TimeInterval(deltaTime)
             let spawnInterval = createEggGameMode()
             while eggSpawnAccumulator >= spawnInterval {
@@ -548,13 +604,23 @@ class GameLogic {
         guard let playerPhysicsBody = s.player.physicsBody else { return }
         let playerVelocity = playerPhysicsBody.velocity
         let isPlayerStationary = playerVelocity == CGVector(dx: 0, dy: 0)
-        let gameplayActive = !s.const.gameOver && !s.newPaused && s.menu.parent == nil
+
+        if !playerInteractiveActive {
+            if s.player.action(forKey: "flap") != nil {
+                s.player.removeAction(forKey: "flap")
+                s.player.showDefaultTexture()
+            }
+            return
+        }
 
         // Handle player flap animation
         if isPlayerStationary {
-            s.player.removeAction(forKey: "flap")
-            s.player.texture = s.player.playerImage
+            if s.player.action(forKey: "flap") != nil {
+                s.player.removeAction(forKey: "flap")
+                s.player.showDefaultTexture()
+            }
         } else if s.player.action(forKey: "flap") == nil {
+            s.player.maybeQuickBlinkOnFlap()
             s.player.flap()
         }
 
@@ -585,7 +651,7 @@ class GameLogic {
         previousPlayerX = s.player.position.x
 
         let shouldSpawnGroundTrail =
-            gameplayActive
+            playerInteractiveActive
             && s.isPlayerGrounded
             && abs(playerVelocity.dy) < groundedVerticalSpeedThreshold
             && deltaX > 0.2
@@ -603,23 +669,23 @@ class GameLogic {
         }
 
         // Boost gravity for eggs so trajectories form readable arcs.
-        let visibleFrame = s.frame
-        for egg in s.children.compactMap({ $0 as? Egg }) {
-            guard let eggBody = egg.physicsBody, eggBody.isDynamic else { continue }
+        if gameplayActive {
+            let visibleFrame = s.frame
+            for egg in s.children.compactMap({ $0 as? Egg }) {
+                guard let eggBody = egg.physicsBody, eggBody.isDynamic else { continue }
 
-            if gameplayActive {
                 var velocity = eggBody.velocity
                 velocity.dy += extraEggGravity * deltaTime
                 eggBody.velocity = velocity
-            }
 
-            let outOfBoundsLeft = egg.position.x < visibleFrame.minX - egg.size.width * 6
-            let outOfBoundsRight = egg.position.x > visibleFrame.maxX + egg.size.width * 6
-            let outOfBoundsBottom = egg.position.y < visibleFrame.minY - egg.size.height * 6
-            let outOfBoundsTop = egg.position.y > visibleFrame.maxY + egg.size.height * 6
+                let outOfBoundsLeft = egg.position.x < visibleFrame.minX - egg.size.width * 6
+                let outOfBoundsRight = egg.position.x > visibleFrame.maxX + egg.size.width * 6
+                let outOfBoundsBottom = egg.position.y < visibleFrame.minY - egg.size.height * 6
+                let outOfBoundsTop = egg.position.y > visibleFrame.maxY + egg.size.height * 6
 
-            if outOfBoundsLeft || outOfBoundsRight || outOfBoundsBottom || outOfBoundsTop {
-                returnEggToPool(egg)
+                if outOfBoundsLeft || outOfBoundsRight || outOfBoundsBottom || outOfBoundsTop {
+                    returnEggToPool(egg)
+                }
             }
         }
 
@@ -630,6 +696,20 @@ class GameLogic {
             && s.scoreNum > 0
             && s.const.gameDifficulty != 0 {
             spawnEnemy()
+        }
+    }
+
+    private func setIdlePresentationState(isIdle: Bool) {
+        guard let s = scene else { return }
+        s.emitter.setAirParticlesActive(!isIdle)
+        guard let physicsBody = s.player.physicsBody else { return }
+        physicsBody.velocity = .zero
+        physicsBody.angularVelocity = 0
+        let shouldKeepIdlePhysics = isIdle && (s.menu.parent != nil || s.endScreen.parent != nil)
+        physicsBody.isDynamic = shouldKeepIdlePhysics || !isIdle
+        if isIdle && !shouldKeepIdlePhysics {
+            s.player.removeAction(forKey: "flap")
+            s.player.showDefaultTexture()
         }
     }
     

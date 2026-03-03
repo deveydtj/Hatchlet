@@ -48,13 +48,11 @@ class Tut: SKNode {
         tutAtlas.preload {
         }
         
-        for i in 0...(tutAtlas.textureNames.count - 1) {
-            let name = "tutorial\(i).png"
-            tutArray.append(SKTexture(imageNamed: name))
-        }
+        let tutTextureNames = sortedByFrameIndex(tutAtlas.textureNames)
+        tutArray = tutTextureNames.map { tutAtlas.textureNamed($0) }
         
     
-        tut.texture = tutAtlas.textureNamed(tutAtlas.textureNames[1])
+        tut.texture = tutArray.indices.contains(1) ? tutArray[1] : tutArray.first
         tut.name = "tut"
         tut.size = CGSize(width: 80, height: 122)
         tut.position = CGPoint(x: 0, y: 0)

@@ -2,13 +2,20 @@
 .DS_Store
 
 # Xcode user-specific settings
-*.xcuserdata/
+*.xcuserdatad/
+xcuserdata/
 *.xcuserstate
 *.xccheckout
+*.xcbkptlist
+*.xcscmblueprint
 
 # Build artifacts
 build/
 DerivedData/
+
+# Workspace-local Xcode state
+*.xcworkspace/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
 
 # SwiftPM cache
 .swiftpm/xcode/package.xcworkspace/
