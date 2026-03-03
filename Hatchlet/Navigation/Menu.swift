@@ -20,7 +20,7 @@ class Menu: SKNode {
     var playAtlas = SKTextureAtlas()
     var shopArrary = [SKTexture]()
     var playArray = [SKTexture]()
-    private var playAnimationAction = SKAction()
+    private var playAnimationAction = SKAction.wait(forDuration: 0.0)
     
     let bin: SKSpriteNode
     
@@ -135,7 +135,7 @@ class Menu: SKNode {
             let loop = SKAction.sequence([animate, SKAction.wait(forDuration: 2.0)])
             playAnimationAction = SKAction.repeatForever(SKAction.sequence([intro, loop]))
         } else {
-            playAnimationAction = SKAction()
+            playAnimationAction = SKAction.wait(forDuration: 0.0)
         }
     }
     
@@ -154,15 +154,21 @@ class Menu: SKNode {
     }
     
     private static func sampledFrameNames(from textureNames: [String], targetCount: Int) -> [String] {
-        guard textureNames.count > targetCount, targetCount > 1 else { return textureNames }
-        
+        guard !textureNames.isEmpty else { return [] }
+
+        if targetCount <= 1 {
+            return [textureNames[0]]
+        }
+
+        guard textureNames.count > targetCount else { return textureNames }
+
         let frameStep = max(1, Int(ceil(Double(textureNames.count) / Double(targetCount))))
         var sampledNames = Swift.stride(from: 0, to: textureNames.count, by: frameStep).map { textureNames[$0] }
-        
+
         if let lastName = textureNames.last, sampledNames.last != lastName {
             sampledNames.append(lastName)
         }
-        
+
         return sampledNames
     }
     
