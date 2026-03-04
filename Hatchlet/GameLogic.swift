@@ -11,6 +11,14 @@
 import SpriteKit
 
 class GameLogic {
+    private struct EggLaunchProfile {
+        var spawnXOffsetProgress: CGFloat
+        var spawnYOffsetProgress: CGFloat
+        var horizontalVelocityProgress: CGFloat
+        var apexXProgress: CGFloat
+        var verticalVelocityScaleProgress: CGFloat
+    }
+
     private weak var scene: GameScene?
     
     // Object pools for performance optimization
@@ -31,6 +39,7 @@ class GameLogic {
     // applied to the displayed HUD count (which updates only after travel completes).
     private var pendingGoldenEggCountIncrements: Int = 0
     private weak var introFoxNode: SKSpriteNode?
+    private var previousEggLaunchProfile: EggLaunchProfile?
 
     init(scene: GameScene) {
         self.scene = scene
@@ -251,6 +260,7 @@ class GameLogic {
         s.playerGroundContactCount = 0
         eggLaunchingEnabled = false
         pendingGoldenEggCountIncrements = 0
+        previousEggLaunchProfile = nil
         s.player.removeHome()
         s.addChild(s.pauseButton)
 
@@ -292,6 +302,7 @@ class GameLogic {
         s.emitter.setAirParticlesActive(false)
         eggLaunchingEnabled = false
         pendingGoldenEggCountIncrements = 0
+        previousEggLaunchProfile = nil
         introFoxNode?.removeAllActions()
         introFoxNode?.removeFromParent()
         introFoxNode = nil
@@ -790,32 +801,70 @@ class GameLogic {
         // If pool is full, let the egg be deallocated naturally
     }
 
+    private func nextEggLaunchProgress(previous: CGFloat?, maxStep: ClosedRange<CGFloat>) -> CGFloat {
+        guard let previous else {
+            return CGFloat.random(in: 0...1)
+        }
+
+        let step = CGFloat.random(in: maxStep)
+        let direction: CGFloat = Bool.random() ? 1 : -1
+        return min(max(previous + (direction * step), 0), 1)
+    }
+    
     private func launchEgg(_ egg: Egg) {
         guard let s = scene else { return }
 
         egg.configurePhysicsForFlight()
         let visibleFrame = s.frame
-        let spawnX = visibleFrame.maxX + egg.size.width + CGFloat.random(in: 20...70)
+        let launchProfile = EggLaunchProfile(
+            spawnXOffsetProgress: nextEggLaunchProgress(
+                previous: previousEggLaunchProfile?.spawnXOffsetProgress,
+                maxStep: 0.05...0.18
+            ),
+            spawnYOffsetProgress: nextEggLaunchProgress(
+                previous: previousEggLaunchProfile?.spawnYOffsetProgress,
+                maxStep: 0.04...0.16
+            ),
+            horizontalVelocityProgress: nextEggLaunchProgress(
+                previous: previousEggLaunchProfile?.horizontalVelocityProgress,
+                maxStep: 0.05...0.17
+            ),
+            apexXProgress: nextEggLaunchProgress(
+                previous: previousEggLaunchProfile?.apexXProgress,
+                maxStep: 0.04...0.15
+            ),
+            verticalVelocityScaleProgress: nextEggLaunchProgress(
+                previous: previousEggLaunchProfile?.verticalVelocityScaleProgress,
+                maxStep: 0.05...0.18
+            )
+        )
+        previousEggLaunchProfile = launchProfile
+
+        let spawnXOffset = 20 + (50 * launchProfile.spawnXOffsetProgress)
+        let spawnX = visibleFrame.maxX + egg.size.width + spawnXOffset
         let spawnBaselineY = max(
             s.groundHitBox.position.y + egg.size.height * 1.2,
             visibleFrame.minY + visibleFrame.height * 0.12
         )
-        let spawnY = spawnBaselineY + CGFloat.random(in: -10...18)
+        let spawnY = spawnBaselineY + (-10 + (28 * launchProfile.spawnYOffsetProgress))
         egg.position = CGPoint(x: spawnX, y: spawnY)
 
         let speedMultiplier = CGFloat(max(0.88, min(1.28, s.eggSpeed / 50.0)))
         let horizontalMultiplier = 0.88 + ((speedMultiplier - 0.88) * 0.24)
-        var launchVelocityX = -CGFloat.random(in: 200...290) * horizontalMultiplier
+        let horizontalVelocity = 200 + (90 * launchProfile.horizontalVelocityProgress)
+        var launchVelocityX = -horizontalVelocity * horizontalMultiplier
 
         // Aim the apex near the top while the egg is still moving through the visible play area.
         let gravityMagnitude = abs(s.physicsWorld.gravity.dy) + abs(extraEggGravity)
         let desiredApexY = visibleFrame.maxY + egg.size.height * 0.35
         let deltaYToApex = max(visibleFrame.height * 1.05, desiredApexY - spawnY)
-        let apexX = visibleFrame.maxX - visibleFrame.width * CGFloat.random(in: 0.28...0.38)
+        let apexXRatio = 0.28 + (0.10 * launchProfile.apexXProgress)
+        let apexX = visibleFrame.maxX - visibleFrame.width * apexXRatio
         let horizontalDistanceToApex = max(visibleFrame.width * 0.34, spawnX - apexX)
         let timeToApex = max(0.66, horizontalDistanceToApex / abs(launchVelocityX))
         var launchVelocityY = (deltaYToApex + 0.5 * gravityMagnitude * timeToApex * timeToApex) / timeToApex
-        launchVelocityY *= CGFloat.random(in: 1.00...1.14)
+        let verticalVelocityScale = 1.00 + (0.14 * launchProfile.verticalVelocityScaleProgress)
+        launchVelocityY *= verticalVelocityScale
 
         // Pre-check steep throws that would peak too low and leave the screen too quickly.
         func predictedHeight(at targetX: CGFloat, velocityY: CGFloat) -> CGFloat {
