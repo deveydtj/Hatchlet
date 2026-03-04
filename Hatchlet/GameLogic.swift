@@ -185,8 +185,7 @@ class GameLogic {
     /// Present initial menu at game startup
     func presentInitialMenu() {
         guard let s = scene else { return }
-        s.landscapeBin.isPaused = true
-        s.scrollingGroundBin.isPaused = true
+        setScrollingEnabled(false)
         // Texture already preloaded in setup()
         // Create and configure the main menu
         s.menu = Menu(size: s.size)
@@ -200,8 +199,7 @@ class GameLogic {
     /// Show the main menu
     func showMenu() {
         guard let s = scene else { return }
-        s.landscapeBin.isPaused = true
-        s.scrollingGroundBin.isPaused = true
+        setScrollingEnabled(false)
         let fade = SKAction.fadeOut(withDuration: 0.25)
         s.endScreen.run(fade) {
             s.endScreen.removeFromParent()
@@ -277,8 +275,7 @@ class GameLogic {
         // Start with an intro fox pass, then begin normal egg launching.
         startIntroFoxSequence()
 
-        s.scrollingGroundBin.isPaused = false
-        s.landscapeBin.isPaused = false
+        setScrollingEnabled(true)
         s.randomMax = 26
 
         switch s.const.gameDifficulty {
@@ -330,10 +327,7 @@ class GameLogic {
             s.const.setGameTut(value: false)
         }
 
-        s.landscapeBin.isPaused = true
-        s.scrollingGroundBin.isPaused = true
-        s.landscapeBin.action(forKey: "landscapeBinMoveLeft")?.speed = 1
-        s.scrollingGroundBin.action(forKey: "scrollingGroundBinMoveLeft")?.speed = 1
+        setScrollingEnabled(false)
 
         // End screen
         s.endScreen = EndScreen(size: s.size, score: s.scoreNum)
@@ -711,6 +705,26 @@ class GameLogic {
         if isIdle && !shouldKeepIdlePhysics {
             s.player.removeAction(forKey: "flap")
             s.player.showDefaultTexture()
+        }
+    }
+
+    private func setScrollingEnabled(_ isEnabled: Bool) {
+        guard let s = scene else { return }
+
+        let scrollingNodes = [s.landscapeBin, s.scrollingGroundBin]
+        let actionKeys = ["landscapeBinMoveLeft", "scrollingGroundBinMoveLeft"]
+
+        if isEnabled {
+            for node in scrollingNodes {
+                node.isPaused = false
+            }
+            return
+        }
+
+        for (node, actionKey) in zip(scrollingNodes, actionKeys) {
+            node.isPaused = true
+            node.removeAction(forKey: actionKey)
+            node.position = .zero
         }
     }
     
