@@ -16,11 +16,9 @@ class Settings: SKNode {
     
     let size: CGSize
     
-    let title: SKLabelNode
-    var titleShadow: SKLabelNode
+    let title: ShadowLabelNode
     
-    let tutorial: SKLabelNode
-    var tutorialShadow: SKLabelNode
+    let tutorial: ShadowLabelNode
     
     let bin: SKSpriteNode
     
@@ -39,10 +37,8 @@ class Settings: SKNode {
     init(size: CGSize){
         self.size = size
         
-        title = SKLabelNode(fontNamed: "AmaticSC-Regular")
-        titleShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
-        tutorial = SKLabelNode(fontNamed: "AmaticSC-Regular")
-        tutorialShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
+        title = ShadowLabelNode(fontNamed: "AmaticSC-Regular", shadowOffset: CGPoint(x: 3, y: -2))
+        tutorial = ShadowLabelNode(fontNamed: "AmaticSC-Regular", shadowOffset: CGPoint(x: 2, y: -1))
         
         
         bin = SKSpriteNode(texture: nil, size: CGSize(width: 336 ,height: 400))
@@ -98,25 +94,17 @@ class Settings: SKNode {
         
         title.text = "Settings"
         title.fontSize = 70
-        title.position = CGPoint(x:0, y: 0 + title.frame.height)
+        title.position = CGPoint(x: 0, y: title.labelFrame.height)
         title.zPosition = 7
         title.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
-        titleShadow.text = title.text
-        titleShadow.fontSize = 70
-        titleShadow.position = CGPoint(x: title.position.x + 3, y: title.position.y - 2)
-        titleShadow.zPosition = 6
-        titleShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
+        title.shadowColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
         
         tutorial.text = "Tutorial"
         tutorial.fontSize = 43
         tutorial.position = CGPoint(x: -85, y: 0)
         tutorial.zPosition = 7
         tutorial.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
-        tutorialShadow.text = tutorial.text
-        tutorialShadow.fontSize = tutorial.fontSize
-        tutorialShadow.position = CGPoint(x: tutorial.position.x + 2, y: tutorial.position.y - 1)
-        tutorialShadow.zPosition = 6
-        tutorialShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
+        tutorial.shadowColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
  
         //bin.texture = MenuAtlas.textureNamed("bin")
         bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
@@ -132,9 +120,7 @@ class Settings: SKNode {
     
     func show() {
         bin.addChild(title)
-        bin.addChild(titleShadow)
         bin.addChild(tutorial)
-        bin.addChild(tutorialShadow)
         bin.addChild(backButton)
         bin.addChild(eggSwitch)
         animateSwitch()

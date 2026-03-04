@@ -321,7 +321,6 @@ class GameLogic {
         s.pauseButton.removeFromParent()
         s.HUD.removeFromParent()
         s.HUD.scoreLabel.text = "0"
-        s.HUD.labelShadow.text = "0"
         s.tut.delete()
         s.fox.stop()
         s.eagle.stop()
@@ -476,7 +475,6 @@ class GameLogic {
             s.scoreNum += 1
         }
         s.HUD.scoreLabel.text = "\(s.scoreNum)"
-        s.HUD.labelShadow.text = "\(s.scoreNum)"
         if s.const.gameDifficulty != 0, s.scoreNum % 15 == 1, s.randomMax >= 7 {
             s.randomMax -= 1
             if Int.random(in: 1...s.randomMax) == 7 {

@@ -14,17 +14,14 @@ class gameHUD: SKNode {
     let size:CGSize
 
     var score: Int = 0
-    var scoreLabel = SKLabelNode()
-    var labelShadow = SKLabelNode()
+    var scoreLabel = ShadowLabelNode(fontNamed: "AmaticSC-Bold", shadowOffset: CGPoint(x: 3, y: -2))
     
     let emitter:Emitters
     
     let goldenEgg: SKSpriteNode
     let goldenEggTexture: SKTexture
-    var goldenEggCountLabel: SKLabelNode
-    var goldenEggCountShadow: SKLabelNode
-    var streakPopupLabel: SKLabelNode
-    var streakPopupShadow: SKLabelNode
+    var goldenEggCountLabel: ShadowLabelNode
+    var streakPopupLabel: ShadowLabelNode
 
     let eggDelete: SKSpriteNode
     
@@ -45,14 +42,11 @@ class gameHUD: SKNode {
         
         goldenEggTexture = Game.textureNamed("goldenEgg")
         goldenEgg = Egg()
-        goldenEggCountLabel = SKLabelNode()
-        goldenEggCountShadow = SKLabelNode()
-        streakPopupLabel = SKLabelNode()
-        streakPopupShadow = SKLabelNode()
+        goldenEggCountLabel = ShadowLabelNode(fontNamed: "AmaticSC-Bold", shadowOffset: CGPoint(x: 2, y: -2))
+        streakPopupLabel = ShadowLabelNode(fontNamed: "AmaticSC-Bold", shadowOffset: CGPoint(x: 2, y: -2))
 
         emitter = Emitters(size: size)
-        scoreLabel = SKLabelNode()
-        labelShadow = SKLabelNode()
+        scoreLabel = ShadowLabelNode(fontNamed: "AmaticSC-Bold", shadowOffset: CGPoint(x: 3, y: -2))
         
         playerShadowTexture = Game.textureNamed("shadow")
         
@@ -82,21 +76,12 @@ class gameHUD: SKNode {
 // ~Add Score Label
         addChild(scoreLabel)
         scoreLabel.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
+        scoreLabel.shadowColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
         scoreLabel.fontSize = 55
-        scoreLabel.fontName = "AmaticSC-Bold"
         scoreLabel.text = String(score)
-        scoreLabel.position.x = (size.width / 2) + scoreLabel.frame.width + 30
+        scoreLabel.position.x = (size.width / 2) + scoreLabel.labelFrame.width + 30
         scoreLabel.position.y = size.height - 60
         scoreLabel.zPosition = 20
-        
-        addChild(labelShadow)
-        labelShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
-        labelShadow.fontSize = 55
-        labelShadow.fontName = scoreLabel.fontName
-        labelShadow.text = scoreLabel.text
-        labelShadow.position.x = (scoreLabel.position.x) + 3
-        labelShadow.position.y = (scoreLabel.position.y) - 2
-        labelShadow.zPosition = 19
         
 // ~Add Egg Deleter
         addChild(eggDelete)
@@ -115,26 +100,19 @@ class gameHUD: SKNode {
         
 // ~Add Golden Egg
         addChild(goldenEgg)
-        goldenEgg.position = CGPoint(x: size.width / 2 + goldenEgg.size.width, y: scoreLabel.position.y - scoreLabel.frame.size.height - goldenEgg.size.height)
+        goldenEgg.position = CGPoint(
+            x: size.width / 2 + goldenEgg.size.width,
+            y: scoreLabel.position.y - scoreLabel.labelFrame.size.height - goldenEgg.size.height
+        )
         goldenEgg.alpha = 0.1
         goldenEgg.scale(to: CGSize(width: 0.1, height: 0.1))
         goldenEgg.physicsBody = nil
         goldenEgg.texture = goldenEggTexture
 
-        addChild(goldenEggCountShadow)
-        goldenEggCountShadow.fontColor = .init(displayP3Red: 0.0, green: 0.0, blue: 0.0, alpha: 0.7)
-        goldenEggCountShadow.fontSize = 35
-        goldenEggCountShadow.fontName = "AmaticSC-Bold"
-        goldenEggCountShadow.horizontalAlignmentMode = .left
-        goldenEggCountShadow.verticalAlignmentMode = .center
-        goldenEggCountShadow.position = CGPoint(x: goldenEgg.position.x + 2, y: goldenEgg.position.y - 2)
-        goldenEggCountShadow.zPosition = 119
-        goldenEggCountShadow.alpha = 0
-
         addChild(goldenEggCountLabel)
         goldenEggCountLabel.fontColor = .init(displayP3Red: 250.0/255.0, green: 209.0/255.0, blue: 92.0/255.0, alpha: 1)
+        goldenEggCountLabel.shadowColor = .init(displayP3Red: 0.0, green: 0.0, blue: 0.0, alpha: 0.7)
         goldenEggCountLabel.fontSize = 35
-        goldenEggCountLabel.fontName = "AmaticSC-Bold"
         goldenEggCountLabel.horizontalAlignmentMode = .left
         goldenEggCountLabel.verticalAlignmentMode = .center
         goldenEggCountLabel.position = CGPoint(
@@ -290,8 +268,7 @@ class gameHUD: SKNode {
         let totalUntilIconFadeOutEnd = iconVisibleHoldDuration + fadeOutDuration
         let holdDuration = max(0, totalUntilIconFadeOutEnd - travelDuration - fadeInDuration - fadeOutDuration)
 
-        goldenEggCountLabel.removeAction(forKey: "goldenEggCountVisibility")
-        goldenEggCountShadow.removeAction(forKey: "goldenEggCountVisibility")
+        goldenEggCountLabel.removeActionFromAll(forKey: "goldenEggCountVisibility")
 
         let fadeIn = SKAction.fadeIn(withDuration: fadeInDuration)
         let hold = SKAction.wait(forDuration: holdDuration)
@@ -299,13 +276,10 @@ class gameHUD: SKNode {
         let seq = SKAction.sequence([fadeIn, hold, fadeOut])
 
         goldenEggCountLabel.run(seq, withKey: "goldenEggCountVisibility")
-        goldenEggCountShadow.run(seq, withKey: "goldenEggCountVisibility")
     }
 
     func setGoldenEggCount(_ value: Int, animated: Bool = false) {
-        let text = "\(value)"
-        goldenEggCountLabel.text = text
-        goldenEggCountShadow.text = text
+        goldenEggCountLabel.text = "\(value)"
         updateGoldenEggCountLayout()
 
         guard animated else { return }
@@ -314,7 +288,6 @@ class gameHUD: SKNode {
             SKAction.scale(to: 1.0, duration: 0.12)
         ])
         goldenEggCountLabel.run(pulse, withKey: "goldenEggCountPulse")
-        goldenEggCountShadow.run(pulse, withKey: "goldenEggCountPulse")
     }
 
     private func updateGoldenEggCountLayout() {
@@ -324,7 +297,6 @@ class gameHUD: SKNode {
         let baseY = goldenEgg.position.y
 
         goldenEggCountLabel.position = CGPoint(x: baseX, y: baseY)
-        goldenEggCountShadow.position = CGPoint(x: baseX + 2, y: baseY - 2)
     }
 
     func celebrateEggStreak(_ streak: Int, at scenePosition: CGPoint) {
@@ -339,19 +311,13 @@ class gameHUD: SKNode {
         )
 
         streakPopupLabel.text = popupText
-        streakPopupShadow.text = popupText
         streakPopupLabel.fontSize = streak >= 5 ? 36 : 31
-        streakPopupShadow.fontSize = streakPopupLabel.fontSize
         streakPopupLabel.position = popupPosition
-        streakPopupShadow.position = CGPoint(x: popupPosition.x + 2, y: popupPosition.y - 2)
         streakPopupLabel.alpha = 0
-        streakPopupShadow.alpha = 0
         streakPopupLabel.setScale(0.86)
-        streakPopupShadow.setScale(0.86)
         streakPopupLabel.fontColor = streakPopupColor(for: streak)
 
-        streakPopupLabel.removeAllActions()
-        streakPopupShadow.removeAllActions()
+        streakPopupLabel.removeAllTextActions()
 
         let appear = SKAction.group([
             SKAction.fadeIn(withDuration: 0.08),
@@ -368,14 +334,12 @@ class gameHUD: SKNode {
         let sequence = SKAction.sequence([appear, hold, disappear])
 
         if streak >= 100 {
-            streakPopupLabel.run(
-                .group([sequence, rainbowFontAction(duration: popupDuration)]),
-                withKey: "streakPopup"
-            )
+            streakPopupLabel.run(sequence, withKey: "streakPopup")
+            streakPopupLabel.labelNode.run(rainbowFontAction(duration: popupDuration), withKey: "streakPopupColor")
         } else {
+            streakPopupLabel.labelNode.removeAction(forKey: "streakPopupColor")
             streakPopupLabel.run(sequence, withKey: "streakPopup")
         }
-        streakPopupShadow.run(sequence, withKey: "streakPopup")
     }
 
     func breakEggStreak(previousStreak _: Int) {
@@ -383,25 +347,14 @@ class gameHUD: SKNode {
     }
 
     func resetEggStreak() {
-        streakPopupLabel.removeAllActions()
-        streakPopupShadow.removeAllActions()
+        streakPopupLabel.removeAllTextActions()
         streakPopupLabel.alpha = 0
-        streakPopupShadow.alpha = 0
     }
 
     private func setupStreakPopup() {
-        streakPopupShadow.fontColor = .init(displayP3Red: 0.0, green: 0.0, blue: 0.0, alpha: 0.72)
-        streakPopupShadow.fontSize = 31
-        streakPopupShadow.fontName = "AmaticSC-Bold"
-        streakPopupShadow.verticalAlignmentMode = .center
-        streakPopupShadow.horizontalAlignmentMode = .center
-        streakPopupShadow.zPosition = 118
-        streakPopupShadow.alpha = 0
-        addChild(streakPopupShadow)
-
         streakPopupLabel.fontColor = .init(displayP3Red: 244.0/255.0, green: 237.0/255.0, blue: 224.0/255.0, alpha: 1)
+        streakPopupLabel.shadowColor = .init(displayP3Red: 0.0, green: 0.0, blue: 0.0, alpha: 0.72)
         streakPopupLabel.fontSize = 31
-        streakPopupLabel.fontName = "AmaticSC-Bold"
         streakPopupLabel.verticalAlignmentMode = .center
         streakPopupLabel.horizontalAlignmentMode = .center
         streakPopupLabel.zPosition = 119

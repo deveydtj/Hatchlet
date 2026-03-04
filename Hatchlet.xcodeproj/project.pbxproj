@@ -11,6 +11,7 @@
 		233CD5652DD9260F001EBAB2 /* GameLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CD5642DD925F6001EBAB2 /* GameLogic.swift */; };
 		233CD5672DD92856001EBAB2 /* PhysicsContactHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CD5662DD92853001EBAB2 /* PhysicsContactHandler.swift */; };
 		233CD5692DD92AB9001EBAB2 /* ScrollingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 233CD5682DD92AAC001EBAB2 /* ScrollingManager.swift */; };
+		23F0AA022EEBFE0000A1B2C3 /* ShadowLabelNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F0AA012EEBFE0000A1B2C3 /* ShadowLabelNode.swift */; };
 		841373A823F87FBC004E63BF /* AmaticSC-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 841373A623F87FBC004E63BF /* AmaticSC-Bold.ttf */; };
 		841373A923F87FBC004E63BF /* AmaticSC-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 841373A723F87FBC004E63BF /* AmaticSC-Regular.ttf */; };
 		841CA1202381134000684909 /* EndScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841CA11F2381134000684909 /* EndScreen.swift */; };
@@ -61,6 +62,7 @@
 		233CD5642DD925F6001EBAB2 /* GameLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLogic.swift; sourceTree = "<group>"; };
 		233CD5662DD92853001EBAB2 /* PhysicsContactHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhysicsContactHandler.swift; sourceTree = "<group>"; };
 		233CD5682DD92AAC001EBAB2 /* ScrollingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollingManager.swift; sourceTree = "<group>"; };
+		23F0AA012EEBFE0000A1B2C3 /* ShadowLabelNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowLabelNode.swift; sourceTree = "<group>"; };
 		0157C21C4D4745F99795C654 /* TextureFrameSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextureFrameSort.swift; sourceTree = "<group>"; };
 		841373A623F87FBC004E63BF /* AmaticSC-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmaticSC-Bold.ttf"; sourceTree = "<group>"; };
 		841373A723F87FBC004E63BF /* AmaticSC-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmaticSC-Regular.ttf"; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				84832A5822879F60003BA784 /* GameScene.swift */,
 				233CD5682DD92AAC001EBAB2 /* ScrollingManager.swift */,
 				0157C21C4D4745F99795C654 /* TextureFrameSort.swift */,
+				23F0AA012EEBFE0000A1B2C3 /* ShadowLabelNode.swift */,
 				233CD5662DD92853001EBAB2 /* PhysicsContactHandler.swift */,
 				233CD5642DD925F6001EBAB2 /* GameLogic.swift */,
 				233CD5622DD9239D001EBAB2 /* InputManager.swift */,
@@ -327,6 +330,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				842177B82439380700FDB3AF /* ItemNode.swift in Sources */,
+				23F0AA022EEBFE0000A1B2C3 /* ShadowLabelNode.swift in Sources */,
 				84C85A74234E891A00DAD310 /* gameHUD.swift in Sources */,
 				84DB432F240384AC00BDB9AF /* Constants.swift in Sources */,
 				233CD5692DD92AB9001EBAB2 /* ScrollingManager.swift in Sources */,
