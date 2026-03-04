@@ -687,6 +687,7 @@ class GameLogic {
                     returnEggToPool(egg)
                 }
             }
+
         }
 
         // Spawn additional fox if conditions are met
@@ -781,14 +782,103 @@ class GameLogic {
         egg.configurePhysicsForFlight()
         let visibleFrame = s.frame
         let spawnX = visibleFrame.maxX + egg.size.width + CGFloat.random(in: 20...70)
-        let spawnY = visibleFrame.minY - egg.size.height * 0.15 + CGFloat.random(in: -6...14)
+        let spawnBaselineY = max(
+            s.groundHitBox.position.y + egg.size.height * 1.2,
+            visibleFrame.minY + visibleFrame.height * 0.12
+        )
+        let spawnY = spawnBaselineY + CGFloat.random(in: -10...18)
         egg.position = CGPoint(x: spawnX, y: spawnY)
 
         let speedMultiplier = CGFloat(max(0.88, min(1.28, s.eggSpeed / 50.0)))
         let horizontalMultiplier = 0.88 + ((speedMultiplier - 0.88) * 0.24)
-        let verticalMultiplier = 0.98 + ((speedMultiplier - 0.88) * 0.20)
-        let launchVelocityX = -CGFloat.random(in: 170...255) * horizontalMultiplier
-        let launchVelocityY = CGFloat.random(in: 880...1120) * verticalMultiplier
+        var launchVelocityX = -CGFloat.random(in: 200...290) * horizontalMultiplier
+
+        // Aim the apex near the top while the egg is still moving through the visible play area.
+        let gravityMagnitude = abs(s.physicsWorld.gravity.dy) + abs(extraEggGravity)
+        let desiredApexY = visibleFrame.maxY + egg.size.height * 0.35
+        let deltaYToApex = max(visibleFrame.height * 1.05, desiredApexY - spawnY)
+        let apexX = visibleFrame.maxX - visibleFrame.width * CGFloat.random(in: 0.28...0.38)
+        let horizontalDistanceToApex = max(visibleFrame.width * 0.34, spawnX - apexX)
+        let timeToApex = max(0.66, horizontalDistanceToApex / abs(launchVelocityX))
+        var launchVelocityY = (deltaYToApex + 0.5 * gravityMagnitude * timeToApex * timeToApex) / timeToApex
+        launchVelocityY *= CGFloat.random(in: 1.00...1.14)
+
+        // Pre-check steep throws that would peak too low and leave the screen too quickly.
+        func predictedHeight(at targetX: CGFloat, velocityY: CGFloat) -> CGFloat {
+            let travelTime = max(0, (spawnX - targetX) / abs(launchVelocityX))
+            return spawnY + velocityY * travelTime - 0.5 * gravityMagnitude * travelTime * travelTime
+        }
+
+        func minimumLaunchVelocity(targetX: CGFloat,
+                                   targetHeightRatio: CGFloat,
+                                   minimumTime: CGFloat) -> CGFloat {
+            let travelTime = max(minimumTime, (spawnX - targetX) / abs(launchVelocityX))
+            let targetHeight = visibleFrame.minY + visibleFrame.height * targetHeightRatio
+            let requiredRise = max(0, targetHeight - spawnY)
+            return (requiredRise + 0.5 * gravityMagnitude * travelTime * travelTime) / travelTime
+        }
+
+        let baseLaunchVelocityY = launchVelocityY
+        let baseLaunchAngle = atan2(baseLaunchVelocityY, abs(launchVelocityX))
+        let steepAngleThreshold: CGFloat = 1.12 // ~64 degrees
+        let isSteepThrow = baseLaunchAngle > steepAngleThreshold
+        var correctionReasons: [String] = []
+
+        if isSteepThrow {
+            let minimumSteepApexHeight = visibleFrame.minY + visibleFrame.height * 0.78
+            let predictedApexHeight = spawnY + (baseLaunchVelocityY * baseLaunchVelocityY) / (2 * gravityMagnitude)
+            let predictedTimeToApex = baseLaunchVelocityY / gravityMagnitude
+            let minimumApexTravel = visibleFrame.width * 0.22
+            let predictedApexTravel = abs(launchVelocityX) * predictedTimeToApex
+            let minimumSteepVerticalSpeed = CGFloat(820) * speedMultiplier
+            let minimumSteepHorizontalSpeed = CGFloat(225) * horizontalMultiplier
+            let rightSideTargetX = visibleFrame.maxX - visibleFrame.width * 0.18
+            let rightSideTargetHeight = visibleFrame.minY + visibleFrame.height * 0.50
+            let isApexTooLow = predictedApexHeight < minimumSteepApexHeight
+            let isApexTooCloseToRight = predictedApexTravel < minimumApexTravel
+            let isSteepVerticalSpeedTooLow = baseLaunchVelocityY < minimumSteepVerticalSpeed
+            let isSteepHorizontalSpeedTooLow = abs(launchVelocityX) < minimumSteepHorizontalSpeed
+            let isRightSideTooLow =
+                predictedHeight(at: rightSideTargetX, velocityY: baseLaunchVelocityY) < rightSideTargetHeight
+
+            if isApexTooLow
+                || isApexTooCloseToRight
+                || isRightSideTooLow
+                || isSteepVerticalSpeedTooLow
+                || isSteepHorizontalSpeedTooLow {
+                if isApexTooLow {
+                    correctionReasons.append("low-apex")
+                }
+                if isApexTooCloseToRight {
+                    correctionReasons.append("short-travel")
+                }
+                if isRightSideTooLow {
+                    correctionReasons.append("low-right")
+                }
+                if isSteepVerticalSpeedTooLow {
+                    correctionReasons.append("steep-low-v")
+                }
+                if isSteepHorizontalSpeedTooLow {
+                    correctionReasons.append("steep-slow-x")
+                }
+                let apexRise = max(0, minimumSteepApexHeight - spawnY)
+                let minimumApexLaunchVelocityY = sqrt(2 * gravityMagnitude * apexRise)
+                let rightSideMinimumLaunchVelocityY = minimumLaunchVelocity(
+                    targetX: rightSideTargetX,
+                    targetHeightRatio: 0.46,
+                    minimumTime: 0.46
+                )
+                let correctedVelocityY = max(
+                    minimumApexLaunchVelocityY,
+                    max(rightSideMinimumLaunchVelocityY, minimumSteepVerticalSpeed)
+                )
+                launchVelocityY = min(max(baseLaunchVelocityY, correctedVelocityY), baseLaunchVelocityY + 130)
+
+                let correctedTimeToApex = launchVelocityY / gravityMagnitude
+                let minimumHorizontalSpeed = minimumApexTravel / correctedTimeToApex
+                launchVelocityX = -max(abs(launchVelocityX), max(minimumHorizontalSpeed, minimumSteepHorizontalSpeed))
+            }
+        }
 
         if egg.parent == nil {
             s.addChild(egg)

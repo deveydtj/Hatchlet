@@ -13,7 +13,6 @@ import SpriteKit
 let Constant = SKTextureAtlas(named: "Constant")
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-    
     /// Refreshes and animates the golden-egg label
     func updateGoldenEggDisplay() {
         guard let eggLabel = childNode(withName: "goldenEggsLabel") as? SKLabelNode else { return }
