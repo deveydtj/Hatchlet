@@ -22,9 +22,16 @@ class PhysicsContactHandler {
 
         // Egg hits player
         if collision == PhysicsCategory.Egg | PhysicsCategory.Player {
-            if let eggNode = eggNode(from: contact), let eggType = eggNode.name {
-                s.gameLogic.setScore(eggType: eggType)
+            if let eggNode = eggNode(from: contact), eggNode.parent != nil, let eggType = eggNode.name {
+                s.gameLogic.setScore(eggType: eggType, catchPosition: eggNode.position)
                 s.gameLogic.deleteEgg(egg: eggNode)
+            }
+        }
+
+        // Egg crosses the left cleanup line -> missed egg
+        if collision == PhysicsCategory.Egg | PhysicsCategory.eggDelete {
+            if let eggNode = eggNode(from: contact), eggNode.parent != nil {
+                s.gameLogic.recycleEgg(egg: eggNode)
             }
         }
 

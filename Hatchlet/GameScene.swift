@@ -96,7 +96,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     override init(size: CGSize) {
         // Instantiate all nodes
-        endScreen = EndScreen(size: size, score: scoreNum)
+        endScreen = EndScreen(size: size, score: scoreNum, bestStreak: 0)
         pauseScreen = PauseScreen(size: size)
         menu = Menu(size: size)
         settings = Settings(size: size)

@@ -40,6 +40,8 @@ class GameLogic {
     private var pendingGoldenEggCountIncrements: Int = 0
     private weak var introFoxNode: SKSpriteNode?
     private var previousEggLaunchProfile: EggLaunchProfile?
+    private var eggCatchStreak: Int = 0
+    private var bestEggCatchStreak: Int = 0
 
     init(scene: GameScene) {
         self.scene = scene
@@ -261,6 +263,8 @@ class GameLogic {
         eggLaunchingEnabled = false
         pendingGoldenEggCountIncrements = 0
         previousEggLaunchProfile = nil
+        eggCatchStreak = 0
+        bestEggCatchStreak = 0
         s.player.removeHome()
         s.addChild(s.pauseButton)
 
@@ -278,6 +282,7 @@ class GameLogic {
         s.HUD.position.x = -(s.size.width/2)
         s.addChild(s.HUD)
         s.HUD.setGoldenEggCount(s.const.goldenEggs)
+        s.HUD.resetEggStreak()
 
         // Remove menu
         s.menu.removeFromParent()
@@ -298,11 +303,14 @@ class GameLogic {
     /// Clean up and show end‐of‐game screen
     func endGame() {
         guard let s = scene else { return }
+        let bestStreakForRun = bestEggCatchStreak
         s.const.gameOver = true
         s.emitter.setAirParticlesActive(false)
         eggLaunchingEnabled = false
         pendingGoldenEggCountIncrements = 0
         previousEggLaunchProfile = nil
+        eggCatchStreak = 0
+        bestEggCatchStreak = 0
         introFoxNode?.removeAllActions()
         introFoxNode?.removeFromParent()
         introFoxNode = nil
@@ -341,7 +349,7 @@ class GameLogic {
         setScrollingEnabled(false)
 
         // End screen
-        s.endScreen = EndScreen(size: s.size, score: s.scoreNum)
+        s.endScreen = EndScreen(size: s.size, score: s.scoreNum, bestStreak: bestStreakForRun)
         s.addChild(s.endScreen)
         setIdlePresentationState(isIdle: true)
         s.scoreNum = 0
@@ -444,12 +452,16 @@ class GameLogic {
     /// Remove egg without score/effects (missed egg cleanup)
     func recycleEgg(egg: SKNode) {
         guard let eggNode = egg as? Egg else { return }
+        if shouldBreakEggStreakOnRecycle() {
+            breakEggStreak(showFeedback: true)
+        }
         returnEggToPool(eggNode)
     }
 
     /// Update score, difficulty scaling, and random enemy spawn
-    func setScore(eggType: String) {
+    func setScore(eggType: String, catchPosition: CGPoint) {
         guard let s = scene else { return }
+        registerEggCatch(catchPosition: catchPosition)
         if s.gameSpeed > 2 {
             s.eggSpeed /= 0.995
             s.gameSpeed *= 0.989
@@ -689,7 +701,7 @@ class GameLogic {
                 let outOfBoundsTop = egg.position.y > visibleFrame.maxY + egg.size.height * 6
 
                 if outOfBoundsLeft || outOfBoundsRight || outOfBoundsBottom || outOfBoundsTop {
-                    returnEggToPool(egg)
+                    recycleEgg(egg: egg)
                 }
             }
 
@@ -809,6 +821,35 @@ class GameLogic {
         let step = CGFloat.random(in: maxStep)
         let direction: CGFloat = Bool.random() ? 1 : -1
         return min(max(previous + (direction * step), 0), 1)
+    }
+
+    private func registerEggCatch(catchPosition: CGPoint) {
+        guard let s = scene else { return }
+        eggCatchStreak += 1
+        bestEggCatchStreak = max(bestEggCatchStreak, eggCatchStreak)
+        s.HUD.celebrateEggStreak(eggCatchStreak, at: catchPosition)
+    }
+
+    private func breakEggStreak(showFeedback: Bool) {
+        guard let s = scene else { return }
+        let previousStreak = eggCatchStreak
+        eggCatchStreak = 0
+
+        guard showFeedback else {
+            s.HUD.resetEggStreak()
+            return
+        }
+
+        if previousStreak > 1 {
+            s.HUD.breakEggStreak(previousStreak: previousStreak)
+        } else {
+            s.HUD.resetEggStreak()
+        }
+    }
+
+    private func shouldBreakEggStreakOnRecycle() -> Bool {
+        guard let s = scene else { return false }
+        return eggCatchStreak > 0 && !s.const.gameOver && eggLaunchingEnabled
     }
     
     private func launchEgg(_ egg: Egg) {

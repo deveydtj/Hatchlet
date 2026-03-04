@@ -57,7 +57,7 @@ class Egg: SKSpriteNode {
 
         guard let body = physicsBody else { return }
         body.categoryBitMask = PhysicsCategory.Egg
-        body.contactTestBitMask = PhysicsCategory.Player
+        body.contactTestBitMask = PhysicsCategory.Player | PhysicsCategory.eggDelete
         body.collisionBitMask = PhysicsCategory.None
         body.isDynamic = true
         body.affectedByGravity = true
