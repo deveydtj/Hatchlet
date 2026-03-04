@@ -17,8 +17,7 @@ class Tut: SKNode {
     
     let tut:SKSpriteNode
     
-    let title: SKLabelNode
-    var titleShadow: SKLabelNode
+    let title: ShadowLabelNode
     
     var tutAtlas = SKTextureAtlas()
     var tutArray = [SKTexture]()
@@ -26,8 +25,7 @@ class Tut: SKNode {
     init(size: CGSize){
         self.size = size
         
-        title = SKLabelNode(fontNamed: "AmaticSC-Regular")
-        titleShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
+        title = ShadowLabelNode(fontNamed: "AmaticSC-Regular", shadowOffset: CGPoint(x: 2, y: -1))
         
         bin = SKSpriteNode(texture: nil, size: CGSize(width: 336 ,height: 400))
         
@@ -60,14 +58,10 @@ class Tut: SKNode {
         
         title.text = "tap to flap"
         title.fontSize = 50
-        title.position = CGPoint(x:0, y: 0 - tut.size.height)
+        title.position = CGPoint(x: 0, y: 0 - tut.size.height)
         title.zPosition = 52
         title.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 1)
-        titleShadow.text = title.text
-        titleShadow.fontSize = title.fontSize
-        titleShadow.position = CGPoint(x: title.position.x + 2, y: title.position.y - 1)
-        titleShadow.zPosition = 51
-        titleShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
+        title.shadowColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
         
         bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
         bin.zPosition = 20
@@ -76,7 +70,6 @@ class Tut: SKNode {
     
     func show() {
         bin.addChild(title)
-        bin.addChild(titleShadow)
         tut.removeAllActions()
         bin.addChild(tut)
         bin.alpha = 0.75

@@ -15,13 +15,7 @@ let Constant = SKTextureAtlas(named: "Constant")
 class GameScene: SKScene, SKPhysicsContactDelegate {
     /// Refreshes and animates the golden-egg label
     func updateGoldenEggDisplay() {
-        guard let eggLabel = childNode(withName: "goldenEggsLabel") as? SKLabelNode else { return }
-        eggLabel.text = "\(const.goldenEggs)"
-        let pulse = SKAction.sequence([
-            SKAction.scale(to: 1.2, duration: 0.1),
-            SKAction.scale(to: 1.0, duration: 0.1)
-        ])
-        eggLabel.run(pulse)
+        HUD.setGoldenEggCount(const.goldenEggs, animated: true)
     }
 
     // MARK: - Managers

@@ -13,8 +13,7 @@ class Menu: SKNode {
     let size: CGSize
     private let playAnimationDuration: TimeInterval = 1.0
     
-    let title: SKLabelNode
-    var titleShadow: SKLabelNode
+    let title: ShadowLabelNode
     
     var shopAtlas = SKTextureAtlas()
     var playAtlas = SKTextureAtlas()
@@ -35,8 +34,7 @@ class Menu: SKNode {
     init(size: CGSize){
         self.size = size
         
-        title = SKLabelNode(fontNamed: "AmaticSC-Regular")
-        titleShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
+        title = ShadowLabelNode(fontNamed: "AmaticSC-Regular", shadowOffset: CGPoint(x: 3, y: -2))
         
         shopAtlas = SKTextureAtlas(named: "images")
         playAtlas = SKTextureAtlas(named: "play")
@@ -76,14 +74,10 @@ class Menu: SKNode {
         name = "MENU"
         title.text = "Hatchlet"
         title.fontSize = 70
-        title.position = CGPoint(x:0, y: 0 + title.frame.height)
+        title.position = CGPoint(x: 0, y: title.labelFrame.height)
         title.zPosition = 7
         title.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
-        titleShadow.text = title.text
-        titleShadow.fontSize = 70
-        titleShadow.position = CGPoint(x: title.position.x + 3, y: title.position.y - 2)
-        titleShadow.zPosition = 6
-        titleShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
+        title.shadowColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
         
         bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
         bin.zPosition = 5
@@ -122,7 +116,6 @@ class Menu: SKNode {
         // Add menu nodes once during setup
         addChild(bin)
         addChild(title)
-        addChild(titleShadow)
         addChild(playButton)
         addChild(shopButton)
         addChild(settingsButton)

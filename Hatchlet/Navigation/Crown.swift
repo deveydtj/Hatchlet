@@ -13,11 +13,9 @@ class Crown: SKNode {
     
     let size: CGSize
     
-    let title: SKLabelNode
-    var titleShadow: SKLabelNode
+    let title: ShadowLabelNode
     
-    let highScore: SKLabelNode
-    var highScoreShadow: SKLabelNode
+    let highScore: ShadowLabelNode
     
     let bin: SKSpriteNode
     
@@ -32,11 +30,9 @@ class Crown: SKNode {
     init(size: CGSize){
         self.size = size
         
-        title = SKLabelNode(fontNamed: "AmaticSC-Regular")
-        titleShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
+        title = ShadowLabelNode(fontNamed: "AmaticSC-Regular", shadowOffset: CGPoint(x: 3, y: -2))
         
-        highScore = SKLabelNode(fontNamed: "AmaticSC-Regular")
-        highScoreShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
+        highScore = ShadowLabelNode(fontNamed: "AmaticSC-Regular", shadowOffset: CGPoint(x: 2, y: -1))
         
         bin = SKSpriteNode(texture: nil, size: CGSize(width: 336 ,height: 400))
         
@@ -57,26 +53,18 @@ class Crown: SKNode {
     func setup() {
         title.text = "Achievements"
         title.fontSize = 70
-        title.position = CGPoint(x:0, y: 0 + title.frame.height)
+        title.position = CGPoint(x: 0, y: title.labelFrame.height)
         title.zPosition = 7
         title.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
-        titleShadow.text = title.text
-        titleShadow.fontSize = 70
-        titleShadow.position = CGPoint(x: title.position.x + 3, y: title.position.y - 2)
-        titleShadow.zPosition = 6
-        titleShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
+        title.shadowColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
         
         highScore.fontSize = 35
-        highScore.position = CGPoint(x:0, y: -20)
+        highScore.position = CGPoint(x: 0, y: -20)
         highScore.zPosition = 7
         highScore.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
-        highScoreShadow.fontSize = highScore.fontSize
-        highScoreShadow.position = CGPoint(x: highScore.position.x + 2, y: highScore.position.y - 1)
-        highScoreShadow.zPosition = 6
-        highScoreShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
+        highScore.shadowColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
         
         highScore.text = "HighScore: " + String(UserDefaults.standard.integer(forKey: "highScore"))
-        highScoreShadow.text = highScore.text
 
         //bin.texture = MenuAtlas.textureNamed("bin")
         bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
@@ -91,12 +79,9 @@ class Crown: SKNode {
     
     func show() {
         highScore.text = "HighScore: " + String(UserDefaults.standard.integer(forKey: "highScore"))
-        highScoreShadow.text = highScore.text
         
         bin.addChild(title)
-        bin.addChild(titleShadow)
         bin.addChild(highScore)
-        bin.addChild(highScoreShadow)
         bin.addChild(backButton)
         addChild(bin)
     }

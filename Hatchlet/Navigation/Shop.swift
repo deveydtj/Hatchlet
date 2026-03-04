@@ -26,10 +26,8 @@ class Shop: SKNode {
     
     let size: CGSize
     
-    let title: SKLabelNode
-    var titleShadow: SKLabelNode
-    let goldenEggText: SKLabelNode
-    var goldenEggTextShadow: SKLabelNode
+    let title: ShadowLabelNode
+    let goldenEggText: ShadowLabelNode
     
     let goldenEgg: SKSpriteNode
     let goldenEggTexture: SKTexture
@@ -66,10 +64,8 @@ class Shop: SKNode {
         self.size = size
         self.const = constants
         
-        title = SKLabelNode(fontNamed: "AmaticSC-Regular")
-        titleShadow = SKLabelNode(fontNamed: "AmaticSC-Regular")
-        goldenEggText = SKLabelNode(fontNamed: "AmaticSC-Bold")
-        goldenEggTextShadow = SKLabelNode(fontNamed: "AmaticSC-Bold")
+        title = ShadowLabelNode(fontNamed: "AmaticSC-Regular", shadowOffset: CGPoint(x: 3, y: -2))
+        goldenEggText = ShadowLabelNode(fontNamed: "AmaticSC-Bold", shadowOffset: CGPoint(x: 3, y: -2))
         
         goldenEggTexture = Game.textureNamed("goldenEgg")
         goldenEgg = Egg()
@@ -101,23 +97,16 @@ class Shop: SKNode {
         
         title.text = "Shop"
         title.fontSize = 70
-        title.position = CGPoint(x:0, y: bin.size.height / 3)
+        title.position = CGPoint(x: 0, y: bin.size.height / 3)
         title.zPosition = 7
         title.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
-        titleShadow.text = title.text
-        titleShadow.fontSize = 70
-        titleShadow.position = CGPoint(x: title.position.x + 3, y: title.position.y - 2)
-        titleShadow.zPosition = 6
-        titleShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
+        title.shadowColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
     
         goldenEggText.fontSize = 45
         goldenEggText.position = CGPoint(x: goldenEgg.size.width, y: bin.size.height * 0.19)
         goldenEggText.zPosition = 7
         goldenEggText.fontColor = .init(displayP3Red: 214.0/255.0, green: 142.0/255.0, blue: 79.0/255.0, alpha: 1)
-        goldenEggTextShadow.fontSize = goldenEggText.fontSize
-        goldenEggTextShadow.position = CGPoint(x: goldenEggText.position.x + 3, y: goldenEggText.position.y - 2)
-        goldenEggTextShadow.zPosition = goldenEggText.zPosition - 1
-        goldenEggTextShadow.fontColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
+        goldenEggText.shadowColor = .init(displayP3Red: 0.0/255.0, green: 0.0/255.0, blue: 0.0/255.0, alpha: 0.75)
         
 //----------------
         //bin.texture = MenuAtlas.textureNamed("bin")
@@ -162,11 +151,8 @@ class Shop: SKNode {
         bin.addChild(leftButton)
         bin.addChild(rightButton)
         bin.addChild(title)
-        bin.addChild(titleShadow)
         goldenEggText.text = String(const.goldenEggs)
-        goldenEggTextShadow.text = goldenEggText.text
         bin.addChild(goldenEggText)
-        bin.addChild(goldenEggTextShadow)
         bin.addChild(backButton)
         addChild(bin)
     }
@@ -312,9 +298,7 @@ class Shop: SKNode {
         let decrement = SKAction.run { [weak self] in
             guard let self = self else { return }
             displayed -= 1
-            let text = "\(displayed)"
-            self.goldenEggText.text = text
-            self.goldenEggTextShadow.text = text
+            self.goldenEggText.text = "\(displayed)"
         }
         let wait = SKAction.wait(forDuration: 0.05)
         let sequence = SKAction.sequence([decrement, wait])
