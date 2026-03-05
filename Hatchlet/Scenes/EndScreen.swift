@@ -83,15 +83,15 @@ class EndScreen: SKNode {
         switch streak {
         case 0:
             return "Ready for another crack?"
-        case 1:
+        case 1...5:
             return "Off to a start"
-        case 2...4:
+        case 6...14:
             return "Finding your rhythm"
-        case 5...7:
+        case 15...24:
             return "Eggcellent run"
-        case 8...11:
+        case 25...39:
             return "Hot streak"
-        case 12...15:
+        case 40...59:
             return "Cracking records"
         default:
             return "Legendary hatch"

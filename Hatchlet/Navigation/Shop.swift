@@ -110,7 +110,7 @@ class Shop: SKNode {
         
 //----------------
         //bin.texture = MenuAtlas.textureNamed("bin")
-        bin.position = CGPoint(x: size.width / 2, y: size.height/1.771)
+        bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
         bin.zPosition = 5
         
         bin1.zPosition = 6
@@ -126,7 +126,7 @@ class Shop: SKNode {
         backButton.texture = Constant.textureNamed("mainMenu")
         backButton.name = "shopBackButton"
         backButton.size = CGSize(width: 58, height: 60)
-        backButton.position = CGPoint(x: -120, y: bin.size.height / 3)
+        backButton.position = CGPoint(x: -120, y: 140)
         backButton.zPosition = 15
         
         leftButton.zPosition = 7
