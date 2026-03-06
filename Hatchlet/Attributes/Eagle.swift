@@ -77,9 +77,14 @@ class Eagle: SKSpriteNode {
 //        flap()
 //    }
     
-    func run(speed: Double, viewSize: CGSize) {
+    func run(speed: Double, viewSize: CGSize, passDurationMultiplier: Double = EagleTuning.aggressive.passDurationMultiplier) {
         running = true
-        let moveLeft = SKAction.moveBy(x: -(viewSize.width + (size.width * 1.5)), y: 0, duration: speed * 2)
+        // Faster pass to increase pressure on the player.
+        let moveLeft = SKAction.moveBy(
+            x: -(viewSize.width + (size.width * 1.5)),
+            y: 0,
+            duration: speed * passDurationMultiplier
+        )
         let reset = SKAction.run() { [weak self] in guard self != nil else { return }
             self!.stop()
         }

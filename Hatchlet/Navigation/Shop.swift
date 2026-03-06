@@ -110,7 +110,8 @@ class Shop: SKNode {
         
 //----------------
         //bin.texture = MenuAtlas.textureNamed("bin")
-        bin.position = CGPoint(x: size.width / 2, y: size.height/1.5)
+        // Keep the shop panel lower so it appears centered in gameplay space.
+        bin.position = CGPoint(x: size.width / 2, y: size.height * 0.56)
         bin.zPosition = 5
         
         bin1.zPosition = 6
