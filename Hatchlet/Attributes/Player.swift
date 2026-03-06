@@ -63,6 +63,7 @@ class Player: SKSpriteNode {
         body.isDynamic = true
         body.affectedByGravity = true
         body.allowsRotation = false
+        body.usesPreciseCollisionDetection = true
         body.linearDamping = 0.9
         
         body.categoryBitMask = PhysicsCategory.Player

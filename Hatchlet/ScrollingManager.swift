@@ -12,6 +12,8 @@ class ScrollingManager {
     private weak var scene: GameScene?
     private var lastUpdateTime: TimeInterval = 0
     private var scrollDistances: [String: CGFloat] = [:]
+    private var smoothedEagleTargetY: CGFloat?
+    private var smoothedEagleYStep: CGFloat?
 
     init(scene: GameScene) {
         self.scene = scene
@@ -39,6 +41,9 @@ class ScrollingManager {
         // If eagle is in flight, move it closer to the player
         if s.eagle.isRunning() {
             moveEagleCloser(deltaTime: deltaTime)
+        } else {
+            smoothedEagleTargetY = nil
+            smoothedEagleYStep = nil
         }
     }
 
@@ -82,16 +87,47 @@ class ScrollingManager {
 
     private func moveEagleCloser(deltaTime: TimeInterval) {
         guard let s = scene else { return }
-        
-        // Cache positions to avoid multiple property access
+
+        let tuning = s.eagleTuning
         let eaglePos = s.eagle.position
-        let playerY = s.player.position.y
-        
-        // Non-linear y-approach towards the player
-        let deltaY = playerY - eaglePos.y
-        if eaglePos.x > s.size.width / 2 {
-            let adjustment = CGFloat(s.eagleSpeed * deltaTime)
-            s.eagle.position.y += deltaY * adjustment
+        let playerPos = s.player.position
+
+        // Keep eagle trajectory stable after it crosses mid-screen.
+        if eaglePos.x <= s.size.width * 0.5 {
+            smoothedEagleTargetY = eaglePos.y
+            smoothedEagleYStep = 0
+            return
         }
+
+        let minY = s.size.height * tuning.minYFactor
+        let maxY = s.size.height * tuning.maxYFactor
+        let rawLeadY = playerPos.y + (s.player.physicsBody?.velocity.dy ?? 0) * tuning.leadFactor
+        let clampedLeadY = min(max(rawLeadY, minY), maxY)
+
+        // Smooth the target so quick player velocity changes do not create jagged vertical motion.
+        let previousTargetY = smoothedEagleTargetY ?? clampedLeadY
+        let targetBlend = min(CGFloat(deltaTime) * 5.0, 1)
+        let filteredTargetY = previousTargetY + (clampedLeadY - previousTargetY) * targetBlend
+        smoothedEagleTargetY = filteredTargetY
+        let deltaY = filteredTargetY - eaglePos.y
+
+        // Increase pursuit speed as eagle closes horizontal distance to the player.
+        let horizontalGap = max(eaglePos.x - playerPos.x, 0)
+        let proximity = 1 - min(horizontalGap / s.size.width, 1)
+        let chaseSpeed = CGFloat(s.eagleSpeed) * tuning.baseVerticalSpeedFactor * (1 + proximity * tuning.proximityBoost)
+        let maxStep = max(chaseSpeed * CGFloat(deltaTime), 0.01)
+
+        // Saturate the chase step smoothly instead of a hard clamp to reduce visible snapping.
+        let rawYStep = deltaY / (1 + (abs(deltaY) / maxStep))
+        let previousYStep = smoothedEagleYStep ?? rawYStep
+        let stepBlend = min(CGFloat(deltaTime) * 7.0, 1)
+        let yStep = previousYStep + (rawYStep - previousYStep) * stepBlend
+        smoothedEagleYStep = yStep
+        s.eagle.position.y += yStep
+        if abs(filteredTargetY - s.eagle.position.y) < 0.25 {
+            s.eagle.position.y = filteredTargetY
+        }
+
+        s.eagle.position.y = min(max(s.eagle.position.y, minY), maxY)
     }
 }

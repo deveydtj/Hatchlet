@@ -13,7 +13,7 @@ import SpriteKit
 class Roof:SKSpriteNode {
     
     init(size: CGSize) {
-        let roofSize = CGSize(width: size.width, height: 1)
+        let roofSize = CGSize(width: size.width, height: max(size.height, 8))
         
         super.init(texture: nil, color: .clear, size: roofSize)
         

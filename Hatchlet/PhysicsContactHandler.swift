@@ -46,10 +46,13 @@ class PhysicsContactHandler {
 
         // Ground hits player → grass puff
         if collision == PhysicsCategory.Ground | PhysicsCategory.Player {
-            s.playerGroundContactCount += 1
-            s.emitter.addEmitterOnPlayer(fileName: "grass",
-                                         position: s.player.position,
-                                         deleteTime: 0.4)
+            let wasGrounded = s.isPlayerGrounded
+            s.playerGroundContactCount = 1
+            if !wasGrounded {
+                s.emitter.addEmitterOnPlayer(fileName: "grass",
+                                             position: s.player.position,
+                                             deleteTime: 0.4)
+            }
         }
 
         // Enemy hits ground → grass
@@ -83,7 +86,7 @@ class PhysicsContactHandler {
         let collision = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
 
         if collision == PhysicsCategory.Ground | PhysicsCategory.Player {
-            s.playerGroundContactCount = max(0, s.playerGroundContactCount - 1)
+            s.playerGroundContactCount = 0
         }
     }
 

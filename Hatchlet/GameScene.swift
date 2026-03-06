@@ -12,6 +12,54 @@ import SpriteKit
 
 let Constant = SKTextureAtlas(named: "Constant")
 
+struct EagleTuning {
+    let passDurationMultiplier: Double
+    let leadFactor: CGFloat
+    let minYFactor: CGFloat
+    let maxYFactor: CGFloat
+    let baseVerticalSpeedFactor: CGFloat
+    let proximityBoost: CGFloat
+    let easySpeed: Double
+    let normalSpeed: Double
+    let hardSpeed: Double
+    let easyMaxSpeed: Double
+    let normalMaxSpeed: Double
+    let hardMaxSpeed: Double
+    let speedRampDivisor: Double
+
+    static let aggressive = EagleTuning(
+        passDurationMultiplier: 0.8,
+        leadFactor: 0.20,
+        minYFactor: 0.12,
+        maxYFactor: 0.96,
+        baseVerticalSpeedFactor: 3000,
+        proximityBoost: 1.8,
+        easySpeed: 0.003,
+        normalSpeed: 0.012,
+        hardSpeed: 0.018,
+        easyMaxSpeed: 0.007,
+        normalMaxSpeed: 0.021,
+        hardMaxSpeed: 0.028,
+        speedRampDivisor: 0.9965
+    )
+
+    func baseSpeed(for difficulty: Int) -> Double {
+        switch difficulty {
+        case 0: return easySpeed
+        case 1: return normalSpeed
+        default: return hardSpeed
+        }
+    }
+
+    func maxSpeed(for difficulty: Int) -> Double {
+        switch difficulty {
+        case 0: return easyMaxSpeed
+        case 1: return normalMaxSpeed
+        default: return hardMaxSpeed
+        }
+    }
+}
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
     /// Refreshes and animates the golden-egg label
     func updateGoldenEggDisplay() {
@@ -50,6 +98,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     let background: Background
     let groundHitBox: SKSpriteNode
+    let roofHitBox: SKSpriteNode
 
     var landscapeBin: SKNode
     var landscape1: Landscape
@@ -62,7 +111,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var gameSpeed: Double = 7
     var eggSpeed: Double = 50
     var randomMax: Int = 26
-    var eagleSpeed: Double = 0.007
+    var eagleSpeed: Double = EagleTuning.aggressive.normalSpeed
+    let eagleTuning = EagleTuning.aggressive
 
     var playerVelocity = CGVector.zero
 
@@ -112,6 +162,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         background = Background(size: size)
         groundHitBox = SKSpriteNode(color: .clear,
                                     size: CGSize(width: size.width * 3, height: 2))
+        roofHitBox = SKSpriteNode(color: .clear,
+                                  size: CGSize(width: size.width * 3, height: 8))
 
         landscapeBin = SKNode()
         landscape1 = Landscape(size: size)

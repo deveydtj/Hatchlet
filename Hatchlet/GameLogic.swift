@@ -27,9 +27,11 @@ class GameLogic {
     private var foxPool: [Fox] = []
     private var eaglePool: [Eagle] = []
     private let maxPoolSize = 10
+    private let eggBurstSpacing: TimeInterval = 0.08
     private let extraEggGravity: CGFloat = -70
     private let groundTrailSpawnDistance: CGFloat = 18
     private let groundedVerticalSpeedThreshold: CGFloat = 25
+    private let groundedHeightTolerance: CGFloat = 12
     private var lastUpdateTime: TimeInterval = 0
     private var eggSpawnAccumulator: TimeInterval = 0
     private var groundTrailDistanceAccumulator: CGFloat = 0
@@ -84,6 +86,17 @@ class GameLogic {
         s.groundHitBox.physicsBody?.contactTestBitMask = PhysicsCategory.Player
         s.groundHitBox.zPosition = 10
         s.addChild(s.groundHitBox)
+
+        // Static roof collider (single segment) so head collisions are consistent.
+        s.roofHitBox.physicsBody = SKPhysicsBody(rectangleOf: s.roofHitBox.size)
+        s.roofHitBox.position = CGPoint(x: s.size.width / 2, y: s.size.height + s.roofHitBox.size.height)
+        s.roofHitBox.physicsBody?.isDynamic = false
+        s.roofHitBox.physicsBody?.affectedByGravity = false
+        s.roofHitBox.physicsBody?.categoryBitMask = PhysicsCategory.Roof
+        s.roofHitBox.physicsBody?.collisionBitMask = PhysicsCategory.Player | PhysicsCategory.Enemy
+        s.roofHitBox.physicsBody?.contactTestBitMask = PhysicsCategory.None
+        s.roofHitBox.zPosition = 10
+        s.addChild(s.roofHitBox)
 
         // Emitters
         s.addChild(s.emitter)
@@ -293,11 +306,7 @@ class GameLogic {
         setScrollingEnabled(true)
         s.randomMax = 26
 
-        switch s.const.gameDifficulty {
-        case 0: s.eagleSpeed = 0.0005
-        case 1: s.eagleSpeed = 0.007
-        default: s.eagleSpeed = 0.01
-        }
+        s.eagleSpeed = s.eagleTuning.baseSpeed(for: s.const.gameDifficulty)
     }
 
     /// Clean up and show end‐of‐game screen
@@ -370,21 +379,22 @@ class GameLogic {
         s.newPaused = true
     }
 
-    /// Spawn a standard or golden egg
+    /// Spawn one or more eggs with a weighted random burst size.
+    /// Extra eggs in a burst are fired in quick succession.
     func createEgg() {
         guard let s = scene, !s.const.gameOver, eggLaunchingEnabled else { return }
 
-        let isGold = Int.random(in: 1...15) == 7
-        let egg = getPooledEgg(isGold: isGold)
+        let launchCount = randomEggLaunchCount()
+        launchSingleEggIfAllowed()
 
-        if isGold {
-            if let emitter = s.emitter.makeEmitter(fileName: "eggCoin") {
-                emitter.targetNode = s
-                egg.addChild(emitter)
+        guard launchCount > 1 else { return }
+        for burstIndex in 1..<launchCount {
+            let wait = SKAction.wait(forDuration: eggBurstSpacing * Double(burstIndex))
+            let launch = SKAction.run { [weak self] in
+                self?.launchSingleEggIfAllowed()
             }
+            s.run(.sequence([wait, launch]))
         }
-
-        launchEgg(egg)
     }
 
     /// Animate and remove a collected egg
@@ -464,7 +474,8 @@ class GameLogic {
         if s.gameSpeed > 2 {
             s.eggSpeed /= 0.995
             s.gameSpeed *= 0.989
-            s.eagleSpeed /= 0.99
+            let rampedEagleSpeed = s.eagleSpeed / s.eagleTuning.speedRampDivisor
+            s.eagleSpeed = min(rampedEagleSpeed, s.eagleTuning.maxSpeed(for: s.const.gameDifficulty))
             s.landscapeBin.action(forKey: "landscapeBinMoveLeft")?.speed += 0.017
             s.scrollingGroundBin.action(forKey: "scrollingGroundBinMoveLeft")?.speed += 0.010
         }
@@ -574,7 +585,11 @@ class GameLogic {
             }
             s.eagle.position = CGPoint(x: s.size.width + s.eagle.size.width, y: s.size.height/2)
             s.addChild(s.eagle)
-            s.eagle.run(speed: s.gameSpeed, viewSize: s.size)
+            s.eagle.run(
+                speed: s.gameSpeed,
+                viewSize: s.size,
+                passDurationMultiplier: s.eagleTuning.passDurationMultiplier
+            )
         } else if !s.fox.isRunning() {
             spawnEnemy()
         }
@@ -588,6 +603,43 @@ class GameLogic {
         case 1: return 1.25
         default: return 0.95
         }
+    }
+
+    private func randomEggLaunchCount() -> Int {
+        guard let s = scene else { return 1 }
+        let roll = Int.random(in: 1...100)
+
+        switch s.const.gameDifficulty {
+        case 0:
+            if roll <= 72 { return 1 }
+            if roll <= 95 { return 2 }
+            return 3
+        case 1:
+            if roll <= 56 { return 1 }
+            if roll <= 84 { return 2 }
+            if roll <= 97 { return 3 }
+            return 4
+        default:
+            if roll <= 42 { return 1 }
+            if roll <= 74 { return 2 }
+            if roll <= 93 { return 3 }
+            return 4
+        }
+    }
+
+    private func launchSingleEggIfAllowed() {
+        guard let s = scene, !s.const.gameOver, eggLaunchingEnabled, !s.newPaused else { return }
+        let isGold = Int.random(in: 1...15) == 7
+        let egg = getPooledEgg(isGold: isGold)
+
+        if isGold {
+            if let emitter = s.emitter.makeEmitter(fileName: "eggCoin") {
+                emitter.targetNode = s
+                egg.addChild(emitter)
+            }
+        }
+
+        launchEgg(egg)
     }
     
     /// Per-frame game logic updates (called from GameScene.update)
@@ -665,9 +717,20 @@ class GameLogic {
         let deltaX = abs(s.player.position.x - (previousPlayerX ?? s.player.position.x))
         previousPlayerX = s.player.position.x
 
+        let playerBottomY = s.player.position.y - (s.player.size.height * 0.5)
+        let groundTopY = s.groundHitBox.position.y + (s.groundHitBox.size.height * 0.5)
+        let verticalGroundGap = playerBottomY - groundTopY
+        let isNearGroundSurface = verticalGroundGap <= groundedHeightTolerance
+
+        // Guard against stale contact counters leaving the player "grounded" in mid-air.
+        if s.isPlayerGrounded && !isNearGroundSurface {
+            s.playerGroundContactCount = 0
+        }
+        let effectivelyGrounded = s.isPlayerGrounded && isNearGroundSurface
+
         let shouldSpawnGroundTrail =
             playerInteractiveActive
-            && s.isPlayerGrounded
+            && effectivelyGrounded
             && abs(playerVelocity.dy) < groundedVerticalSpeedThreshold
             && deltaX > 0.2
 
@@ -679,7 +742,7 @@ class GameLogic {
                                              deleteTime: 0.22)
                 groundTrailDistanceAccumulator -= groundTrailSpawnDistance
             }
-        } else if !s.isPlayerGrounded {
+        } else if !effectivelyGrounded {
             groundTrailDistanceAccumulator = 0
         }
 
@@ -1050,6 +1113,10 @@ class GameLogic {
         s.eagle.position = CGPoint(x: s.size.width + s.eagle.size.width,
                                    y: s.size.height / 2)
         s.addChild(s.eagle)
-        s.eagle.run(speed: s.gameSpeed, viewSize: s.size)
+        s.eagle.run(
+            speed: s.gameSpeed,
+            viewSize: s.size,
+            passDurationMultiplier: s.eagleTuning.passDurationMultiplier
+        )
     }
 }

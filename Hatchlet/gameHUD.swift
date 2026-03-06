@@ -85,7 +85,10 @@ class gameHUD: SKNode {
         
 // ~Add Egg Deleter
         addChild(eggDelete)
-        eggDelete.position.x = size.width / 2
+        // Place cleanup collider fully off-screen on the left so eggs recycle
+        // only after they leave the visible play area.
+        let offscreenDeleteOffset = eggDelete.size.width + 30
+        eggDelete.position.x = (size.width / 2) - offscreenDeleteOffset
         eggDelete.position.y = size.height / 2
         eggDelete.physicsBody = SKPhysicsBody(rectangleOf: eggDelete.size)
         
